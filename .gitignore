@@ -1,0 +1,11 @@
+*.zip
+*.bak
+*-audit.txt
+_portfolio-audit.txt
+.env
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.vscode/
