@@ -4920,3 +4920,81 @@ a.logo img[src$="gland-logo-loop.gif"] {
   }
 }
 /* GLAND HEADER GIF LOGO END */
+
+/* GLAND HERO PROFESSION TITLE START */
+.banner__content h1 {
+  max-width: 100%;
+  font-size: clamp(62px, 5.8vw, 96px);
+  line-height: 1.06;
+  overflow: visible;
+}
+
+.banner__content h1 .hone,
+.banner__content h1 .designers {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  overflow: visible;
+}
+
+.banner__content h1 .hone {
+  margin-bottom: 16px;
+}
+
+.banner__content h1 .designers {
+  margin-top: 6px;
+  padding-bottom: 10px;
+  line-height: 1.08;
+}
+
+.banner__content h1 .designers::before {
+  white-space: nowrap;
+  line-height: 1.08;
+  padding-bottom: 10px;
+}
+
+@media (max-width: 991px) {
+  .banner__content h1 {
+    font-size: clamp(50px, 7vw, 76px);
+    line-height: 1.06;
+  }
+
+  .banner__content h1 .hone {
+    margin-bottom: 14px;
+  }
+
+  .banner__content h1 .designers {
+    margin-top: 4px;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 767px) {
+  .banner__content h1 {
+    font-size: clamp(40px, 8vw, 58px);
+    line-height: 1.08;
+  }
+
+  .banner__content h1 .hone {
+    margin-bottom: 10px;
+  }
+
+  .banner__content h1 .designers {
+    margin-top: 2px;
+    padding-bottom: 6px;
+  }
+}
+
+@media (max-width: 575px) {
+  .banner__content h1 {
+    font-size: clamp(34px, 9vw, 46px);
+  }
+
+  .banner__content h1 .hone,
+  .banner__content h1 .designers {
+    letter-spacing: -0.005em;
+  }
+}
+/* GLAND HERO PROFESSION TITLE END */
