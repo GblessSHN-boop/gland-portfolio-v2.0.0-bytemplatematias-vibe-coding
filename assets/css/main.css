@@ -4998,3 +4998,38 @@ a.logo img[src$="gland-logo-loop.gif"] {
   }
 }
 /* GLAND HERO PROFESSION TITLE END */
+
+/* GLAND HERO RIGHT VIDEO START */
+.banner__thumb.gland-hero-video-thumb {
+  width: 100%;
+  max-width: 504px;
+  aspect-ratio: 504 / 597;
+  margin-left: auto;
+  overflow: hidden;
+  background: #c9c9c9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner__thumb.gland-hero-video-thumb .gland-hero-ad-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background: #c9c9c9;
+}
+
+@media (max-width: 991px) {
+  .banner__thumb.gland-hero-video-thumb {
+    margin: 40px auto 0;
+    max-width: 504px;
+  }
+}
+
+@media (max-width: 575px) {
+  .banner__thumb.gland-hero-video-thumb {
+    max-width: 100%;
+  }
+}
+/* GLAND HERO RIGHT VIDEO END */
