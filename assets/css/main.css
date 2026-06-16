@@ -5050,3 +5050,27 @@ a.logo img[src$="gland-header-icon.gif"] {
   }
 }
 /* GLAND HEADER ICON END */
+
+/* GLAND SOCIAL HOVER START */
+a .bi-youtube,
+a .bi-github,
+a .bi-instagram,
+a .bi-linkedin {
+  transition: color 0.25s ease;
+}
+
+a:hover .bi-youtube,
+a:hover .bi-github,
+a:hover .bi-instagram,
+a:hover .bi-linkedin {
+  color: #2FC77E !important;
+}
+
+.social__footer {
+  transition: color 0.25s ease;
+}
+
+.social__footer:hover {
+  color: #2FC77E !important;
+}
+/* GLAND SOCIAL HOVER END */
