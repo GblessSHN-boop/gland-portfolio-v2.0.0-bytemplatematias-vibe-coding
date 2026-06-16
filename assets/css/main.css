@@ -5033,3 +5033,20 @@ a.logo img[src$="gland-logo-loop.gif"] {
   }
 }
 /* GLAND HERO RIGHT VIDEO END */
+
+/* GLAND HEADER ICON START */
+a.logo img[src$="gland-header-icon.gif"] {
+  width: 86px;
+  height: auto;
+  max-height: 46px;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 575px) {
+  a.logo img[src$="gland-header-icon.gif"] {
+    width: 72px;
+    max-height: 40px;
+  }
+}
+/* GLAND HEADER ICON END */
