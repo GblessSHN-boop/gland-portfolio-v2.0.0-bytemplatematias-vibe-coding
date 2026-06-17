@@ -5100,7 +5100,7 @@ a:hover .bi-linkedin {
 }
 
 .gland-top-skill-marquee .marquee-item {
-  gap: 72px;
+  gap: 68px;
 }
 
 .gland-top-skill-marquee .gland-marquee-sequence {
@@ -5119,28 +5119,19 @@ a:hover .bi-linkedin {
   font-weight: 400;
   line-height: 1;
   letter-spacing: 0.018em;
-  word-spacing: 0.12em;
+  word-spacing: 0.10em;
   text-transform: none !important;
+  color: #101820;
   padding: 0;
 }
 
-.gland-top-skill-marquee .gland-marquee-white {
-  color: #ffffff;
-}
-
-.gland-top-skill-marquee .gland-marquee-accent {
-  color: #c9f31d;
-}
-
-.gland-top-skill-marquee .gland-marquee-star {
-  display: inline-flex;
-  align-items: center;
-  color: #101820;
-  font-family: "Poppins", "Arial", sans-serif;
-  font-size: clamp(24px, 1.9vw, 34px);
-  font-weight: 800;
-  line-height: 1;
-  margin: 0 22px;
+.gland-top-skill-marquee .gland-marquee-separator {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  margin: 0 18px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 @media (max-width: 575px) {
@@ -5154,9 +5145,10 @@ a:hover .bi-linkedin {
     letter-spacing: 0.01em;
   }
 
-  .gland-top-skill-marquee .gland-marquee-star {
-    font-size: 22px;
-    margin: 0 16px;
+  .gland-top-skill-marquee .gland-marquee-separator {
+    width: 16px;
+    height: 16px;
+    margin: 0 14px;
   }
 }
 /* GLAND TOP SKILL MARQUEE END */
