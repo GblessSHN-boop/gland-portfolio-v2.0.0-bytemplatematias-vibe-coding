@@ -5074,3 +5074,89 @@ a:hover .bi-linkedin {
   color: #2FC77E !important;
 }
 /* GLAND SOCIAL HOVER END */
+
+/* GLAND TOP SKILL MARQUEE START */
+@font-face {
+  font-family: "GlandCompany";
+  src: url("../fonts/company.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.gland-top-skill-marquee {
+  height: 86px;
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.gland-top-skill-marquee .marquee-inner,
+.gland-top-skill-marquee .marqee-list,
+.gland-top-skill-marquee .marquee-item {
+  display: flex;
+  align-items: center;
+}
+
+.gland-top-skill-marquee .marquee-item {
+  gap: 72px;
+}
+
+.gland-top-skill-marquee .gland-marquee-sequence {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.gland-top-skill-marquee .gland-marquee-word {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: "GlandCompany", "Poppins", "Arial", sans-serif !important;
+  font-size: clamp(26px, 2.05vw, 36px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.018em;
+  word-spacing: 0.12em;
+  text-transform: none !important;
+  padding: 0;
+}
+
+.gland-top-skill-marquee .gland-marquee-white {
+  color: #ffffff;
+}
+
+.gland-top-skill-marquee .gland-marquee-accent {
+  color: #c9f31d;
+}
+
+.gland-top-skill-marquee .gland-marquee-star {
+  display: inline-flex;
+  align-items: center;
+  color: #101820;
+  font-family: "Poppins", "Arial", sans-serif;
+  font-size: clamp(24px, 1.9vw, 34px);
+  font-weight: 800;
+  line-height: 1;
+  margin: 0 22px;
+}
+
+@media (max-width: 575px) {
+  .gland-top-skill-marquee {
+    height: 72px;
+    min-height: 72px;
+  }
+
+  .gland-top-skill-marquee .gland-marquee-word {
+    font-size: 24px;
+    letter-spacing: 0.01em;
+  }
+
+  .gland-top-skill-marquee .gland-marquee-star {
+    font-size: 22px;
+    margin: 0 16px;
+  }
+}
+/* GLAND TOP SKILL MARQUEE END */
