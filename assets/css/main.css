@@ -5172,3 +5172,71 @@ a:hover .bi-linkedin {
   }
 }
 /* GLAND PERSONAL INFO EMAIL END */
+
+/* GLAND BOTTOM VALUE MARQUEE START */
+.gland-bottom-value-marquee {
+  height: 86px;
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.gland-bottom-value-marquee .marquee-inner,
+.gland-bottom-value-marquee .marqee-list,
+.gland-bottom-value-marquee .marquee-item {
+  display: flex;
+  align-items: center;
+}
+
+.gland-bottom-value-marquee .marquee-item {
+  gap: 22px;
+}
+
+.gland-bottom-value-marquee .gland-bottom-marquee-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 22px;
+  white-space: nowrap;
+  padding: 12px 0;
+}
+
+.gland-bottom-value-marquee .gland-bottom-marquee-text,
+.gland-bottom-value-marquee .gland-bottom-marquee-text span {
+  font-family: "GlandCompany", "Poppins", "Arial", sans-serif !important;
+  font-size: clamp(28px, 2.1vw, 38px) !important;
+  font-weight: 400 !important;
+  line-height: 1.05 !important;
+  letter-spacing: 0.025em !important;
+  text-transform: none !important;
+  color: #101820 !important;
+}
+
+.gland-bottom-marquee-separator {
+  width: 31px;
+  height: 31px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 575px) {
+  .gland-bottom-value-marquee {
+    height: 72px;
+    min-height: 72px;
+  }
+
+  .gland-bottom-value-marquee .gland-bottom-marquee-text {
+    gap: 18px;
+  }
+
+  .gland-bottom-value-marquee .gland-bottom-marquee-text,
+  .gland-bottom-value-marquee .gland-bottom-marquee-text span {
+    font-size: 24px !important;
+  }
+
+  .gland-bottom-marquee-separator {
+    width: 26px;
+    height: 26px;
+  }
+}
+/* GLAND BOTTOM VALUE MARQUEE END */
