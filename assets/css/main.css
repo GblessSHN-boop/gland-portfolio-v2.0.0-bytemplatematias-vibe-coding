@@ -5152,3 +5152,23 @@ a:hover .bi-linkedin {
   }
 }
 /* GLAND TOP SKILL MARQUEE END */
+
+/* GLAND PERSONAL INFO EMAIL START */
+.about__contbox__item a.gland-email-link {
+  text-transform: lowercase !important;
+  font-size: 14px !important;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+@media (max-width: 575px) {
+  .about__contbox__item a.gland-email-link {
+    font-size: 13px !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+/* GLAND PERSONAL INFO EMAIL END */
