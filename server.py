@@ -590,6 +590,17 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
     def do_PATCH(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
+        # GLAND SINGLETON CMS PATCH ROUTES START
+        if path == "/api/hero-content":
+            self._handle_update_hero_content()
+            return
+        if path == "/api/site-identity":
+            self._handle_update_site_identity()
+            return
+        if path == "/api/personal-info":
+            self._handle_update_personal_info()
+            return
+        # GLAND SINGLETON CMS PATCH ROUTES END
 
         if path == "/api/personal-info":
             self._handle_update_personal_info()
