@@ -50,13 +50,19 @@ from backend.media_service import (
     list_media_files,
     update_media_file,
 )
+from backend.analytics_service import (
+    get_analytics_summary,
+    list_recent_events,
+    record_event,
+    record_visit,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.9"
+    server_version = "GlandPortfolioPython/1.0"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -125,6 +131,35 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
+        if path == "/api/analytics/summary":
+            try:
+                summary = get_analytics_summary()
+                self._send_json(200, {"success": True, "data": summary})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load analytics summary.",
+                        "error": str(error),
+                    },
+                )
+            return
+
+        if path == "/api/analytics/events":
+            try:
+                events = list_recent_events(limit=100)
+                self._send_json(200, {"success": True, "data": events})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load analytics events.",
+                        "error": str(error),
+                    },
+                )
+            return
         if path == "/api/media-files":
             try:
                 media_files = list_media_files(limit=100)
@@ -335,6 +370,13 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
 
+        if path == "/api/analytics/visit":
+            self._handle_record_analytics_visit()
+            return
+
+        if path == "/api/analytics/event":
+            self._handle_record_analytics_event()
+            return
         if path == "/api/media-files":
             self._handle_create_media_file()
             return
@@ -356,6 +398,67 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "API endpoint not found."})
 
+    def _get_client_ip(self):
+        forwarded_for = self.headers.get("X-Forwarded-For", "")
+        if forwarded_for:
+            return forwarded_for.split(",")[0].strip()
+
+        if self.client_address:
+            return self.client_address[0]
+
+        return ""
+
+    def _handle_record_analytics_visit(self):
+        data = self._read_request_data()
+
+        try:
+            visit = record_visit(data, ip_address=self._get_client_ip())
+
+            self._send_json(
+                201,
+                {
+                    "success": True,
+                    "message": "Analytics visit recorded.",
+                    "data": visit,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to record analytics visit.",
+                    "error": str(error),
+                },
+            )
+
+    def _handle_record_analytics_event(self):
+        data = self._read_request_data()
+
+        try:
+            event = record_event(data, ip_address=self._get_client_ip())
+
+            self._send_json(
+                201,
+                {
+                    "success": True,
+                    "message": "Analytics event recorded.",
+                    "data": event,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to record analytics event.",
+                    "error": str(error),
+                },
+            )
     def _handle_create_media_file(self):
         data = self._read_request_data()
 

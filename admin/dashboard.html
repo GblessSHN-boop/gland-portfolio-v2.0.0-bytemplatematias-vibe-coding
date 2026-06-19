@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | GLAND Portfolio Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="gland-admin-shell">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
+            </div>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a href="messages.html">Messages</a>
+                <a href="projects.html">Projects</a>
+                <a href="highlights.html">Highlights</a>
+                <a href="personal-info.html">Personal Info</a>
+                <a href="hero-content.html">Hero Content</a>
+                <a href="site-identity.html">Site Identity</a>
+                <a href="dashboard.html" class="is-active">Dashboard</a>
+                <a href="page-editor.html">Page Editor</a>
+                <a href="media.html">Media</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="gland-main">
+            <header class="gland-page-header">
+                <div>
+                    <p class="gland-kicker">Admin Overview</p>
+                    <h2 class="gland-page-title">Dashboard</h2>
+                    <p class="gland-page-description">
+                        Summary of traffic, messages, projects, media, and tracked interaction events.
+                    </p>
+                </div>
+
+                <div class="gland-toolbar">
+                    <button class="gland-button" type="button" data-refresh-dashboard>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <p class="gland-page-description" data-page-status></p>
+
+            <section class="gland-dashboard-grid" data-dashboard-cards>
+                <div class="gland-card gland-empty">Loading dashboard summary...</div>
+            </section>
+
+            <section class="gland-analytics-layout">
+                <div>
+                    <h3 class="gland-section-title">Top Pages</h3>
+                    <div data-top-pages></div>
+                </div>
+
+                <div>
+                    <h3 class="gland-section-title">Top Events</h3>
+                    <div data-top-events></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

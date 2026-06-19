@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | GLAND Portfolio Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="gland-admin-shell">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
+            </div>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a href="messages.html">Messages</a>
+                <a href="projects.html">Projects</a>
+                <a href="highlights.html">Highlights</a>
+                <a href="personal-info.html">Personal Info</a>
+                <a href="hero-content.html">Hero Content</a>
+                <a href="site-identity.html">Site Identity</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="page-editor.html">Page Editor</a>
+                <a href="media.html">Media</a>
+                <a href="analytics.html" class="is-active">Analytics</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="gland-main">
+            <header class="gland-page-header">
+                <div>
+                    <p class="gland-kicker">Tracking Events</p>
+                    <h2 class="gland-page-title">Analytics</h2>
+                    <p class="gland-page-description">
+                        View recent tracked events and send test analytics events to the backend.
+                    </p>
+                </div>
+
+                <div class="gland-toolbar">
+                    <button class="gland-button" type="button" data-refresh-analytics>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <p class="gland-page-description" data-page-status></p>
+
+            <section class="gland-card gland-form-card">
+                <form data-analytics-event-form>
+                    <div class="gland-form-grid">
+                        <div class="gland-field">
+                            <label for="event_type">Event Type</label>
+                            <input id="event_type" name="event_type" type="text" value="admin_test">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="event_name">Event Name</label>
+                            <input id="event_name" name="event_name" type="text" value="manual_test">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="event_value">Event Value</label>
+                            <input id="event_value" name="event_value" type="text" value="1">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="page_path">Page Path</label>
+                            <input id="page_path" name="page_path" type="text" value="/admin/analytics.html">
+                        </div>
+
+                        <div class="gland-field full">
+                            <label for="target_url">Target URL</label>
+                            <input id="target_url" name="target_url" type="text" value="">
+                        </div>
+                    </div>
+
+                    <div class="gland-actions">
+                        <button class="gland-button lime" type="submit">
+                            Send Test Event
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section data-events-list>
+                <div class="gland-card gland-empty">
+                    Loading analytics events...
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/analytics.js"></script>
+</body>
+</html>

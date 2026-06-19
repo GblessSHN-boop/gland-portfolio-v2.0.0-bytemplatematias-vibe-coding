@@ -219,3 +219,22 @@ Media upload behavior:
 - Images are stored in `uploads/images`
 - Videos are stored in `uploads/videos`
 - Uploaded file metadata is stored in MySQL table `media_files`
+
+## Analytics and Dashboard
+
+Admin pages:
+
+- `admin/dashboard.html`
+- `admin/analytics.html`
+
+Analytics API endpoints:
+
+- `GET /api/analytics/summary`
+- `GET /api/analytics/events`
+- `POST /api/analytics/visit`
+- `POST /api/analytics/event`
+
+Analytics tables:
+
+- `analytics_visits`
+- `analytics_events`

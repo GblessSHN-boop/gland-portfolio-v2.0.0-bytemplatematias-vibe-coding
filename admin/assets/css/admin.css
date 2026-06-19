@@ -649,3 +649,70 @@ body {
     }
 }
 /* GLAND ADMIN MEDIA CRUD END */
+
+/* GLAND ADMIN ANALYTICS START */
+.gland-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.gland-stat-card {
+    padding: 20px;
+}
+
+.gland-stat-label {
+    margin: 0 0 8px;
+    color: var(--gland-muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.gland-stat-value {
+    margin: 0;
+    font-size: 34px;
+    line-height: 1;
+    color: var(--gland-dark);
+}
+
+.gland-analytics-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+}
+
+.gland-table-wrap {
+    overflow-x: auto;
+}
+
+.gland-data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.gland-data-table th,
+.gland-data-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--gland-line);
+    text-align: left;
+    vertical-align: top;
+}
+
+.gland-data-table th {
+    color: var(--gland-dark);
+    font-size: 13px;
+}
+
+.gland-data-table td {
+    color: var(--gland-muted);
+    font-size: 13px;
+}
+
+@media (max-width: 1100px) {
+    .gland-dashboard-grid,
+    .gland-analytics-layout {
+        grid-template-columns: 1fr;
+    }
+}
+/* GLAND ADMIN ANALYTICS END */
