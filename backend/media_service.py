@@ -1,0 +1,2 @@
+﻿# Media upload service placeholder
+

@@ -1,0 +1,2 @@
+﻿# Contact message service placeholder
+
