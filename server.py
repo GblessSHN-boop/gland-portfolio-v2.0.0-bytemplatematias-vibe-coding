@@ -1,3 +1,5 @@
+from backend.auth_service import authenticate_admin, create_admin_session, delete_admin_session, get_admin_by_session_token
+from http.cookies import SimpleCookie
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
@@ -114,6 +116,15 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
+        # GLAND ADMIN AUTH GET ROUTES START
+        if path == "/api/auth/me":
+            self._handle_auth_me()
+            return
+        if self._auth_requires_guard(path, "GET"):
+            if not self._auth_current_admin():
+                self._auth_reject(path)
+                return
+        # GLAND ADMIN AUTH GET ROUTES END
 
         if path == "/api/health":
             db_status = test_connection()
@@ -369,6 +380,18 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
+        # GLAND ADMIN AUTH POST ROUTES START
+        if path == "/api/auth/login":
+            self._handle_auth_login()
+            return
+        if path == "/api/auth/logout":
+            self._handle_auth_logout()
+            return
+        if self._auth_requires_guard(path, "POST"):
+            if not self._auth_current_admin():
+                self._auth_reject(path)
+                return
+        # GLAND ADMIN AUTH POST ROUTES END
 
         if path == "/api/analytics/visit":
             self._handle_record_analytics_visit()
@@ -590,6 +613,12 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
     def do_PATCH(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
+        # GLAND ADMIN AUTH PATCH GUARD START
+        if self._auth_requires_guard(path, "PATCH"):
+            if not self._auth_current_admin():
+                self._auth_reject(path)
+                return
+        # GLAND ADMIN AUTH PATCH GUARD END
         # GLAND SINGLETON CMS PATCH ROUTES START
         if path == "/api/hero-content":
             self._handle_update_hero_content()
@@ -847,6 +876,12 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
     def do_DELETE(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
+        # GLAND ADMIN AUTH DELETE GUARD START
+        if self._auth_requires_guard(path, "DELETE"):
+            if not self._auth_current_admin():
+                self._auth_reject(path)
+                return
+        # GLAND ADMIN AUTH DELETE GUARD END
 
         if path == "/api/personal-info":
             self._handle_delete_personal_info()
@@ -1064,6 +1099,262 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                     "error": str(error),
                 },
             )
+
+    # GLAND ADMIN AUTH METHODS START
+    def _auth_read_json(self):
+        try:
+            content_length = int(self.headers.get("Content-Length", "0") or 0)
+        except ValueError:
+            content_length = 0
+
+        if content_length <= 0:
+            return {}
+
+        raw_body = self.rfile.read(content_length).decode("utf-8")
+
+        if not raw_body.strip():
+            return {}
+
+        return json.loads(raw_body)
+
+    def _auth_json_response(self, status_code, payload, cookie_header=None):
+        body = json.dumps(payload, default=str, indent=2).encode("utf-8")
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+
+        if cookie_header:
+            self.send_header("Set-Cookie", cookie_header)
+
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _auth_cookie_header(self, token, max_age_seconds):
+        return (
+            f"gland_admin_session={token}; "
+            "Path=/; "
+            "HttpOnly; "
+            "SameSite=Lax; "
+            f"Max-Age={int(max_age_seconds)}"
+        )
+
+    def _auth_expired_cookie_header(self):
+        return "gland_admin_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"
+
+    def _auth_cookie_token(self):
+        try:
+            cookie = SimpleCookie(self.headers.get("Cookie", ""))
+            morsel = cookie.get("gland_admin_session")
+            return morsel.value if morsel else ""
+        except Exception:
+            return ""
+
+    def _auth_client_ip(self):
+        forwarded_for = self.headers.get("X-Forwarded-For", "")
+        if forwarded_for:
+            return forwarded_for.split(",", 1)[0].strip()
+
+        try:
+            return self.client_address[0]
+        except Exception:
+            return ""
+
+    def _auth_current_admin(self):
+        token = self._auth_cookie_token()
+
+        if not token:
+            return None
+
+        try:
+            return get_admin_by_session_token(token)
+        except Exception:
+            return None
+
+    def _auth_requires_guard(self, path, method):
+        method = (method or "").upper()
+
+        if path == "/admin/login.html" or path.startswith("/admin/assets/"):
+            return False
+
+        if path.startswith("/admin/") and method == "GET":
+            if path == "/admin/" or path.endswith(".html"):
+                return True
+
+        if not path.startswith("/api/"):
+            return False
+
+        if path.startswith("/api/auth/"):
+            return False
+
+        if path == "/api/health":
+            return False
+
+        if method == "GET":
+            public_get_exact = {
+                "/api/site-identity",
+                "/api/hero-content",
+                "/api/personal-info",
+            }
+
+            if path in public_get_exact:
+                return False
+
+            public_get_prefixes = (
+                "/api/projects",
+                "/api/highlights",
+                "/api/media-files",
+            )
+
+            for prefix in public_get_prefixes:
+                if path == prefix or path.startswith(prefix + "/"):
+                    return False
+
+            return True
+
+        if method == "POST":
+            public_post_exact = {
+                "/api/contact",
+                "/api/analytics/visit",
+                "/api/analytics/event",
+            }
+
+            if path in public_post_exact:
+                return False
+
+            return True
+
+        if method in {"PATCH", "DELETE"}:
+            return True
+
+        return False
+
+    def _auth_reject(self, path):
+        if path.startswith("/api/"):
+            self._auth_json_response(
+                401,
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": "Authentication required.",
+                },
+            )
+            return
+
+        self.send_response(302)
+        self.send_header("Location", "/admin/login.html")
+        self.end_headers()
+
+    def _handle_auth_me(self):
+        admin = self._auth_current_admin()
+
+        if not admin:
+            self._auth_json_response(
+                200,
+                {
+                    "success": True,
+                    "authenticated": False,
+                    "data": None,
+                },
+            )
+            return
+
+        self._auth_json_response(
+            200,
+            {
+                "success": True,
+                "authenticated": True,
+                "data": {
+                    "admin": admin,
+                },
+            },
+        )
+
+    def _handle_auth_login(self):
+        try:
+            data = self._auth_read_json()
+        except Exception:
+            self._auth_json_response(
+                400,
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": "Invalid JSON body.",
+                },
+            )
+            return
+
+        identifier = str(data.get("username") or data.get("email") or "").strip()
+        password = str(data.get("password") or "")
+
+        if not identifier or not password:
+            self._auth_json_response(
+                400,
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": "Username/email and password are required.",
+                },
+            )
+            return
+
+        try:
+            admin = authenticate_admin(identifier, password)
+        except Exception:
+            admin = None
+
+        if not admin:
+            self._auth_json_response(
+                401,
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": "Invalid username/email or password.",
+                },
+            )
+            return
+
+        session = create_admin_session(
+            admin["id"],
+            ip_address=self._auth_client_ip(),
+            user_agent=self.headers.get("User-Agent", ""),
+        )
+
+        self._auth_json_response(
+            200,
+            {
+                "success": True,
+                "authenticated": True,
+                "message": "Login successful.",
+                "data": {
+                    "admin": admin,
+                    "expires_at": session.get("expires_at"),
+                },
+            },
+            cookie_header=self._auth_cookie_header(
+                session["token"],
+                session.get("max_age_seconds", 43200),
+            ),
+        )
+
+    def _handle_auth_logout(self):
+        token = self._auth_cookie_token()
+
+        try:
+            if token:
+                delete_admin_session(token)
+        except Exception:
+            pass
+
+        self._auth_json_response(
+            200,
+            {
+                "success": True,
+                "authenticated": False,
+                "message": "Logout successful.",
+            },
+            cookie_header=self._auth_expired_cookie_header(),
+        )
+    # GLAND ADMIN AUTH METHODS END
 
 
 def run():

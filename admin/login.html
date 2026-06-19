@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | GLAND Portfolio</title>
+  <style>
+    :root {
+      --bg: #101010;
+      --panel: #181818;
+      --text: #ffffff;
+      --muted: #bdbdbd;
+      --line: rgba(255, 255, 255, 0.12);
+      --accent: #c9f31d;
+      --danger: #ff6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top left, rgba(201, 243, 29, 0.12), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .login-card {
+      width: min(420px, calc(100vw - 32px));
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(24, 24, 24, 0.94);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .description {
+      margin: 0 0 26px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      margin: 0 0 16px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #101010;
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      width: 100%;
+      height: 48px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #111111;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .message {
+      min-height: 22px;
+      margin-top: 16px;
+      color: var(--danger);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 18px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <main class="login-card">
+    <p class="eyebrow">GLAND CMS</p>
+    <h1>Admin Login</h1>
+    <p class="description">
+      Sign in to manage portfolio content, messages, media, and analytics.
+    </p>
+
+    <form id="adminLoginForm">
+      <label for="username">Username or Email</label>
+      <input id="username" name="username" type="text" autocomplete="username" required />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required />
+
+      <button id="loginButton" type="submit">Login</button>
+
+      <div id="loginMessage" class="message" aria-live="polite"></div>
+    </form>
+
+    <a class="back-link" href="../index.html">Back to portfolio</a>
+  </main>
+
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

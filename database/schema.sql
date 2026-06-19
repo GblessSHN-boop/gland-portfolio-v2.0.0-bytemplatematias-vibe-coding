@@ -1,4 +1,4 @@
-﻿CREATE DATABASE IF NOT EXISTS gland_portfolio_db
+CREATE DATABASE IF NOT EXISTS gland_portfolio_db
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
@@ -129,3 +129,23 @@ CREATE TABLE IF NOT EXISTS activity_logs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE SET NULL
 );
+
+-- GLAND ADMIN AUTH SESSIONS START
+CREATE TABLE IF NOT EXISTS admin_sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT NOT NULL,
+    token_hash VARCHAR(128) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    ip_address VARCHAR(64) DEFAULT NULL,
+    user_agent TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_admin_sessions_token_hash (token_hash),
+    INDEX idx_admin_sessions_admin_id (admin_id),
+    INDEX idx_admin_sessions_expires_at (expires_at),
+    CONSTRAINT fk_admin_sessions_admin_id
+        FOREIGN KEY (admin_id)
+        REFERENCES admin_users(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GLAND ADMIN AUTH SESSIONS END
