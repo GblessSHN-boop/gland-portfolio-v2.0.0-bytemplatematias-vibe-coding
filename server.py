@@ -1,22 +1,20 @@
-﻿from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 from datetime import datetime, timezone
 import json
 import os
-import uuid
+
+import config
+from backend.db import test_connection
+from backend.message_service import create_message, get_recent_messages
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-LOG_DIR = PROJECT_ROOT / "logs"
-DEV_CONTACT_LOG = LOG_DIR / "contact_messages_dev.jsonl"
-
-APP_HOST = "127.0.0.1"
-APP_PORT = 8000
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.1"
+    server_version = "GlandPortfolioPython/0.2"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -50,17 +48,41 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
 
         if parsed_url.path == "/api/health":
+            db_status = test_connection()
+
             self._send_json(
-                200,
+                200 if db_status["success"] else 503,
                 {
-                    "success": True,
+                    "success": db_status["success"],
                     "app": "GLAND Portfolio Admin CMS",
                     "backend": "python",
-                    "status": "healthy",
+                    "database": db_status,
                     "message": "Python backend is running.",
                     "time": datetime.now(timezone.utc).isoformat(),
                 },
             )
+            return
+
+        if parsed_url.path == "/api/messages":
+            try:
+                messages = get_recent_messages(limit=50)
+
+                self._send_json(
+                    200,
+                    {
+                        "success": True,
+                        "data": messages,
+                    },
+                )
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load messages from MySQL.",
+                        "error": str(error),
+                    },
+                )
             return
 
         return super().do_GET()
@@ -107,44 +129,35 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
-        LOG_DIR.mkdir(exist_ok=True)
+        try:
+            saved_message = create_message(name, email, subject, message)
 
-        record = {
-            "id": str(uuid.uuid4()),
-            "name": name,
-            "email": email,
-            "subject": subject,
-            "message": message,
-            "status": "new",
-            "storage": "dev_log",
-            "database": "pending_mysql_integration",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }
-
-        with DEV_CONTACT_LOG.open("a", encoding="utf-8") as file:
-            file.write(json.dumps(record, ensure_ascii=False) + "\n")
-
-        self._send_json(
-            201,
-            {
-                "success": True,
-                "message": "Message received by Python backend. MySQL storage will be connected in the next phase.",
-                "data": {
-                    "id": record["id"],
-                    "status": record["status"],
-                    "storage": record["storage"],
+            self._send_json(
+                201,
+                {
+                    "success": True,
+                    "message": "Message received and saved to MySQL database.",
+                    "data": saved_message,
                 },
-            },
-        )
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Message received but failed to save to MySQL database.",
+                    "error": str(error),
+                },
+            )
 
 
 def run():
     os.chdir(PROJECT_ROOT)
 
-    server_address = (APP_HOST, APP_PORT)
+    server_address = (config.APP_HOST, config.APP_PORT)
     httpd = ThreadingHTTPServer(server_address, GlandPortfolioHandler)
 
-    print(f"GLAND Portfolio Python backend running at http://{APP_HOST}:{APP_PORT}")
+    print(f"GLAND Portfolio Python backend running at http://{config.APP_HOST}:{config.APP_PORT}")
     print("Press Ctrl+C to stop the server.")
 
     try:
