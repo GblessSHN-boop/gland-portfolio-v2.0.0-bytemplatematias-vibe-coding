@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | GLAND Portfolio Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="gland-admin-shell">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
+            </div>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a href="messages.html">Messages</a>
+                <a href="projects.html" class="is-active">Projects</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="page-editor.html">Page Editor</a>
+                <a href="media.html">Media</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="gland-main">
+            <header class="gland-page-header">
+                <div>
+                    <p class="gland-kicker">Portfolio CMS</p>
+                    <h2 class="gland-page-title">Projects</h2>
+                    <p class="gland-page-description">
+                        Create and manage Complete Projects content stored in MySQL.
+                        Later this data will sync into the public portfolio section.
+                    </p>
+                </div>
+
+                <div class="gland-toolbar">
+                    <button class="gland-button" type="button" data-refresh-projects>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <p class="gland-page-description" data-page-status></p>
+
+            <section class="gland-card gland-form-card">
+                <form data-project-form>
+                    <div class="gland-form-grid">
+                        <div class="gland-field">
+                            <label for="title">Project Title</label>
+                            <input id="title" name="title" type="text" placeholder="GLAND Personal Portfolio Website" required>
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="category">Category</label>
+                            <input id="category" name="category" type="text" placeholder="AI Web Portfolio">
+                        </div>
+
+                        <div class="gland-field full">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" placeholder="Short project description"></textarea>
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="image_path">Image Path</label>
+                            <input id="image_path" name="image_path" type="text" placeholder="../assets/img/project/gland-portfolio-website-cover.png">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="technologies">Technologies</label>
+                            <input id="technologies" name="technologies" type="text" placeholder="HTML, CSS, JavaScript, Python, MySQL">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="project_url">Project URL</label>
+                            <input id="project_url" name="project_url" type="url" placeholder="https://example.com">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="repo_url">Repository URL</label>
+                            <input id="repo_url" name="repo_url" type="url" placeholder="https://github.com/...">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="display_order">Display Order</label>
+                            <input id="display_order" name="display_order" type="number" value="0">
+                        </div>
+                    </div>
+
+                    <div class="gland-checkbox-row">
+                        <label>
+                            <input type="checkbox" name="is_featured" checked>
+                            Featured
+                        </label>
+
+                        <label>
+                            <input type="checkbox" name="is_active" checked>
+                            Active
+                        </label>
+                    </div>
+
+                    <div class="gland-actions">
+                        <button class="gland-button lime" type="submit" data-submit-project>
+                            Create Project
+                        </button>
+                        <button class="gland-button secondary" type="button" data-reset-project-form>
+                            Reset
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="gland-project-grid" data-project-list aria-live="polite">
+                <div class="gland-card gland-empty">
+                    Loading projects from MySQL...
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/projects.js"></script>
+</body>
+</html>

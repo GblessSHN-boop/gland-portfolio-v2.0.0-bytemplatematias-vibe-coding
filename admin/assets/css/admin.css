@@ -250,3 +250,124 @@ body {
         margin-top: 18px;
     }
 }
+/* GLAND ADMIN PROJECTS CRUD START */
+.gland-form-card {
+    padding: 22px;
+    margin-bottom: 22px;
+}
+
+.gland-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.gland-field {
+    display: grid;
+    gap: 7px;
+}
+
+.gland-field.full {
+    grid-column: 1 / -1;
+}
+
+.gland-field label {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--gland-dark);
+}
+
+.gland-field input,
+.gland-field textarea,
+.gland-field select {
+    width: 100%;
+    border: 1px solid var(--gland-line);
+    border-radius: 14px;
+    padding: 12px;
+    background: #fbfdf7;
+    color: var(--gland-text);
+    font: inherit;
+}
+
+.gland-field textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.gland-checkbox-row {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.gland-checkbox-row label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gland-muted);
+    font-weight: 700;
+}
+
+.gland-project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.gland-project-card {
+    padding: 20px;
+}
+
+.gland-project-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 18px;
+    object-fit: cover;
+    background: #eef3e6;
+    border: 1px solid var(--gland-line);
+    margin-bottom: 14px;
+}
+
+.gland-project-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+.gland-project-meta {
+    margin: 7px 0 10px;
+    color: var(--gland-muted);
+    font-size: 13px;
+}
+
+.gland-project-description {
+    margin: 0 0 12px;
+    color: #2d3328;
+    line-height: 1.6;
+}
+
+.gland-pill-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.gland-pill {
+    display: inline-flex;
+    border-radius: 999px;
+    background: #eef3e6;
+    color: var(--gland-dark);
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+@media (max-width: 900px) {
+    .gland-form-grid,
+    .gland-project-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* GLAND ADMIN PROJECTS CRUD END */

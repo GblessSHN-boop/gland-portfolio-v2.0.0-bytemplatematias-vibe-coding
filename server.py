@@ -14,13 +14,20 @@ from backend.message_service import (
     get_recent_messages,
     update_message,
 )
+from backend.project_service import (
+    create_project,
+    delete_project,
+    get_project_by_id,
+    list_projects,
+    update_project,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.3"
+    server_version = "GlandPortfolioPython/0.4"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -50,13 +57,13 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             for key, values in parsed.items()
         }
 
-    def _get_message_id_from_path(self, path):
+    def _get_id_from_path(self, path, collection):
         parts = path.strip("/").split("/")
 
         if len(parts) != 3:
             return None
 
-        if parts[0] != "api" or parts[1] != "messages":
+        if parts[0] != "api" or parts[1] != collection:
             return None
 
         try:
@@ -92,14 +99,7 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         if path == "/api/messages":
             try:
                 messages = get_recent_messages(limit=50)
-
-                self._send_json(
-                    200,
-                    {
-                        "success": True,
-                        "data": messages,
-                    },
-                )
+                self._send_json(200, {"success": True, "data": messages})
             except Exception as error:
                 self._send_json(
                     500,
@@ -111,29 +111,17 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 )
             return
 
-        message_id = self._get_message_id_from_path(path)
+        message_id = self._get_id_from_path(path, "messages")
 
         if message_id is not None:
             try:
                 message = get_message_by_id(message_id)
 
                 if not message:
-                    self._send_json(
-                        404,
-                        {
-                            "success": False,
-                            "message": "Message not found.",
-                        },
-                    )
+                    self._send_json(404, {"success": False, "message": "Message not found."})
                     return
 
-                self._send_json(
-                    200,
-                    {
-                        "success": True,
-                        "data": message,
-                    },
-                )
+                self._send_json(200, {"success": True, "data": message})
             except Exception as error:
                 self._send_json(
                     500,
@@ -145,22 +133,60 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 )
             return
 
+        if path == "/api/projects":
+            try:
+                projects = list_projects(limit=100)
+                self._send_json(200, {"success": True, "data": projects})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load projects from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
+
+        project_id = self._get_id_from_path(path, "projects")
+
+        if project_id is not None:
+            try:
+                project = get_project_by_id(project_id)
+
+                if not project:
+                    self._send_json(404, {"success": False, "message": "Project not found."})
+                    return
+
+                self._send_json(200, {"success": True, "data": project})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load project from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
+
         return super().do_GET()
 
     def do_POST(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
 
-        if path != "/api/contact":
-            self._send_json(
-                404,
-                {
-                    "success": False,
-                    "message": "API endpoint not found.",
-                },
-            )
+        if path == "/api/contact":
+            self._handle_create_contact()
             return
 
+        if path == "/api/projects":
+            self._handle_create_project()
+            return
+
+        self._send_json(404, {"success": False, "message": "API endpoint not found."})
+
+    def _handle_create_contact(self):
         data = self._read_request_data()
 
         name = str(data.get("name", "")).strip()
@@ -211,20 +237,51 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 },
             )
 
-    def do_PATCH(self):
-        parsed_url = urlparse(self.path)
-        message_id = self._get_message_id_from_path(parsed_url.path)
+    def _handle_create_project(self):
+        data = self._read_request_data()
 
-        if message_id is None:
+        try:
+            project = create_project(data)
+
             self._send_json(
-                404,
+                201,
                 {
-                    "success": False,
-                    "message": "Message update endpoint not found.",
+                    "success": True,
+                    "message": "Project created.",
+                    "data": project,
                 },
             )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to create project.",
+                    "error": str(error),
+                },
+            )
+
+    def do_PATCH(self):
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path
+
+        message_id = self._get_id_from_path(path, "messages")
+
+        if message_id is not None:
+            self._handle_update_message(message_id)
             return
 
+        project_id = self._get_id_from_path(path, "projects")
+
+        if project_id is not None:
+            self._handle_update_project(project_id)
+            return
+
+        self._send_json(404, {"success": False, "message": "Update endpoint not found."})
+
+    def _handle_update_message(self, message_id):
         data = self._read_request_data()
 
         status = data.get("status")
@@ -254,13 +311,7 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
 
             if not updated_message:
-                self._send_json(
-                    404,
-                    {
-                        "success": False,
-                        "message": "Message not found.",
-                    },
-                )
+                self._send_json(404, {"success": False, "message": "Message not found."})
                 return
 
             self._send_json(
@@ -272,13 +323,7 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 },
             )
         except ValueError as error:
-            self._send_json(
-                400,
-                {
-                    "success": False,
-                    "message": str(error),
-                },
-            )
+            self._send_json(400, {"success": False, "message": str(error)})
         except Exception as error:
             self._send_json(
                 500,
@@ -289,31 +334,60 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 },
             )
 
-    def do_DELETE(self):
-        parsed_url = urlparse(self.path)
-        message_id = self._get_message_id_from_path(parsed_url.path)
+    def _handle_update_project(self, project_id):
+        data = self._read_request_data()
 
-        if message_id is None:
+        try:
+            project = update_project(project_id, data)
+
+            if not project:
+                self._send_json(404, {"success": False, "message": "Project not found."})
+                return
+
             self._send_json(
-                404,
+                200,
                 {
-                    "success": False,
-                    "message": "Message delete endpoint not found.",
+                    "success": True,
+                    "message": "Project updated.",
+                    "data": project,
                 },
             )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to update project.",
+                    "error": str(error),
+                },
+            )
+
+    def do_DELETE(self):
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path
+
+        message_id = self._get_id_from_path(path, "messages")
+
+        if message_id is not None:
+            self._handle_delete_message(message_id)
             return
 
+        project_id = self._get_id_from_path(path, "projects")
+
+        if project_id is not None:
+            self._handle_delete_project(project_id)
+            return
+
+        self._send_json(404, {"success": False, "message": "Delete endpoint not found."})
+
+    def _handle_delete_message(self, message_id):
         try:
             was_deleted = delete_message(message_id)
 
             if not was_deleted:
-                self._send_json(
-                    404,
-                    {
-                        "success": False,
-                        "message": "Message not found.",
-                    },
-                )
+                self._send_json(404, {"success": False, "message": "Message not found."})
                 return
 
             self._send_json(
@@ -321,9 +395,7 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 {
                     "success": True,
                     "message": "Message deleted.",
-                    "data": {
-                        "id": message_id,
-                    },
+                    "data": {"id": message_id},
                 },
             )
         except Exception as error:
@@ -332,6 +404,32 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 {
                     "success": False,
                     "message": "Failed to delete message.",
+                    "error": str(error),
+                },
+            )
+
+    def _handle_delete_project(self, project_id):
+        try:
+            was_deleted = delete_project(project_id)
+
+            if not was_deleted:
+                self._send_json(404, {"success": False, "message": "Project not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Project deleted.",
+                    "data": {"id": project_id},
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to delete project.",
                     "error": str(error),
                 },
             )

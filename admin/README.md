@@ -66,3 +66,30 @@ Message statuses:
 - `approved`
 - `rejected`
 - `archived`
+
+## Projects CRUD
+
+Admin projects editor:
+
+- `admin/projects.html`
+
+Project API endpoints:
+
+- `GET /api/projects`
+- `GET /api/projects/{id}`
+- `POST /api/projects`
+- `PATCH /api/projects/{id}`
+- `DELETE /api/projects/{id}`
+
+Project fields:
+
+- title
+- category
+- description
+- image_path
+- project_url
+- repo_url
+- technologies
+- display_order
+- is_featured
+- is_active
