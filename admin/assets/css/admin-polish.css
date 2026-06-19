@@ -1,0 +1,342 @@
+/* GLAND ADMIN UI POLISH START */
+:root {
+  --gland-admin-bg: #0f1010;
+  --gland-admin-surface: #171818;
+  --gland-admin-surface-2: #1f2020;
+  --gland-admin-line: rgba(255, 255, 255, 0.1);
+  --gland-admin-line-strong: rgba(201, 243, 29, 0.22);
+  --gland-admin-text: #f5f5f5;
+  --gland-admin-muted: #aeb4b8;
+  --gland-admin-soft: #d7dde1;
+  --gland-admin-accent: #c9f31d;
+  --gland-admin-danger: #ff6b6b;
+  --gland-admin-warning: #ffd166;
+  --gland-admin-success: #75f0a2;
+  --gland-admin-radius: 18px;
+  --gland-admin-radius-sm: 12px;
+  --gland-admin-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(201, 243, 29, 0.08), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.04), transparent 30%),
+    var(--gland-admin-bg) !important;
+  color: var(--gland-admin-text);
+  min-height: 100vh;
+}
+
+body.gland-admin-polished {
+  color-scheme: dark;
+}
+
+body.gland-admin-polished a {
+  color: inherit;
+}
+
+body.gland-admin-polished img {
+  max-width: 100%;
+}
+
+body.gland-admin-polished main,
+body.gland-admin-polished .main,
+body.gland-admin-polished .content,
+body.gland-admin-polished .admin-content,
+body.gland-admin-polished .dashboard-content,
+body.gland-admin-polished .page-content {
+  min-width: 0;
+}
+
+body.gland-admin-polished h1,
+body.gland-admin-polished h2,
+body.gland-admin-polished h3,
+body.gland-admin-polished h4 {
+  color: var(--gland-admin-text);
+  letter-spacing: -0.03em;
+}
+
+body.gland-admin-polished p {
+  color: var(--gland-admin-muted);
+}
+
+body.gland-admin-polished header,
+body.gland-admin-polished .header,
+body.gland-admin-polished .topbar,
+body.gland-admin-polished .admin-header {
+  border-bottom: 1px solid var(--gland-admin-line);
+  background: rgba(15, 16, 16, 0.86);
+  backdrop-filter: blur(16px);
+}
+
+body.gland-admin-polished aside,
+body.gland-admin-polished nav,
+body.gland-admin-polished .sidebar,
+body.gland-admin-polished .admin-sidebar,
+body.gland-admin-polished .side-nav {
+  border-color: var(--gland-admin-line);
+}
+
+body.gland-admin-polished .sidebar,
+body.gland-admin-polished .admin-sidebar,
+body.gland-admin-polished aside {
+  background: rgba(17, 18, 18, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+body.gland-admin-polished nav a,
+body.gland-admin-polished .sidebar a,
+body.gland-admin-polished .admin-sidebar a,
+body.gland-admin-polished .nav-link {
+  border-radius: 12px;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+body.gland-admin-polished nav a:hover,
+body.gland-admin-polished .sidebar a:hover,
+body.gland-admin-polished .admin-sidebar a:hover,
+body.gland-admin-polished .nav-link:hover,
+body.gland-admin-polished .nav-link.is-active,
+body.gland-admin-polished a.is-active {
+  background: rgba(201, 243, 29, 0.1);
+  color: var(--gland-admin-accent);
+}
+
+body.gland-admin-polished .card,
+body.gland-admin-polished .panel,
+body.gland-admin-polished .box,
+body.gland-admin-polished .stat-card,
+body.gland-admin-polished .dashboard-card,
+body.gland-admin-polished section,
+body.gland-admin-polished article {
+  border-color: var(--gland-admin-line);
+}
+
+body.gland-admin-polished .card,
+body.gland-admin-polished .panel,
+body.gland-admin-polished .box,
+body.gland-admin-polished .stat-card,
+body.gland-admin-polished .dashboard-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    var(--gland-admin-surface);
+  border: 1px solid var(--gland-admin-line);
+  border-radius: var(--gland-admin-radius);
+  box-shadow: var(--gland-admin-shadow);
+}
+
+body.gland-admin-polished .stat-card,
+body.gland-admin-polished .dashboard-card {
+  position: relative;
+  overflow: hidden;
+}
+
+body.gland-admin-polished .stat-card::before,
+body.gland-admin-polished .dashboard-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gland-admin-accent), transparent);
+  opacity: 0.9;
+}
+
+body.gland-admin-polished table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--gland-admin-soft);
+  overflow: hidden;
+}
+
+body.gland-admin-polished table thead th {
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--gland-admin-text);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+body.gland-admin-polished table th,
+body.gland-admin-polished table td {
+  border-bottom: 1px solid var(--gland-admin-line);
+  padding: 13px 14px;
+  vertical-align: middle;
+}
+
+body.gland-admin-polished table tbody tr {
+  transition: background 140ms ease;
+}
+
+body.gland-admin-polished table tbody tr:hover {
+  background: rgba(201, 243, 29, 0.045);
+}
+
+body.gland-admin-polished input,
+body.gland-admin-polished textarea,
+body.gland-admin-polished select {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--gland-admin-line);
+  color: var(--gland-admin-text);
+  border-radius: var(--gland-admin-radius-sm);
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+body.gland-admin-polished input:focus,
+body.gland-admin-polished textarea:focus,
+body.gland-admin-polished select:focus {
+  border-color: var(--gland-admin-accent);
+  box-shadow: 0 0 0 4px rgba(201, 243, 29, 0.12);
+  background: rgba(255, 255, 255, 0.065);
+}
+
+body.gland-admin-polished input::placeholder,
+body.gland-admin-polished textarea::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+body.gland-admin-polished label {
+  color: var(--gland-admin-soft);
+  font-weight: 700;
+}
+
+body.gland-admin-polished button,
+body.gland-admin-polished .button,
+body.gland-admin-polished .btn,
+body.gland-admin-polished input[type="submit"] {
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 120ms ease, background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+}
+
+body.gland-admin-polished button:disabled,
+body.gland-admin-polished .button:disabled,
+body.gland-admin-polished .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+body.gland-admin-polished button:not(:disabled):active,
+body.gland-admin-polished .button:not(:disabled):active,
+body.gland-admin-polished .btn:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+body.gland-admin-polished .btn-primary,
+body.gland-admin-polished .button-primary,
+body.gland-admin-polished button[type="submit"],
+body.gland-admin-polished input[type="submit"] {
+  background: var(--gland-admin-accent);
+  color: #111111;
+}
+
+body.gland-admin-polished .btn-danger,
+body.gland-admin-polished .button-danger,
+body.gland-admin-polished button[data-action="delete"],
+body.gland-admin-polished button.delete,
+body.gland-admin-polished .delete-button {
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff9b9b;
+  border-color: rgba(255, 107, 107, 0.26);
+}
+
+body.gland-admin-polished .badge,
+body.gland-admin-polished .tag,
+body.gland-admin-polished .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--gland-admin-soft);
+  border: 1px solid var(--gland-admin-line);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+body.gland-admin-polished .status-new,
+body.gland-admin-polished .badge-new,
+body.gland-admin-polished .is-new {
+  background: rgba(201, 243, 29, 0.12);
+  color: var(--gland-admin-accent);
+  border-color: var(--gland-admin-line-strong);
+}
+
+body.gland-admin-polished .status-approved,
+body.gland-admin-polished .badge-approved,
+body.gland-admin-polished .is-approved {
+  background: rgba(117, 240, 162, 0.12);
+  color: var(--gland-admin-success);
+  border-color: rgba(117, 240, 162, 0.24);
+}
+
+body.gland-admin-polished .status-archived,
+body.gland-admin-polished .badge-archived,
+body.gland-admin-polished .is-archived {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--gland-admin-muted);
+}
+
+body.gland-admin-polished .alert,
+body.gland-admin-polished .message,
+body.gland-admin-polished .notice,
+body.gland-admin-polished .empty-state {
+  border-radius: var(--gland-admin-radius-sm);
+  border: 1px solid var(--gland-admin-line);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+body.gland-admin-polished .alert-success,
+body.gland-admin-polished .success {
+  color: var(--gland-admin-success);
+  border-color: rgba(117, 240, 162, 0.24);
+  background: rgba(117, 240, 162, 0.08);
+}
+
+body.gland-admin-polished .alert-error,
+body.gland-admin-polished .error {
+  color: #ff9b9b;
+  border-color: rgba(255, 107, 107, 0.26);
+  background: rgba(255, 107, 107, 0.08);
+}
+
+body.gland-admin-polished code,
+body.gland-admin-polished pre {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--gland-admin-accent);
+  border-radius: 10px;
+}
+
+body.gland-admin-polished ::selection {
+  background: rgba(201, 243, 29, 0.35);
+  color: #111111;
+}
+
+@media (max-width: 900px) {
+  body.gland-admin-polished table {
+    font-size: 13px;
+  }
+
+  body.gland-admin-polished table th,
+  body.gland-admin-polished table td {
+    padding: 11px 10px;
+  }
+
+  body.gland-admin-polished .card,
+  body.gland-admin-polished .panel,
+  body.gland-admin-polished .box,
+  body.gland-admin-polished .stat-card,
+  body.gland-admin-polished .dashboard-card {
+    border-radius: 16px;
+  }
+}
+/* GLAND ADMIN UI POLISH END */
