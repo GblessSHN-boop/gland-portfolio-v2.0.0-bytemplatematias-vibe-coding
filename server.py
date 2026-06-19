@@ -7,14 +7,20 @@ import os
 
 import config
 from backend.db import test_connection
-from backend.message_service import create_message, get_recent_messages
+from backend.message_service import (
+    create_message,
+    delete_message,
+    get_message_by_id,
+    get_recent_messages,
+    update_message,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.2"
+    server_version = "GlandPortfolioPython/0.3"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -44,10 +50,30 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             for key, values in parsed.items()
         }
 
+    def _get_message_id_from_path(self, path):
+        parts = path.strip("/").split("/")
+
+        if len(parts) != 3:
+            return None
+
+        if parts[0] != "api" or parts[1] != "messages":
+            return None
+
+        try:
+            return int(parts[2])
+        except ValueError:
+            return None
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Allow", "GET, POST, PATCH, DELETE, OPTIONS")
+        self.end_headers()
+
     def do_GET(self):
         parsed_url = urlparse(self.path)
+        path = parsed_url.path
 
-        if parsed_url.path == "/api/health":
+        if path == "/api/health":
             db_status = test_connection()
 
             self._send_json(
@@ -63,7 +89,7 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
-        if parsed_url.path == "/api/messages":
+        if path == "/api/messages":
             try:
                 messages = get_recent_messages(limit=50)
 
@@ -85,12 +111,47 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 )
             return
 
+        message_id = self._get_message_id_from_path(path)
+
+        if message_id is not None:
+            try:
+                message = get_message_by_id(message_id)
+
+                if not message:
+                    self._send_json(
+                        404,
+                        {
+                            "success": False,
+                            "message": "Message not found.",
+                        },
+                    )
+                    return
+
+                self._send_json(
+                    200,
+                    {
+                        "success": True,
+                        "data": message,
+                    },
+                )
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load message from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
+
         return super().do_GET()
 
     def do_POST(self):
         parsed_url = urlparse(self.path)
+        path = parsed_url.path
 
-        if parsed_url.path != "/api/contact":
+        if path != "/api/contact":
             self._send_json(
                 404,
                 {
@@ -146,6 +207,131 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 {
                     "success": False,
                     "message": "Message received but failed to save to MySQL database.",
+                    "error": str(error),
+                },
+            )
+
+    def do_PATCH(self):
+        parsed_url = urlparse(self.path)
+        message_id = self._get_message_id_from_path(parsed_url.path)
+
+        if message_id is None:
+            self._send_json(
+                404,
+                {
+                    "success": False,
+                    "message": "Message update endpoint not found.",
+                },
+            )
+            return
+
+        data = self._read_request_data()
+
+        status = data.get("status")
+        admin_note = data.get("admin_note")
+
+        if status is not None:
+            status = str(status).strip()
+
+        if admin_note is not None:
+            admin_note = str(admin_note).strip()
+
+        if status is None and admin_note is None:
+            self._send_json(
+                400,
+                {
+                    "success": False,
+                    "message": "Nothing to update. Send status or admin_note.",
+                },
+            )
+            return
+
+        try:
+            updated_message = update_message(
+                message_id=message_id,
+                status=status,
+                admin_note=admin_note,
+            )
+
+            if not updated_message:
+                self._send_json(
+                    404,
+                    {
+                        "success": False,
+                        "message": "Message not found.",
+                    },
+                )
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Message updated.",
+                    "data": updated_message,
+                },
+            )
+        except ValueError as error:
+            self._send_json(
+                400,
+                {
+                    "success": False,
+                    "message": str(error),
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to update message.",
+                    "error": str(error),
+                },
+            )
+
+    def do_DELETE(self):
+        parsed_url = urlparse(self.path)
+        message_id = self._get_message_id_from_path(parsed_url.path)
+
+        if message_id is None:
+            self._send_json(
+                404,
+                {
+                    "success": False,
+                    "message": "Message delete endpoint not found.",
+                },
+            )
+            return
+
+        try:
+            was_deleted = delete_message(message_id)
+
+            if not was_deleted:
+                self._send_json(
+                    404,
+                    {
+                        "success": False,
+                        "message": "Message not found.",
+                    },
+                )
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Message deleted.",
+                    "data": {
+                        "id": message_id,
+                    },
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to delete message.",
                     "error": str(error),
                 },
             )

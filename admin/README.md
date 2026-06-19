@@ -45,3 +45,24 @@ Temporary contact storage during development:
 Next phase:
 
 - connect `POST /api/contact` to MySQL table `messages`.
+
+## Message CRUD
+
+Admin message inbox:
+
+- `admin/messages.html`
+
+Message API endpoints:
+
+- `GET /api/messages`
+- `GET /api/messages/{id}`
+- `PATCH /api/messages/{id}`
+- `DELETE /api/messages/{id}`
+
+Message statuses:
+
+- `new`
+- `read`
+- `approved`
+- `rejected`
+- `archived`

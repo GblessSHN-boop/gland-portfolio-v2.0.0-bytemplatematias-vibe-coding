@@ -1,6 +1,20 @@
 from backend.db import get_connection
 
 
+VALID_MESSAGE_STATUSES = {"new", "read", "approved", "rejected", "archived"}
+
+
+def normalize_message(row):
+    if not row:
+        return None
+
+    for key in ("created_at", "updated_at"):
+        if row.get(key):
+            row[key] = row[key].isoformat(sep=" ")
+
+    return row
+
+
 def create_message(name, email, subject, message):
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
@@ -46,13 +60,94 @@ def get_recent_messages(limit=50):
         cursor.execute(query, (limit,))
         rows = cursor.fetchall()
 
-        for row in rows:
-            if row.get("created_at"):
-                row["created_at"] = row["created_at"].isoformat(sep=" ")
-            if row.get("updated_at"):
-                row["updated_at"] = row["updated_at"].isoformat(sep=" ")
+        return [normalize_message(row) for row in rows]
+    finally:
+        cursor.close()
+        connection.close()
 
-        return rows
+
+def get_message_by_id(message_id):
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        query = """
+            SELECT id, name, email, subject, message, status, admin_note, created_at, updated_at
+            FROM messages
+            WHERE id = %s
+            LIMIT 1
+        """
+
+        cursor.execute(query, (message_id,))
+        row = cursor.fetchone()
+
+        return normalize_message(row)
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def update_message(message_id, status=None, admin_note=None):
+    if status is not None and status not in VALID_MESSAGE_STATUSES:
+        raise ValueError(
+            "Invalid message status. Allowed statuses: "
+            + ", ".join(sorted(VALID_MESSAGE_STATUSES))
+        )
+
+    fields = []
+    params = []
+
+    if status is not None:
+        fields.append("status = %s")
+        params.append(status)
+
+    if admin_note is not None:
+        fields.append("admin_note = %s")
+        params.append(admin_note)
+
+    if not fields:
+        return get_message_by_id(message_id)
+
+    fields.append("updated_at = CURRENT_TIMESTAMP")
+    params.append(message_id)
+
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        query = f"""
+            UPDATE messages
+            SET {", ".join(fields)}
+            WHERE id = %s
+        """
+
+        cursor.execute(query, tuple(params))
+        connection.commit()
+
+        if cursor.rowcount == 0:
+            return None
+
+        return get_message_by_id(message_id)
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def delete_message(message_id):
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("DELETE FROM messages WHERE id = %s", (message_id,))
+        connection.commit()
+
+        return cursor.rowcount > 0
+    except Exception:
+        connection.rollback()
+        raise
     finally:
         cursor.close()
         connection.close()
