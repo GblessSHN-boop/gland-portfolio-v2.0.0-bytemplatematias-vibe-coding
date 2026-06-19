@@ -1,3 +1,5 @@
+from backend.notification_service import send_admin_login_alert
+from backend.login_activity_service import create_login_event, update_login_event_alert_status
 from backend.auth_service import authenticate_admin, create_admin_session, delete_admin_session, get_admin_by_session_token
 from http.cookies import SimpleCookie
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
@@ -1287,6 +1289,12 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         password = str(data.get("password") or "")
 
         if not identifier or not password:
+            self._auth_record_event_and_alert(
+                "login_failed",
+                identifier=identifier,
+                success=False,
+                message="Missing username/email or password.",
+            )
             self._auth_json_response(
                 400,
                 {
@@ -1303,6 +1311,12 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             admin = None
 
         if not admin:
+            self._auth_record_event_and_alert(
+                "login_failed",
+                identifier=identifier,
+                success=False,
+                message="Invalid username/email or password.",
+            )
             self._auth_json_response(
                 401,
                 {
@@ -1317,6 +1331,14 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             admin["id"],
             ip_address=self._auth_client_ip(),
             user_agent=self.headers.get("User-Agent", ""),
+        )
+
+        self._auth_record_event_and_alert(
+            "login_success",
+            identifier=identifier,
+            admin=admin,
+            success=True,
+            message="Login successful.",
         )
 
         self._auth_json_response(
@@ -1338,12 +1360,25 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
     def _handle_auth_logout(self):
         token = self._auth_cookie_token()
+        admin = self._auth_current_admin()
+        identifier = ""
+
+        if isinstance(admin, dict):
+            identifier = str(admin.get("username") or admin.get("email") or "")
 
         try:
             if token:
                 delete_admin_session(token)
         except Exception:
             pass
+
+        self._auth_record_event_and_alert(
+            "logout",
+            identifier=identifier,
+            admin=admin,
+            success=True,
+            message="Logout successful.",
+        )
 
         self._auth_json_response(
             200,
@@ -1354,6 +1389,42 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             },
             cookie_header=self._auth_expired_cookie_header(),
         )
+
+    # GLAND ADMIN LOGIN ALERT METHODS START
+    def _auth_record_event_and_alert(self, event_type, identifier="", admin=None, success=False, message=""):
+        admin_id = None
+
+        if isinstance(admin, dict):
+            admin_id = admin.get("id")
+
+        try:
+            event = create_login_event(
+                event_type=event_type,
+                identifier=identifier,
+                admin_id=admin_id,
+                success=success,
+                ip_address=self._auth_client_ip(),
+                user_agent=self.headers.get("User-Agent", ""),
+                message=message,
+            )
+        except Exception:
+            return None
+
+        try:
+            alert_result = send_admin_login_alert(event)
+
+            if alert_result and not alert_result.get("skipped"):
+                update_login_event_alert_status(
+                    int(event.get("id") or 0),
+                    sent=bool(alert_result.get("sent")),
+                    error=str(alert_result.get("error") or ""),
+                )
+        except Exception:
+            pass
+
+        return event
+    # GLAND ADMIN LOGIN ALERT METHODS END
+
     # GLAND ADMIN AUTH METHODS END
 
 

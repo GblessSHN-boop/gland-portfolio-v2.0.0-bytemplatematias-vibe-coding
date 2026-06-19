@@ -1,0 +1,128 @@
+"""
+GLAND NOTIFICATION SERVICE
+Optional email alerts for admin authentication activity.
+"""
+
+from __future__ import annotations
+
+import smtplib
+from email.message import EmailMessage
+from typing import Any, Dict
+
+try:
+    import config
+except Exception:
+    config = None
+
+
+def _get_config(name: str, default=None):
+    if config is None:
+        return default
+
+    return getattr(config, name, default)
+
+
+def is_email_alert_enabled() -> bool:
+    if not bool(_get_config("SMTP_ENABLED", False)):
+        return False
+
+    required_values = [
+        _get_config("SMTP_HOST", ""),
+        _get_config("SMTP_PORT", ""),
+        _get_config("SMTP_USERNAME", ""),
+        _get_config("SMTP_APP_PASSWORD", ""),
+        _get_config("ADMIN_ALERT_EMAIL", ""),
+    ]
+
+    return all(str(value or "").strip() for value in required_values)
+
+
+def send_email(subject: str, body: str) -> Dict[str, Any]:
+    if not is_email_alert_enabled():
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "",
+            "message": "Email alert is disabled or SMTP config is incomplete.",
+        }
+
+    smtp_host = str(_get_config("SMTP_HOST", "smtp.gmail.com"))
+    smtp_port = int(_get_config("SMTP_PORT", 587))
+    smtp_username = str(_get_config("SMTP_USERNAME", ""))
+    smtp_password = str(_get_config("SMTP_APP_PASSWORD", ""))
+    from_email = str(_get_config("SMTP_FROM_EMAIL", smtp_username) or smtp_username)
+    to_email = str(_get_config("ADMIN_ALERT_EMAIL", ""))
+
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = from_email
+    message["To"] = to_email
+    message.set_content(body)
+
+    timeout = int(_get_config("SMTP_TIMEOUT_SECONDS", 10) or 10)
+
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=timeout) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.ehlo()
+            smtp.login(smtp_username, smtp_password)
+            smtp.send_message(message)
+
+        return {
+            "sent": True,
+            "skipped": False,
+            "error": "",
+            "message": "Email alert sent.",
+        }
+
+    except Exception as exc:
+        return {
+            "sent": False,
+            "skipped": False,
+            "error": str(exc),
+            "message": "Email alert failed.",
+        }
+
+
+def send_admin_login_alert(event: Dict[str, Any]) -> Dict[str, Any]:
+    event_type = str(event.get("event_type") or "login_event")
+    identifier = str(event.get("identifier") or "-")
+    ip_address = str(event.get("ip_address") or "-")
+    user_agent = str(event.get("user_agent") or "-")
+    created_at = str(event.get("created_at") or "-")
+    event_message = str(event.get("message") or "-")
+    success = "yes" if event.get("success") else "no"
+
+    alert_success = bool(_get_config("ADMIN_ALERT_LOGIN_SUCCESS", True))
+    alert_failed = bool(_get_config("ADMIN_ALERT_LOGIN_FAILED", True))
+    alert_logout = bool(_get_config("ADMIN_ALERT_LOGOUT", True))
+
+    if event_type == "login_success" and not alert_success:
+        return {"sent": False, "skipped": True, "error": "", "message": "Login success alert disabled."}
+
+    if event_type == "login_failed" and not alert_failed:
+        return {"sent": False, "skipped": True, "error": "", "message": "Login failed alert disabled."}
+
+    if event_type == "logout" and not alert_logout:
+        return {"sent": False, "skipped": True, "error": "", "message": "Logout alert disabled."}
+
+    subject = f"GLAND Admin Alert: {event_type}"
+
+    body = "\n".join(
+        [
+            "GLAND Portfolio Admin Alert",
+            "",
+            f"Event     : {event_type}",
+            f"Success   : {success}",
+            f"Identifier: {identifier}",
+            f"IP Address: {ip_address}",
+            f"Time      : {created_at}",
+            f"Message   : {event_message}",
+            "",
+            "User Agent:",
+            user_agent,
+        ]
+    )
+
+    return send_email(subject, body)
