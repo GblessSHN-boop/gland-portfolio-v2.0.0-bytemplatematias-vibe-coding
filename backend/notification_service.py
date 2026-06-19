@@ -37,7 +37,7 @@ def is_email_alert_enabled() -> bool:
     return all(str(value or "").strip() for value in required_values)
 
 
-def send_email(subject: str, body: str) -> Dict[str, Any]:
+def send_email(subject: str, body: str, to_email: str = "") -> Dict[str, Any]:
     if not is_email_alert_enabled():
         return {
             "sent": False,
@@ -51,7 +51,7 @@ def send_email(subject: str, body: str) -> Dict[str, Any]:
     smtp_username = str(_get_config("SMTP_USERNAME", ""))
     smtp_password = str(_get_config("SMTP_APP_PASSWORD", ""))
     from_email = str(_get_config("SMTP_FROM_EMAIL", smtp_username) or smtp_username)
-    to_email = str(_get_config("ADMIN_ALERT_EMAIL", ""))
+    to_email = str(to_email or _get_config("ADMIN_ALERT_EMAIL", ""))
 
     message = EmailMessage()
     message["Subject"] = subject
@@ -126,3 +126,38 @@ def send_admin_login_alert(event: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     return send_email(subject, body)
+
+
+def send_admin_password_reset_email(payload: Dict[str, Any]) -> Dict[str, Any]:
+    admin = payload.get("admin") or {}
+    reset_url = str(payload.get("reset_url") or "")
+    expires_at = str(payload.get("expires_at") or "-")
+    ip_address = str(payload.get("ip_address") or "-")
+    user_agent = str(payload.get("user_agent") or "-")
+
+    to_email = str(admin.get("email") or _get_config("ADMIN_ALERT_EMAIL", "") or "")
+
+    subject = "GLAND Admin Password Reset"
+
+    body = "\n".join(
+        [
+            "GLAND Portfolio Admin Password Reset",
+            "",
+            "A password reset was requested for your admin account.",
+            "",
+            f"Username : {admin.get('username') or '-'}",
+            f"Email    : {admin.get('email') or '-'}",
+            f"Expires  : {expires_at}",
+            f"IP       : {ip_address}",
+            "",
+            "Reset link:",
+            reset_url,
+            "",
+            "If you did not request this, ignore this email.",
+            "",
+            "User Agent:",
+            user_agent,
+        ]
+    )
+
+    return send_email(subject, body, to_email=to_email)

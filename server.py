@@ -1,3 +1,4 @@
+from backend.password_reset_service import request_admin_password_reset, reset_admin_password_with_token
 from backend.notification_service import send_admin_login_alert
 from backend.login_activity_service import create_login_event, update_login_event_alert_status
 from backend.auth_service import authenticate_admin, create_admin_session, delete_admin_session, get_admin_by_session_token
@@ -388,6 +389,12 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             return
         if path == "/api/auth/logout":
             self._handle_auth_logout()
+            return
+        if path == "/api/auth/forgot-password":
+            self._handle_auth_forgot_password()
+            return
+        if path == "/api/auth/reset-password":
+            self._handle_auth_reset_password()
             return
         if self._auth_requires_guard(path, "POST"):
             if not self._auth_current_admin():
@@ -1175,7 +1182,7 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
     def _auth_requires_guard(self, path, method):
         method = (method or "").upper()
 
-        if path == "/admin/login.html" or path.startswith("/admin/assets/"):
+        if path in {"/admin/login.html", "/admin/forgot-password.html", "/admin/reset-password.html"} or path.startswith("/admin/assets/"):
             return False
 
         if path.startswith("/admin/") and method == "GET":
@@ -1424,6 +1431,98 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         return event
     # GLAND ADMIN LOGIN ALERT METHODS END
+
+
+    # GLAND ADMIN PASSWORD RESET METHODS START
+    def _auth_request_base_url(self):
+        host = self.headers.get("Host", "127.0.0.1:8000")
+        scheme = "https" if self.headers.get("X-Forwarded-Proto") == "https" else "http"
+        return f"{scheme}://{host}"
+
+    def _handle_auth_forgot_password(self):
+        try:
+            data = self._auth_read_json()
+        except Exception:
+            self._auth_json_response(
+                400,
+                {
+                    "success": False,
+                    "message": "Invalid JSON body.",
+                },
+            )
+            return
+
+        identifier = str(data.get("identifier") or data.get("email") or data.get("username") or "").strip()
+
+        if not identifier:
+            self._auth_json_response(
+                400,
+                {
+                    "success": False,
+                    "message": "Username or email is required.",
+                },
+            )
+            return
+
+        try:
+            result = request_admin_password_reset(
+                identifier,
+                base_url=self._auth_request_base_url(),
+                ip_address=self._auth_client_ip(),
+                user_agent=self.headers.get("User-Agent", ""),
+            )
+        except Exception:
+            result = {
+                "success": True,
+                "message": "If the admin account exists, a password reset email has been sent.",
+                "email_sent": False,
+                "email_skipped": True,
+                "debug_reset_url": None,
+            }
+
+        self._auth_json_response(
+            200,
+            {
+                "success": True,
+                "message": result.get("message") or "If the admin account exists, a password reset email has been sent.",
+                "data": {
+                    "email_sent": bool(result.get("email_sent")),
+                    "email_skipped": bool(result.get("email_skipped")),
+                    "debug_reset_url": result.get("debug_reset_url"),
+                },
+            },
+        )
+
+    def _handle_auth_reset_password(self):
+        try:
+            data = self._auth_read_json()
+        except Exception:
+            self._auth_json_response(
+                400,
+                {
+                    "success": False,
+                    "message": "Invalid JSON body.",
+                },
+            )
+            return
+
+        token = str(data.get("token") or "").strip()
+        new_password = str(data.get("new_password") or data.get("password") or "")
+
+        result = reset_admin_password_with_token(token, new_password)
+        status_code = int(result.get("status_code") or (200 if result.get("success") else 400))
+
+        self._auth_json_response(
+            status_code,
+            {
+                "success": bool(result.get("success")),
+                "message": result.get("message") or "",
+                "data": {
+                    "admin": result.get("admin"),
+                } if result.get("success") else None,
+            },
+        )
+    # GLAND ADMIN PASSWORD RESET METHODS END
 
     # GLAND ADMIN AUTH METHODS END
 
