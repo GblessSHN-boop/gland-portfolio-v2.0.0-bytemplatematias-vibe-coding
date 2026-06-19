@@ -340,3 +340,116 @@ body.gland-admin-polished ::selection {
   }
 }
 /* GLAND ADMIN UI POLISH END */
+
+/* GLAND ADMIN UI POLISH A2 CONTRAST FIX START */
+body.gland-admin-polished .stat-card,
+body.gland-admin-polished .dashboard-card,
+body.gland-admin-polished .summary-card,
+body.gland-admin-polished .analytics-card,
+body.gland-admin-polished .metric-card,
+body.gland-admin-polished [class*="stat-card"],
+body.gland-admin-polished [class*="summary-card"],
+body.gland-admin-polished [class*="metric-card"] {
+  background:
+    radial-gradient(circle at top right, rgba(201, 243, 29, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+    #171818 !important;
+  color: #f6f7f8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.105) !important;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.34) !important;
+}
+
+body.gland-admin-polished .stat-card *,
+body.gland-admin-polished .dashboard-card *,
+body.gland-admin-polished .summary-card *,
+body.gland-admin-polished .analytics-card *,
+body.gland-admin-polished .metric-card *,
+body.gland-admin-polished [class*="stat-card"] *,
+body.gland-admin-polished [class*="summary-card"] *,
+body.gland-admin-polished [class*="metric-card"] * {
+  color: inherit;
+}
+
+body.gland-admin-polished .stat-card h3,
+body.gland-admin-polished .stat-card h4,
+body.gland-admin-polished .stat-card .label,
+body.gland-admin-polished .stat-card .title,
+body.gland-admin-polished .stat-card .name,
+body.gland-admin-polished .dashboard-card h3,
+body.gland-admin-polished .dashboard-card h4,
+body.gland-admin-polished .dashboard-card .label,
+body.gland-admin-polished .dashboard-card .title,
+body.gland-admin-polished .dashboard-card .name,
+body.gland-admin-polished [class*="stat-card"] h3,
+body.gland-admin-polished [class*="stat-card"] h4,
+body.gland-admin-polished [class*="stat-card"] .label,
+body.gland-admin-polished [class*="stat-card"] .title,
+body.gland-admin-polished [class*="stat-card"] .name {
+  color: #b7bec4 !important;
+  font-weight: 800 !important;
+}
+
+body.gland-admin-polished .stat-card .value,
+body.gland-admin-polished .stat-card .count,
+body.gland-admin-polished .stat-card strong,
+body.gland-admin-polished .stat-card b,
+body.gland-admin-polished .dashboard-card .value,
+body.gland-admin-polished .dashboard-card .count,
+body.gland-admin-polished .dashboard-card strong,
+body.gland-admin-polished .dashboard-card b,
+body.gland-admin-polished [class*="stat-card"] .value,
+body.gland-admin-polished [class*="stat-card"] .count,
+body.gland-admin-polished [class*="stat-card"] strong,
+body.gland-admin-polished [class*="stat-card"] b {
+  color: #ffffff !important;
+}
+
+body.gland-admin-polished .stat-card p,
+body.gland-admin-polished .dashboard-card p,
+body.gland-admin-polished [class*="stat-card"] p {
+  color: #aeb4b8 !important;
+}
+
+body.gland-admin-polished table,
+body.gland-admin-polished .table,
+body.gland-admin-polished .table-card,
+body.gland-admin-polished .data-table,
+body.gland-admin-polished [class*="table"] {
+  background: #171818 !important;
+  color: #eef1f2 !important;
+}
+
+body.gland-admin-polished table thead,
+body.gland-admin-polished table thead tr,
+body.gland-admin-polished table thead th {
+  background: rgba(255, 255, 255, 0.065) !important;
+  color: #f6f7f8 !important;
+}
+
+body.gland-admin-polished table tbody,
+body.gland-admin-polished table tbody tr,
+body.gland-admin-polished table tbody td {
+  background: transparent !important;
+  color: #d9dee1 !important;
+}
+
+body.gland-admin-polished table tbody tr:hover td {
+  background: rgba(201, 243, 29, 0.055) !important;
+}
+
+body.gland-admin-polished .logout,
+body.gland-admin-polished .logout-button,
+body.gland-admin-polished button[id*="logout"],
+body.gland-admin-polished button[class*="logout"],
+body.gland-admin-polished a[href*="logout"] {
+  background: #c9f31d !important;
+  color: #111111 !important;
+  box-shadow: 0 14px 35px rgba(201, 243, 29, 0.18);
+}
+
+body.gland-admin-polished .admin-main,
+body.gland-admin-polished .dashboard-main,
+body.gland-admin-polished main {
+  padding-bottom: 72px;
+}
+/* GLAND ADMIN UI POLISH A2 CONTRAST FIX END */
