@@ -38,13 +38,18 @@ from backend.hero_content_service import (
     get_hero_content,
     update_hero_content,
 )
+from backend.site_identity_service import (
+    delete_site_identity,
+    get_site_identity,
+    update_site_identity,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.7"
+    server_version = "GlandPortfolioPython/0.8"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -113,6 +118,23 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
+        if path == "/api/site-identity":
+            try:
+                site_identity = get_site_identity()
+                self._send_json(200, {"success": True, "data": site_identity})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load site identity from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
+        if path == "/api/site-identity":
+            self._handle_update_site_identity()
+            return
         if path == "/api/hero-content":
             try:
                 hero_content = get_hero_content()
@@ -414,6 +436,31 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "Update endpoint not found."})
 
+    def _handle_update_site_identity(self):
+        data = self._read_request_data()
+
+        try:
+            site_identity = update_site_identity(data)
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Site identity updated.",
+                    "data": site_identity,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to update site identity.",
+                    "error": str(error),
+                },
+            )
     def _handle_update_hero_content(self):
         data = self._read_request_data()
 
@@ -586,8 +633,14 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             self._handle_delete_personal_info()
             return
 
+        if path == "/api/site-identity":
+            self._handle_update_site_identity()
+            return
         if path == "/api/hero-content":
             self._handle_delete_hero_content()
+            return
+        if path == "/api/site-identity":
+            self._handle_delete_site_identity()
             return
         message_id = self._get_id_from_path(path, "messages")
 
@@ -609,6 +662,31 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "Delete endpoint not found."})
 
+    def _handle_delete_site_identity(self):
+        try:
+            was_deleted = delete_site_identity()
+
+            if not was_deleted:
+                self._send_json(404, {"success": False, "message": "Site identity not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Site identity deleted.",
+                    "data": None,
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to delete site identity.",
+                    "error": str(error),
+                },
+            )
     def _handle_delete_hero_content(self):
         try:
             was_deleted = delete_hero_content()

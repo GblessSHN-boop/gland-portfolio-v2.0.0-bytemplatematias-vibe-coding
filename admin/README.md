@@ -171,3 +171,31 @@ Hero content fields:
 - hero_media_path
 - background_image_path
 - is_active
+
+## Site Identity CRUD
+
+Admin site identity editor:
+
+- `admin/site-identity.html`
+
+Site identity API endpoints:
+
+- `GET /api/site-identity`
+- `POST /api/site-identity`
+- `PATCH /api/site-identity`
+- `DELETE /api/site-identity`
+
+Site identity fields:
+
+- site_title
+- meta_description
+- canonical_url
+- logo_path
+- header_icon_path
+- favicon_path
+- preloader_text
+- youtube_url
+- github_url
+- instagram_url
+- linkedin_url
+- is_active

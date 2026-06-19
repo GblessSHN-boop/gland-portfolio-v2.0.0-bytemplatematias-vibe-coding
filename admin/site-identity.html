@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Identity | GLAND Portfolio Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="gland-admin-shell">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
+            </div>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a href="messages.html">Messages</a>
+                <a href="projects.html">Projects</a>
+                <a href="highlights.html">Highlights</a>
+                <a href="personal-info.html">Personal Info</a>
+                <a href="hero-content.html">Hero Content</a>
+                <a href="site-identity.html" class="is-active">Site Identity</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="page-editor.html">Page Editor</a>
+                <a href="media.html">Media</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="gland-main">
+            <header class="gland-page-header">
+                <div>
+                    <p class="gland-kicker">Brand & SEO CMS</p>
+                    <h2 class="gland-page-title">Site Identity</h2>
+                    <p class="gland-page-description">
+                        Manage site title, metadata, logo paths, favicon, preloader text, and social links stored in MySQL.
+                    </p>
+                </div>
+
+                <div class="gland-toolbar">
+                    <button class="gland-button" type="button" data-refresh-site-identity>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <p class="gland-page-description" data-page-status></p>
+
+            <section class="gland-identity-layout">
+                <div class="gland-card gland-form-card">
+                    <form data-site-identity-form>
+                        <div class="gland-form-grid">
+                            <div class="gland-field full">
+                                <label for="site_title">Site Title</label>
+                                <input id="site_title" name="site_title" type="text" required>
+                            </div>
+
+                            <div class="gland-field full">
+                                <label for="meta_description">Meta Description</label>
+                                <textarea id="meta_description" name="meta_description"></textarea>
+                            </div>
+
+                            <div class="gland-field full">
+                                <label for="canonical_url">Canonical URL</label>
+                                <input id="canonical_url" name="canonical_url" type="url">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="logo_path">Logo Path</label>
+                                <input id="logo_path" name="logo_path" type="text" placeholder="assets/img/logo/gland-header-icon.gif">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="header_icon_path">Header Icon Path</label>
+                                <input id="header_icon_path" name="header_icon_path" type="text" placeholder="assets/img/logo/gland-header-icon.gif">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="favicon_path">Favicon Path</label>
+                                <input id="favicon_path" name="favicon_path" type="text" placeholder="assets/img/logo/favicon.png">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="preloader_text">Preloader Text</label>
+                                <input id="preloader_text" name="preloader_text" type="text" placeholder="GLAND">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="youtube_url">YouTube URL</label>
+                                <input id="youtube_url" name="youtube_url" type="url">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="github_url">GitHub URL</label>
+                                <input id="github_url" name="github_url" type="url">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="instagram_url">Instagram URL</label>
+                                <input id="instagram_url" name="instagram_url" type="url">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="linkedin_url">LinkedIn URL</label>
+                                <input id="linkedin_url" name="linkedin_url" type="url">
+                            </div>
+                        </div>
+
+                        <div class="gland-checkbox-row">
+                            <label>
+                                <input type="checkbox" name="is_active" checked>
+                                Active
+                            </label>
+                        </div>
+
+                        <div class="gland-actions">
+                            <button class="gland-button lime" type="submit">
+                                Save Site Identity
+                            </button>
+                            <button class="gland-button secondary" type="button" data-reset-site-identity>
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <aside class="gland-card gland-identity-preview">
+                    <img class="gland-identity-logo" data-preview-logo src="../assets/img/logo/gland-header-icon.gif" alt="Site identity preview">
+                    <h3 class="gland-identity-title" data-preview-title>Site title</h3>
+                    <p class="gland-identity-description" data-preview-description>Meta description preview.</p>
+
+                    <div class="gland-identity-small-list">
+                        <span data-preview-canonical>Canonical URL</span>
+                        <span data-preview-preloader>Preloader: GLAND</span>
+                    </div>
+
+                    <div class="gland-identity-small-list" data-preview-socials></div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/site-identity.js"></script>
+</body>
+</html>
