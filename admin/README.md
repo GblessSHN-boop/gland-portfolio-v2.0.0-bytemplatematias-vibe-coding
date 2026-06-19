@@ -28,3 +28,20 @@ Python server + MySQL database.
 ## Database
 
 See `database/schema.sql`.
+
+## PHP Replacement
+
+The original `contact.php` template file has been replaced by a Python backend.
+
+Main Python endpoints:
+
+- `GET /api/health`
+- `POST /api/contact`
+
+Temporary contact storage during development:
+
+- `logs/contact_messages_dev.jsonl`
+
+Next phase:
+
+- connect `POST /api/contact` to MySQL table `messages`.
