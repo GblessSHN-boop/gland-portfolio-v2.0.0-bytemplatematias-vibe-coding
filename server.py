@@ -1464,31 +1464,26 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
-        try:
-            result = request_admin_password_reset(
-                identifier,
-                base_url=self._auth_request_base_url(),
-                ip_address=self._auth_client_ip(),
-                user_agent=self.headers.get("User-Agent", ""),
-            )
-        except Exception:
-            result = {
-                "success": True,
-                "message": "If the admin account exists, a password reset email has been sent.",
-                "email_sent": False,
-                "email_skipped": True,
-                "debug_reset_url": None,
-            }
+        result = request_admin_password_reset(
+            identifier,
+            base_url=self._auth_request_base_url(),
+            ip_address=self._auth_client_ip(),
+            user_agent=self.headers.get("User-Agent", ""),
+        )
+
+        status_code = int(result.get("status_code") or (200 if result.get("success") else 400))
 
         self._auth_json_response(
-            200,
+            status_code,
             {
-                "success": True,
-                "message": result.get("message") or "If the admin account exists, a password reset email has been sent.",
+                "success": bool(result.get("success")),
+                "message": result.get("message") or "",
                 "data": {
                     "email_sent": bool(result.get("email_sent")),
                     "email_skipped": bool(result.get("email_skipped")),
                     "debug_reset_url": result.get("debug_reset_url"),
+                    "retry_after_seconds": int(result.get("retry_after_seconds") or 0),
+                    "cooldown_seconds": int(result.get("cooldown_seconds") or 0),
                 },
             },
         )

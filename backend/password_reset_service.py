@@ -1,8 +1,3 @@
-"""
-GLAND ADMIN PASSWORD RESET SERVICE
-Creates one-time password reset links for admin users.
-"""
-
 from __future__ import annotations
 
 import datetime as _dt
@@ -17,13 +12,12 @@ except Exception:
     config = None
 
 from backend.auth_service import get_connection, hash_password, safe_admin
-from backend.notification_service import send_admin_password_reset_email
+from backend.branded_mailer import send_admin_password_reset_email
 
 
 def _get_config(name: str, default=None):
     if config is None:
         return default
-
     return getattr(config, name, default)
 
 
@@ -31,12 +25,16 @@ def _hash_token(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
-def _utc_now() -> _dt.datetime:
-    return _dt.datetime.utcnow()
+def _now() -> _dt.datetime:
+    return _dt.datetime.now()
 
 
 def _token_minutes() -> int:
     return int(_get_config("PASSWORD_RESET_TOKEN_MINUTES", 30) or 30)
+
+
+def _cooldown_seconds() -> int:
+    return int(_get_config("PASSWORD_RESET_REQUEST_COOLDOWN_SECONDS", 90) or 90)
 
 
 def _debug_return_token() -> bool:
@@ -81,9 +79,36 @@ def _find_active_admin(identifier: str) -> Optional[Dict[str, Any]]:
             """,
             (identifier, identifier),
         )
-
         return cursor.fetchone()
+    finally:
+        connection.close()
 
+
+def _get_retry_after_seconds(admin_id: int) -> int:
+    cooldown = _cooldown_seconds()
+    connection = get_connection()
+
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(
+            """
+            SELECT
+                TIMESTAMPDIFF(SECOND, created_at, NOW()) AS elapsed_seconds
+            FROM admin_password_reset_tokens
+            WHERE admin_id = %s
+            ORDER BY id DESC
+            LIMIT 1
+            """,
+            (admin_id,),
+        )
+        row = cursor.fetchone()
+
+        if not row or row.get("elapsed_seconds") is None:
+            return 0
+
+        elapsed = int(row["elapsed_seconds"] or 0)
+        retry_after = cooldown - elapsed
+        return retry_after if retry_after > 0 else 0
     finally:
         connection.close()
 
@@ -99,10 +124,13 @@ def request_admin_password_reset(
 
     generic_response: Dict[str, Any] = {
         "success": True,
+        "status_code": 200,
         "message": "If the admin account exists, a password reset email has been sent.",
         "email_sent": False,
         "email_skipped": True,
         "debug_reset_url": None,
+        "retry_after_seconds": 0,
+        "cooldown_seconds": _cooldown_seconds(),
     }
 
     admin = _find_active_admin(identifier)
@@ -110,9 +138,23 @@ def request_admin_password_reset(
     if not admin:
         return generic_response
 
+    retry_after_seconds = _get_retry_after_seconds(int(admin["id"]))
+
+    if retry_after_seconds > 0:
+        return {
+            "success": False,
+            "status_code": 429,
+            "message": f"Please wait {retry_after_seconds} seconds before requesting another reset email.",
+            "email_sent": False,
+            "email_skipped": True,
+            "debug_reset_url": None,
+            "retry_after_seconds": retry_after_seconds,
+            "cooldown_seconds": _cooldown_seconds(),
+        }
+
     token = secrets.token_urlsafe(48)
     token_hash = _hash_token(token)
-    expires_at = _utc_now() + _dt.timedelta(minutes=_token_minutes())
+    expires_at = _now() + _dt.timedelta(minutes=_token_minutes())
     reset_url = _build_reset_url(token, base_url=base_url)
 
     connection = get_connection()
@@ -123,7 +165,7 @@ def request_admin_password_reset(
         cursor.execute(
             """
             DELETE FROM admin_password_reset_tokens
-            WHERE expires_at <= UTC_TIMESTAMP()
+            WHERE expires_at <= NOW()
                OR used_at IS NOT NULL
             """
         )
@@ -158,7 +200,7 @@ def request_admin_password_reset(
         {
             "admin": safe_admin(admin),
             "reset_url": reset_url,
-            "expires_at": expires_at.isoformat(sep=" "),
+            "expires_at": expires_at.strftime("%Y-%m-%d %H:%M:%S"),
             "ip_address": ip_address,
             "user_agent": user_agent,
         }
@@ -189,15 +231,16 @@ def request_admin_password_reset(
     except Exception:
         pass
 
-    response = {
+    return {
         "success": True,
+        "status_code": 200,
         "message": "If the admin account exists, a password reset email has been sent.",
         "email_sent": bool(email_result.get("sent")),
         "email_skipped": bool(email_result.get("skipped")),
         "debug_reset_url": reset_url if _debug_return_token() else None,
+        "retry_after_seconds": 0,
+        "cooldown_seconds": _cooldown_seconds(),
     }
-
-    return response
 
 
 def reset_admin_password_with_token(token: str, new_password: str) -> Dict[str, Any]:
@@ -242,7 +285,7 @@ def reset_admin_password_with_token(token: str, new_password: str) -> Dict[str, 
             INNER JOIN admin_users
                 ON admin_users.id = admin_password_reset_tokens.admin_id
             WHERE admin_password_reset_tokens.token_hash = %s
-              AND admin_password_reset_tokens.expires_at > UTC_TIMESTAMP()
+              AND admin_password_reset_tokens.expires_at > NOW()
               AND admin_password_reset_tokens.used_at IS NULL
               AND admin_users.is_active = 1
             LIMIT 1
