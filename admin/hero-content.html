@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Content | GLAND Portfolio Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="gland-admin-shell">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
+            </div>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a href="messages.html">Messages</a>
+                <a href="projects.html">Projects</a>
+                <a href="highlights.html">Highlights</a>
+                <a href="personal-info.html">Personal Info</a>
+                <a href="hero-content.html" class="is-active">Hero Content</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="page-editor.html">Page Editor</a>
+                <a href="media.html">Media</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="gland-main">
+            <header class="gland-page-header">
+                <div>
+                    <p class="gland-kicker">Hero Section CMS</p>
+                    <h2 class="gland-page-title">Hero Content</h2>
+                    <p class="gland-page-description">
+                        Manage hero title, availability, phone, intro video, and hero media stored in MySQL.
+                        Later this data will sync into the public homepage hero.
+                    </p>
+                </div>
+
+                <div class="gland-toolbar">
+                    <button class="gland-button" type="button" data-refresh-hero-content>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <p class="gland-page-description" data-page-status></p>
+
+            <section class="gland-hero-admin-layout">
+                <div class="gland-card gland-form-card">
+                    <form data-hero-content-form>
+                        <div class="gland-form-grid">
+                            <div class="gland-field full">
+                                <label for="eyebrow">Eyebrow</label>
+                                <input id="eyebrow" name="eyebrow" type="text" placeholder="Hello, I'm Gland">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="title_line_1">Title Line 1</label>
+                                <input id="title_line_1" name="title_line_1" type="text" placeholder="AI Engineer" required>
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="title_line_2">Title Line 2</label>
+                                <input id="title_line_2" name="title_line_2" type="text" placeholder="Creative Designer">
+                            </div>
+
+                            <div class="gland-field full">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" placeholder="Short hero description"></textarea>
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="availability_text">Availability Text</label>
+                                <input id="availability_text" name="availability_text" type="text" placeholder="Available for AI, Vibe Coding, UI/UX, and Design Projects">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="availability_location">Availability Location</label>
+                                <input id="availability_location" name="availability_location" type="text" placeholder="Worldwide">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="phone_label">Phone Label</label>
+                                <input id="phone_label" name="phone_label" type="text" placeholder="(+62)-895-4048-71011">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="phone_url">Phone URL</label>
+                                <input id="phone_url" name="phone_url" type="url" placeholder="https://wa.me/62895404871011">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="intro_video_label">Intro Video Label</label>
+                                <input id="intro_video_label" name="intro_video_label" type="text" placeholder="Intro Video">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="intro_video_url">Intro Video URL</label>
+                                <input id="intro_video_url" name="intro_video_url" type="url" placeholder="https://www.youtube.com/watch?v=YuBB8pYAv-8">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="hero_media_type">Hero Media Type</label>
+                                <select id="hero_media_type" name="hero_media_type">
+                                    <option value="video">Video</option>
+                                    <option value="image">Image</option>
+                                </select>
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="hero_media_path">Hero Media Path</label>
+                                <input id="hero_media_path" name="hero_media_path" type="text" placeholder="assets/video/hero-right-iklan-4k.mp4">
+                            </div>
+
+                            <div class="gland-field full">
+                                <label for="background_image_path">Background Image Path</label>
+                                <input id="background_image_path" name="background_image_path" type="text" placeholder="assets/img/banner/banner-bg.png">
+                            </div>
+                        </div>
+
+                        <div class="gland-checkbox-row">
+                            <label>
+                                <input type="checkbox" name="is_active" checked>
+                                Active
+                            </label>
+                        </div>
+
+                        <div class="gland-actions">
+                            <button class="gland-button lime" type="submit">
+                                Save Hero Content
+                            </button>
+                            <button class="gland-button secondary" type="button" data-reset-hero-content>
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <aside class="gland-card gland-hero-preview">
+                    <p class="gland-hero-preview-kicker" data-preview-eyebrow>Hero eyebrow</p>
+                    <h3 class="gland-hero-preview-title">
+                        <span data-preview-title-line-1>AI Engineer</span>
+                        <span data-preview-title-line-2>Creative Designer</span>
+                    </h3>
+                    <p class="gland-hero-preview-description" data-preview-description>Hero description preview.</p>
+
+                    <div class="gland-hero-preview-meta">
+                        <span data-preview-availability>Availability text</span>
+                        <span data-preview-location>Location</span>
+                        <span data-preview-phone>Phone</span>
+                        <span data-preview-intro>Intro Video</span>
+                    </div>
+
+                    <div data-preview-media-slot>
+                        <video class="gland-hero-media-preview" src="../assets/video/hero-right-iklan-4k.mp4" muted autoplay loop playsinline></video>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/hero-content.js"></script>
+</body>
+</html>

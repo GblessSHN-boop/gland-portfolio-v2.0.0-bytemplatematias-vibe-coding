@@ -33,13 +33,18 @@ from backend.personal_info_service import (
     get_personal_info,
     update_personal_info,
 )
+from backend.hero_content_service import (
+    delete_hero_content,
+    get_hero_content,
+    update_hero_content,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.6"
+    server_version = "GlandPortfolioPython/0.7"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -108,6 +113,20 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
+        if path == "/api/hero-content":
+            try:
+                hero_content = get_hero_content()
+                self._send_json(200, {"success": True, "data": hero_content})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load hero content from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
         if path == "/api/personal-info":
             try:
                 personal_info = get_personal_info()
@@ -138,6 +157,9 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 )
             return
 
+        if path == "/api/hero-content":
+            self._handle_update_hero_content()
+            return
         message_id = self._get_id_from_path(path, "messages")
 
         if message_id is not None:
@@ -160,6 +182,9 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 )
             return
 
+        if path == "/api/hero-content":
+            self._handle_update_hero_content()
+            return
         if path == "/api/projects":
             try:
                 projects = list_projects(limit=100)
@@ -389,6 +414,31 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "Update endpoint not found."})
 
+    def _handle_update_hero_content(self):
+        data = self._read_request_data()
+
+        try:
+            hero_content = update_hero_content(data)
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Hero content updated.",
+                    "data": hero_content,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to update hero content.",
+                    "error": str(error),
+                },
+            )
     def _handle_update_personal_info(self):
         data = self._read_request_data()
 
@@ -536,6 +586,9 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             self._handle_delete_personal_info()
             return
 
+        if path == "/api/hero-content":
+            self._handle_delete_hero_content()
+            return
         message_id = self._get_id_from_path(path, "messages")
 
         if message_id is not None:
@@ -556,6 +609,31 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "Delete endpoint not found."})
 
+    def _handle_delete_hero_content(self):
+        try:
+            was_deleted = delete_hero_content()
+
+            if not was_deleted:
+                self._send_json(404, {"success": False, "message": "Hero content not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Hero content deleted.",
+                    "data": None,
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to delete hero content.",
+                    "error": str(error),
+                },
+            )
     def _handle_delete_personal_info(self):
         try:
             was_deleted = delete_personal_info()

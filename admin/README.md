@@ -141,3 +141,33 @@ Personal info fields:
 - photo_path
 - resume_url
 - is_active
+
+## Hero Content CRUD
+
+Admin hero content editor:
+
+- `admin/hero-content.html`
+
+Hero content API endpoints:
+
+- `GET /api/hero-content`
+- `POST /api/hero-content`
+- `PATCH /api/hero-content`
+- `DELETE /api/hero-content`
+
+Hero content fields:
+
+- eyebrow
+- title_line_1
+- title_line_2
+- description
+- availability_text
+- availability_location
+- phone_label
+- phone_url
+- intro_video_label
+- intro_video_url
+- hero_media_type
+- hero_media_path
+- background_image_path
+- is_active
