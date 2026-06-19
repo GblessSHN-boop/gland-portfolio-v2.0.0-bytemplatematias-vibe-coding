@@ -199,3 +199,23 @@ Site identity fields:
 - instagram_url
 - linkedin_url
 - is_active
+
+## Media Upload CRUD
+
+Admin media library:
+
+- `admin/media.html`
+
+Media API endpoints:
+
+- `GET /api/media-files`
+- `GET /api/media-files/{id}`
+- `POST /api/media-files`
+- `PATCH /api/media-files/{id}`
+- `DELETE /api/media-files/{id}`
+
+Media upload behavior:
+
+- Images are stored in `uploads/images`
+- Videos are stored in `uploads/videos`
+- Uploaded file metadata is stored in MySQL table `media_files`

@@ -598,3 +598,54 @@ body {
     }
 }
 /* GLAND ADMIN SITE IDENTITY CRUD END */
+
+/* GLAND ADMIN MEDIA CRUD START */
+.gland-media-layout {
+    display: grid;
+    grid-template-columns: 390px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.gland-media-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.gland-media-card {
+    padding: 18px;
+}
+
+.gland-media-preview {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 18px;
+    object-fit: cover;
+    background: #eef3e6;
+    border: 1px solid var(--gland-line);
+    margin-bottom: 14px;
+}
+
+.gland-media-title {
+    margin: 0;
+    font-size: 18px;
+}
+
+.gland-media-meta {
+    margin: 7px 0 12px;
+    color: var(--gland-muted);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1100px) {
+    .gland-media-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .gland-media-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* GLAND ADMIN MEDIA CRUD END */

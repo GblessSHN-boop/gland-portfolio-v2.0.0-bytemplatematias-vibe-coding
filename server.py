@@ -43,13 +43,20 @@ from backend.site_identity_service import (
     get_site_identity,
     update_site_identity,
 )
+from backend.media_service import (
+    create_media_file,
+    delete_media_file,
+    get_media_file_by_id,
+    list_media_files,
+    update_media_file,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.8"
+    server_version = "GlandPortfolioPython/0.9"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -118,6 +125,42 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
+        if path == "/api/media-files":
+            try:
+                media_files = list_media_files(limit=100)
+                self._send_json(200, {"success": True, "data": media_files})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load media files from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
+
+        media_file_id = self._get_id_from_path(path, "media-files")
+
+        if media_file_id is not None:
+            try:
+                media_file = get_media_file_by_id(media_file_id)
+
+                if not media_file:
+                    self._send_json(404, {"success": False, "message": "Media file not found."})
+                    return
+
+                self._send_json(200, {"success": True, "data": media_file})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load media file from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
         if path == "/api/site-identity":
             try:
                 site_identity = get_site_identity()
@@ -181,6 +224,11 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         if path == "/api/hero-content":
             self._handle_update_hero_content()
+            return
+        media_file_id = self._get_id_from_path(path, "media-files")
+
+        if media_file_id is not None:
+            self._handle_update_media_file(media_file_id)
             return
         message_id = self._get_id_from_path(path, "messages")
 
@@ -287,6 +335,9 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
 
+        if path == "/api/media-files":
+            self._handle_create_media_file()
+            return
         if path == "/api/contact":
             self._handle_create_contact()
             return
@@ -305,6 +356,31 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "API endpoint not found."})
 
+    def _handle_create_media_file(self):
+        data = self._read_request_data()
+
+        try:
+            media_file = create_media_file(data)
+
+            self._send_json(
+                201,
+                {
+                    "success": True,
+                    "message": "Media file uploaded.",
+                    "data": media_file,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to upload media file.",
+                    "error": str(error),
+                },
+            )
     def _handle_create_contact(self):
         data = self._read_request_data()
 
@@ -436,6 +512,35 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "Update endpoint not found."})
 
+    def _handle_update_media_file(self, media_file_id):
+        data = self._read_request_data()
+
+        try:
+            media_file = update_media_file(media_file_id, data)
+
+            if not media_file:
+                self._send_json(404, {"success": False, "message": "Media file not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Media file updated.",
+                    "data": media_file,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to update media file.",
+                    "error": str(error),
+                },
+            )
     def _handle_update_site_identity(self):
         data = self._read_request_data()
 
@@ -642,6 +747,11 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         if path == "/api/site-identity":
             self._handle_delete_site_identity()
             return
+        media_file_id = self._get_id_from_path(path, "media-files")
+
+        if media_file_id is not None:
+            self._handle_delete_media_file(media_file_id)
+            return
         message_id = self._get_id_from_path(path, "messages")
 
         if message_id is not None:
@@ -662,6 +772,31 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         self._send_json(404, {"success": False, "message": "Delete endpoint not found."})
 
+    def _handle_delete_media_file(self, media_file_id):
+        try:
+            was_deleted = delete_media_file(media_file_id)
+
+            if not was_deleted:
+                self._send_json(404, {"success": False, "message": "Media file not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Media file deleted.",
+                    "data": {"id": media_file_id},
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to delete media file.",
+                    "error": str(error),
+                },
+            )
     def _handle_delete_site_identity(self):
         try:
             was_deleted = delete_site_identity()
