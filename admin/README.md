@@ -116,3 +116,28 @@ Highlight fields:
 - highlight_url
 - display_order
 - is_active
+
+## Personal Info CRUD
+
+Admin personal info editor:
+
+- `admin/personal-info.html`
+
+Personal info API endpoints:
+
+- `GET /api/personal-info`
+- `POST /api/personal-info`
+- `PATCH /api/personal-info`
+- `DELETE /api/personal-info`
+
+Personal info fields:
+
+- full_name
+- role_title
+- description
+- email
+- phone
+- address
+- photo_path
+- resume_url
+- is_active

@@ -28,13 +28,18 @@ from backend.highlight_service import (
     list_highlights,
     update_highlight,
 )
+from backend.personal_info_service import (
+    delete_personal_info,
+    get_personal_info,
+    update_personal_info,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.5"
+    server_version = "GlandPortfolioPython/0.6"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -101,6 +106,21 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                     "time": datetime.now(timezone.utc).isoformat(),
                 },
             )
+            return
+
+        if path == "/api/personal-info":
+            try:
+                personal_info = get_personal_info()
+                self._send_json(200, {"success": True, "data": personal_info})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load personal info from MySQL.",
+                        "error": str(error),
+                    },
+                )
             return
 
         if path == "/api/messages":
@@ -232,6 +252,10 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             self._handle_create_highlight()
             return
 
+        if path == "/api/personal-info":
+            self._handle_update_personal_info()
+            return
+
         self._send_json(404, {"success": False, "message": "API endpoint not found."})
 
     def _handle_create_contact(self):
@@ -341,6 +365,10 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
 
+        if path == "/api/personal-info":
+            self._handle_update_personal_info()
+            return
+
         message_id = self._get_id_from_path(path, "messages")
 
         if message_id is not None:
@@ -360,6 +388,32 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             return
 
         self._send_json(404, {"success": False, "message": "Update endpoint not found."})
+
+    def _handle_update_personal_info(self):
+        data = self._read_request_data()
+
+        try:
+            personal_info = update_personal_info(data)
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Personal info updated.",
+                    "data": personal_info,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to update personal info.",
+                    "error": str(error),
+                },
+            )
 
     def _handle_update_message(self, message_id):
         data = self._read_request_data()
@@ -478,6 +532,10 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
 
+        if path == "/api/personal-info":
+            self._handle_delete_personal_info()
+            return
+
         message_id = self._get_id_from_path(path, "messages")
 
         if message_id is not None:
@@ -497,6 +555,32 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             return
 
         self._send_json(404, {"success": False, "message": "Delete endpoint not found."})
+
+    def _handle_delete_personal_info(self):
+        try:
+            was_deleted = delete_personal_info()
+
+            if not was_deleted:
+                self._send_json(404, {"success": False, "message": "Personal info not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Personal info deleted.",
+                    "data": None,
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to delete personal info.",
+                    "error": str(error),
+                },
+            )
 
     def _handle_delete_message(self, message_id):
         try:

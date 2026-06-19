@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Info | GLAND Portfolio Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="gland-admin-shell">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
+            </div>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a href="messages.html">Messages</a>
+                <a href="projects.html">Projects</a>
+                <a href="highlights.html">Highlights</a>
+                <a href="personal-info.html" class="is-active">Personal Info</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="page-editor.html">Page Editor</a>
+                <a href="media.html">Media</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="gland-main">
+            <header class="gland-page-header">
+                <div>
+                    <p class="gland-kicker">Profile CMS</p>
+                    <h2 class="gland-page-title">Personal Info</h2>
+                    <p class="gland-page-description">
+                        Manage profile photo path, description, email, phone, and address stored in MySQL.
+                        Later this data will sync into the public personal info section.
+                    </p>
+                </div>
+
+                <div class="gland-toolbar">
+                    <button class="gland-button" type="button" data-refresh-personal-info>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <p class="gland-page-description" data-page-status></p>
+
+            <section class="gland-personal-layout">
+                <div class="gland-card gland-form-card">
+                    <form data-personal-info-form>
+                        <div class="gland-form-grid">
+                            <div class="gland-field">
+                                <label for="full_name">Full Name</label>
+                                <input id="full_name" name="full_name" type="text" required>
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="role_title">Role Title</label>
+                                <input id="role_title" name="role_title" type="text">
+                            </div>
+
+                            <div class="gland-field full">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description"></textarea>
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="email">Email</label>
+                                <input id="email" name="email" type="email">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="phone">Phone</label>
+                                <input id="phone" name="phone" type="text">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="address">Address</label>
+                                <input id="address" name="address" type="text">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="photo_path">Photo Path</label>
+                                <input id="photo_path" name="photo_path" type="text" placeholder="assets/img/about/gland-personal-info.png">
+                            </div>
+
+                            <div class="gland-field">
+                                <label for="resume_url">Resume URL</label>
+                                <input id="resume_url" name="resume_url" type="url">
+                            </div>
+                        </div>
+
+                        <div class="gland-checkbox-row">
+                            <label>
+                                <input type="checkbox" name="is_active" checked>
+                                Active
+                            </label>
+                        </div>
+
+                        <div class="gland-actions">
+                            <button class="gland-button lime" type="submit">
+                                Save Personal Info
+                            </button>
+                            <button class="gland-button secondary" type="button" data-reset-personal-info>
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <aside class="gland-card gland-profile-preview">
+                    <img class="gland-profile-photo" data-preview-photo src="../assets/img/about/gland-personal-info.png" alt="Personal info preview">
+                    <h3 class="gland-profile-name" data-preview-name>Full name</h3>
+                    <p class="gland-profile-role" data-preview-role>Role title</p>
+                    <p class="gland-profile-description" data-preview-description>Personal description preview.</p>
+
+                    <div class="gland-profile-contact">
+                        <span data-preview-email>email@example.com</span>
+                        <span data-preview-phone>Phone number</span>
+                        <span data-preview-address>Address</span>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/personal-info.js"></script>
+</body>
+</html>

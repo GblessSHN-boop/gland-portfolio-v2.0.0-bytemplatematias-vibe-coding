@@ -416,3 +416,62 @@ body {
     font-size: 13px;
 }
 /* GLAND ADMIN HIGHLIGHTS CRUD END */
+
+/* GLAND ADMIN PERSONAL INFO CRUD START */
+.gland-personal-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 22px;
+    align-items: start;
+}
+
+.gland-profile-preview {
+    padding: 22px;
+    position: sticky;
+    top: 22px;
+}
+
+.gland-profile-photo {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 28px;
+    object-fit: cover;
+    background: #eef3e6;
+    border: 1px solid var(--gland-line);
+    margin-bottom: 16px;
+}
+
+.gland-profile-name {
+    margin: 0;
+    font-size: 24px;
+}
+
+.gland-profile-role {
+    margin: 7px 0 12px;
+    color: var(--gland-muted);
+    font-weight: 800;
+}
+
+.gland-profile-description {
+    margin: 0 0 14px;
+    color: #2d3328;
+    line-height: 1.6;
+}
+
+.gland-profile-contact {
+    display: grid;
+    gap: 8px;
+    color: var(--gland-muted);
+    font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+    .gland-personal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .gland-profile-preview {
+        position: static;
+    }
+}
+/* GLAND ADMIN PERSONAL INFO CRUD END */
