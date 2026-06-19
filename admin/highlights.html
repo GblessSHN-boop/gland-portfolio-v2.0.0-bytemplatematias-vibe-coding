@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Highlights | GLAND Portfolio Admin</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="gland-admin-shell">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
+            </div>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a href="messages.html">Messages</a>
+                <a href="projects.html">Projects</a>
+                <a href="highlights.html" class="is-active">Highlights</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="page-editor.html">Page Editor</a>
+                <a href="media.html">Media</a>
+                <a href="analytics.html">Analytics</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="gland-main">
+            <header class="gland-page-header">
+                <div>
+                    <p class="gland-kicker">Selected Highlights</p>
+                    <h2 class="gland-page-title">Highlights</h2>
+                    <p class="gland-page-description">
+                        Create and manage selected highlights stored in MySQL.
+                        Later this data will sync into the public portfolio highlights section.
+                    </p>
+                </div>
+
+                <div class="gland-toolbar">
+                    <button class="gland-button" type="button" data-refresh-highlights>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <p class="gland-page-description" data-page-status></p>
+
+            <section class="gland-card gland-form-card">
+                <form data-highlight-form>
+                    <div class="gland-form-grid">
+                        <div class="gland-field">
+                            <label for="title">Highlight Title</label>
+                            <input id="title" name="title" type="text" placeholder="AI Product Thinking" required>
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="subtitle">Subtitle</label>
+                            <input id="subtitle" name="subtitle" type="text" placeholder="Interface Strategy">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="year_label">Year</label>
+                            <input id="year_label" name="year_label" type="text" placeholder="2026">
+                        </div>
+
+                        <div class="gland-field">
+                            <label for="display_order">Display Order</label>
+                            <input id="display_order" name="display_order" type="number" value="0">
+                        </div>
+
+                        <div class="gland-field full">
+                            <label for="highlight_url">Highlight URL</label>
+                            <input id="highlight_url" name="highlight_url" type="url" placeholder="https://example.com">
+                        </div>
+                    </div>
+
+                    <div class="gland-checkbox-row">
+                        <label>
+                            <input type="checkbox" name="is_active" checked>
+                            Active
+                        </label>
+                    </div>
+
+                    <div class="gland-actions">
+                        <button class="gland-button lime" type="submit" data-submit-highlight>
+                            Create Highlight
+                        </button>
+                        <button class="gland-button secondary" type="button" data-reset-highlight-form>
+                            Reset
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="gland-highlight-grid" data-highlight-list aria-live="polite">
+                <div class="gland-card gland-empty">
+                    Loading highlights from MySQL...
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/highlights.js"></script>
+</body>
+</html>

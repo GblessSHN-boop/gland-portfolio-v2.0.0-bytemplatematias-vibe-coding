@@ -21,13 +21,20 @@ from backend.project_service import (
     list_projects,
     update_project,
 )
+from backend.highlight_service import (
+    create_highlight,
+    delete_highlight,
+    get_highlight_by_id,
+    list_highlights,
+    update_highlight,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 class GlandPortfolioHandler(SimpleHTTPRequestHandler):
-    server_version = "GlandPortfolioPython/0.4"
+    server_version = "GlandPortfolioPython/0.5"
 
     def _send_json(self, status_code, payload):
         response = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
@@ -170,6 +177,43 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 )
             return
 
+        if path == "/api/highlights":
+            try:
+                highlights = list_highlights(limit=100)
+                self._send_json(200, {"success": True, "data": highlights})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load highlights from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
+
+        highlight_id = self._get_id_from_path(path, "highlights")
+
+        if highlight_id is not None:
+            try:
+                highlight = get_highlight_by_id(highlight_id)
+
+                if not highlight:
+                    self._send_json(404, {"success": False, "message": "Highlight not found."})
+                    return
+
+                self._send_json(200, {"success": True, "data": highlight})
+            except Exception as error:
+                self._send_json(
+                    500,
+                    {
+                        "success": False,
+                        "message": "Failed to load highlight from MySQL.",
+                        "error": str(error),
+                    },
+                )
+            return
+
         return super().do_GET()
 
     def do_POST(self):
@@ -182,6 +226,10 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         if path == "/api/projects":
             self._handle_create_project()
+            return
+
+        if path == "/api/highlights":
+            self._handle_create_highlight()
             return
 
         self._send_json(404, {"success": False, "message": "API endpoint not found."})
@@ -263,6 +311,32 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 },
             )
 
+    def _handle_create_highlight(self):
+        data = self._read_request_data()
+
+        try:
+            highlight = create_highlight(data)
+
+            self._send_json(
+                201,
+                {
+                    "success": True,
+                    "message": "Highlight created.",
+                    "data": highlight,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to create highlight.",
+                    "error": str(error),
+                },
+            )
+
     def do_PATCH(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
@@ -277,6 +351,12 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         if project_id is not None:
             self._handle_update_project(project_id)
+            return
+
+        highlight_id = self._get_id_from_path(path, "highlights")
+
+        if highlight_id is not None:
+            self._handle_update_highlight(highlight_id)
             return
 
         self._send_json(404, {"success": False, "message": "Update endpoint not found."})
@@ -364,6 +444,36 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 },
             )
 
+    def _handle_update_highlight(self, highlight_id):
+        data = self._read_request_data()
+
+        try:
+            highlight = update_highlight(highlight_id, data)
+
+            if not highlight:
+                self._send_json(404, {"success": False, "message": "Highlight not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Highlight updated.",
+                    "data": highlight,
+                },
+            )
+        except ValueError as error:
+            self._send_json(400, {"success": False, "message": str(error)})
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to update highlight.",
+                    "error": str(error),
+                },
+            )
+
     def do_DELETE(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
@@ -378,6 +488,12 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         if project_id is not None:
             self._handle_delete_project(project_id)
+            return
+
+        highlight_id = self._get_id_from_path(path, "highlights")
+
+        if highlight_id is not None:
+            self._handle_delete_highlight(highlight_id)
             return
 
         self._send_json(404, {"success": False, "message": "Delete endpoint not found."})
@@ -430,6 +546,32 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                 {
                     "success": False,
                     "message": "Failed to delete project.",
+                    "error": str(error),
+                },
+            )
+
+    def _handle_delete_highlight(self, highlight_id):
+        try:
+            was_deleted = delete_highlight(highlight_id)
+
+            if not was_deleted:
+                self._send_json(404, {"success": False, "message": "Highlight not found."})
+                return
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Highlight deleted.",
+                    "data": {"id": highlight_id},
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to delete highlight.",
                     "error": str(error),
                 },
             )

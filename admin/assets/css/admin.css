@@ -371,3 +371,48 @@ body {
     }
 }
 /* GLAND ADMIN PROJECTS CRUD END */
+
+/* GLAND ADMIN HIGHLIGHTS CRUD START */
+.gland-highlight-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.gland-highlight-card {
+    padding: 20px;
+}
+
+.gland-highlight-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.gland-highlight-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+.gland-highlight-subtitle {
+    margin: 7px 0 0;
+    color: var(--gland-muted);
+    font-size: 14px;
+}
+
+.gland-highlight-year {
+    display: inline-flex;
+    border-radius: 999px;
+    background: var(--gland-green);
+    color: var(--gland-dark);
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.gland-highlight-meta {
+    margin: 12px 0 0;
+    color: var(--gland-muted);
+    font-size: 13px;
+}
+/* GLAND ADMIN HIGHLIGHTS CRUD END */

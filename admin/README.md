@@ -93,3 +93,26 @@ Project fields:
 - display_order
 - is_featured
 - is_active
+
+## Selected Highlights CRUD
+
+Admin highlights editor:
+
+- `admin/highlights.html`
+
+Highlight API endpoints:
+
+- `GET /api/highlights`
+- `GET /api/highlights/{id}`
+- `POST /api/highlights`
+- `PATCH /api/highlights/{id}`
+- `DELETE /api/highlights/{id}`
+
+Highlight fields:
+
+- title
+- subtitle
+- year_label
+- highlight_url
+- display_order
+- is_active
