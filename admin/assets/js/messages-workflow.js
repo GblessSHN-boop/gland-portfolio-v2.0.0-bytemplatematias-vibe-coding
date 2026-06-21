@@ -1,18 +1,17 @@
 (function () {
   "use strict";
 
-  const REFRESH_INTERVAL_MS = 5000;
-  const ACTION_LABELS = {
-    "mark read": "Tandai pesan sudah dibaca. Cocok untuk pesan baru yang sudah kamu cek.",
-    "approve": "Setujui lead/pesan yang layak ditindaklanjuti.",
-    "reject": "Tolak pesan yang tidak cocok, tidak valid, atau bukan prioritas.",
-    "archive": "Arsipkan pesan yang sudah selesai diproses.",
-    "delete": "Hapus permanen. Pakai hanya untuk spam/sampah."
-  };
-
-  let lastCount = null;
+  const REFRESH_INTERVAL_MS = 3000;
   let nextRefreshAt = Date.now() + REFRESH_INTERVAL_MS;
   let toastTimer = null;
+
+  const ACTION_HINTS = {
+    "mark read": "Tandai pesan sudah dibaca.",
+    "approve": "Lead valid dan perlu ditindaklanjuti.",
+    "reject": "Pesan tidak cocok atau tidak valid.",
+    "archive": "Pesan selesai, simpan sebagai arsip.",
+    "delete": "Hapus permanen khusus spam."
+  };
 
   function textOf(element) {
     return String(element && element.textContent ? element.textContent : "").trim();
@@ -23,47 +22,31 @@
   }
 
   function findRefreshButton() {
-    const controls = Array.from(document.querySelectorAll("button, a"));
-    return controls.find((element) => textOf(element).toLowerCase() === "refresh");
+    return Array.from(document.querySelectorAll("button, a"))
+      .find((element) => textOf(element).toLowerCase() === "refresh");
   }
 
   function findLoadedCounter() {
-    const candidates = Array.from(document.querySelectorAll("main *, .admin-main *, body *"));
-
-    return candidates.find((element) => {
-      const text = textOf(element);
-      return /^Loaded\s+\d+\s+message\(s\)\s+from\s+MySQL\./i.test(text);
-    });
+    return Array.from(document.querySelectorAll("main *, .admin-main *, body *"))
+      .find((element) => /^Loaded\s+\d+\s+message\(s\)\s+from\s+MySQL\./i.test(textOf(element)));
   }
 
   function getMessageCount() {
     const counter = findLoadedCounter();
-    const text = textOf(counter);
-    const match = text.match(/Loaded\s+(\d+)\s+message/i);
-
-    if (!match) {
-      return null;
-    }
-
-    return Number(match[1]);
+    const match = textOf(counter).match(/Loaded\s+(\d+)\s+message/i);
+    return match ? Number(match[1]) : null;
   }
 
   function isUserEditing() {
     const active = document.activeElement;
-
-    if (!active) {
-      return false;
-    }
+    if (!active) return false;
 
     const tag = active.tagName ? active.tagName.toLowerCase() : "";
-
     return tag === "input" || tag === "textarea" || tag === "select" || active.isContentEditable;
   }
 
   function ensureWorkflowPanel() {
-    if (document.querySelector("[data-gland-messages-workflow]")) {
-      return;
-    }
+    if (document.querySelector("[data-gland-messages-workflow]")) return;
 
     const counter = findLoadedCounter();
     const host = counter && counter.parentElement ? counter.parentElement : document.querySelector("main") || document.body;
@@ -75,26 +58,22 @@
     panel.innerHTML = `
       <div class="gland-messages-workflow__top">
         <div>
-          <p class="gland-messages-workflow__eyebrow">Message workflow</p>
-          <h2 class="gland-messages-workflow__title">Alur inbox admin yang jelas</h2>
-          <p class="gland-messages-workflow__desc">
-            Setiap pesan masuk otomatis refresh cepat. Gunakan status secara berurutan:
-            baca dulu, tentukan apakah layak ditindaklanjuti, lalu arsipkan ketika selesai.
-            Delete hanya untuk spam, bukan untuk pesan normal yang sudah selesai.
-          </p>
+          <p class="gland-messages-workflow__eyebrow">Inbox workflow</p>
+          <h2 class="gland-messages-workflow__title">New → Read → Approve / Reject → Archive</h2>
+          <p class="gland-messages-workflow__desc">Workflow ringkas untuk memproses pesan contact.</p>
         </div>
         <div class="gland-messages-workflow__refresh">
-          Auto refresh: <strong>ON</strong><br>
-          <small data-gland-refresh-status>Setiap 5 detik</small>
+          Auto refresh: <strong>ON</strong>
+          <small data-gland-refresh-status>Setiap 3 detik</small>
         </div>
       </div>
       <div class="gland-messages-workflow__steps">
-        <div class="gland-messages-workflow__step"><span>NEW</span><small>Pesan baru masuk dan belum dicek.</small></div>
-        <div class="gland-messages-workflow__step"><span>READ</span><small>Admin sudah membaca isi pesan.</small></div>
-        <div class="gland-messages-workflow__step"><span>APPROVED</span><small>Lead layak diproses atau dibalas.</small></div>
-        <div class="gland-messages-workflow__step"><span>REJECTED</span><small>Pesan tidak valid atau tidak cocok.</small></div>
-        <div class="gland-messages-workflow__step"><span>ARCHIVED</span><small>Pesan selesai dan disimpan.</small></div>
-        <div class="gland-messages-workflow__step"><span>DELETE</span><small>Hapus permanen khusus spam.</small></div>
+        <div class="gland-messages-workflow__step"><span>NEW</span><small>Baru masuk.</small></div>
+        <div class="gland-messages-workflow__step"><span>READ</span><small>Sudah dibaca.</small></div>
+        <div class="gland-messages-workflow__step"><span>APPROVED</span><small>Layak diproses.</small></div>
+        <div class="gland-messages-workflow__step"><span>REJECTED</span><small>Tidak cocok.</small></div>
+        <div class="gland-messages-workflow__step"><span>ARCHIVED</span><small>Selesai.</small></div>
+        <div class="gland-messages-workflow__step"><span>DELETE</span><small>Spam.</small></div>
       </div>
     `;
 
@@ -107,10 +86,7 @@
 
   function ensureToast() {
     let toast = document.querySelector("[data-gland-messages-toast]");
-
-    if (toast) {
-      return toast;
-    }
+    if (toast) return toast;
 
     toast = document.createElement("div");
     toast.className = "gland-messages-toast";
@@ -128,9 +104,9 @@
     toast.classList.add("is-visible");
 
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
+    toastTimer = window.setTimeout(() => {
       toast.classList.remove("is-visible");
-    }, 4200);
+    }, 3200);
   }
 
   function normalizeAction(text) {
@@ -150,6 +126,7 @@
 
     while (current && current !== document.body) {
       const actionButtons = Array.from(current.querySelectorAll("button")).filter((item) => normalizeAction(textOf(item)));
+
       if (actionButtons.length >= 3) {
         return current;
       }
@@ -166,43 +143,29 @@
     actionButtons.forEach((button) => {
       const action = normalizeAction(textOf(button));
       button.dataset.glandAction = action.replace(/\s+/g, "-");
-      button.setAttribute("title", ACTION_LABELS[action] || "Admin message action");
+      button.setAttribute("title", ACTION_HINTS[action] || "Message action");
 
       const card = findActionCard(button);
-
-      if (!card) {
-        return;
-      }
-
-      card.classList.add("gland-message-card");
-
-      if (!card.querySelector("[data-gland-message-hint]")) {
-        const hint = document.createElement("div");
-        hint.className = "gland-message-card__hint";
-        hint.setAttribute("data-gland-message-hint", "true");
-        hint.textContent = "Alur kerja: Mark Read setelah dibaca, Approve kalau perlu ditindaklanjuti, Reject kalau tidak cocok, Archive kalau selesai. Delete hanya untuk spam.";
-        card.appendChild(hint);
+      if (card) {
+        card.classList.add("gland-message-card");
       }
     });
   }
 
   function updateRefreshStatus() {
-    const target = document.querySelector("[data-gland-refresh-status]");
-
-    if (!target) {
-      return;
-    }
+    const status = document.querySelector("[data-gland-refresh-status]");
+    if (!status) return;
 
     if (isUserEditing()) {
-      target.textContent = "Pause sebentar karena admin sedang mengetik.";
+      status.textContent = "Pause saat admin mengetik.";
       return;
     }
 
     const seconds = Math.max(0, Math.ceil((nextRefreshAt - Date.now()) / 1000));
-    target.textContent = `Refresh berikutnya dalam ${seconds} detik.`;
+    status.textContent = `Refresh dalam ${seconds} detik.`;
   }
 
-  function performRefresh(reason) {
+  function performRefresh() {
     const button = findRefreshButton();
 
     if (!button || isUserEditing() || document.hidden) {
@@ -210,6 +173,7 @@
     }
 
     const before = getMessageCount();
+
     button.click();
     nextRefreshAt = Date.now() + REFRESH_INTERVAL_MS;
 
@@ -217,50 +181,47 @@
       const after = getMessageCount();
 
       if (typeof before === "number" && typeof after === "number" && after > before) {
-        showToast(`Ada ${after - before} pesan baru masuk.`);
+        showToast(`${after - before} pesan baru masuk.`);
         const firstCard = document.querySelector(".gland-message-card");
+
         if (firstCard) {
           firstCard.classList.add("gland-new-message-pulse");
-          window.setTimeout(() => firstCard.classList.remove("gland-new-message-pulse"), 3200);
+          window.setTimeout(() => firstCard.classList.remove("gland-new-message-pulse"), 2400);
         }
       }
 
-      lastCount = after;
+      ensureWorkflowPanel();
       enhanceCards();
       updateRefreshStatus();
-    }, 900);
+    }, 700);
   }
 
   function boot() {
-    if (!isMessagesPage()) {
-      return;
-    }
+    if (!isMessagesPage()) return;
 
     document.body.classList.add("gland-messages-enhanced");
 
     ensureWorkflowPanel();
     enhanceCards();
 
-    lastCount = getMessageCount();
-
     window.setInterval(() => {
       updateRefreshStatus();
 
       if (Date.now() >= nextRefreshAt) {
-        performRefresh("interval");
+        performRefresh();
       }
     }, 1000);
 
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
-        nextRefreshAt = Date.now() + 1000;
-        performRefresh("visibility");
+        nextRefreshAt = Date.now() + 500;
+        performRefresh();
       }
     });
 
     window.addEventListener("focus", () => {
-      nextRefreshAt = Date.now() + 1000;
-      performRefresh("focus");
+      nextRefreshAt = Date.now() + 500;
+      performRefresh();
     });
 
     const observer = new MutationObserver(() => {
@@ -272,8 +233,6 @@
       childList: true,
       subtree: true
     });
-
-    showToast("Messages auto-refresh aktif.");
   }
 
   if (document.readyState === "loading") {

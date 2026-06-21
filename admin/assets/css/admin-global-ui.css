@@ -1,35 +1,44 @@
-/* GLAND ADMIN GLOBAL UI POLISH START */
-
-@font-face {
-  font-family: "GLAND Admin UI";
-  src: url("../fonts/admin-ui-font.woff2") format("woff2");
-  font-display: swap;
-  font-weight: 400;
-  font-style: normal;
-}
+/* GLAND ADMIN PROFESSIONAL UI V2 START */
 
 :root {
-  --gland-admin-font: "GLAND Admin UI", "Inter", "Manrope", "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
-  --gland-admin-bg: #080b08;
-  --gland-admin-panel: rgba(13, 17, 13, 0.94);
-  --gland-admin-panel-2: rgba(18, 25, 16, 0.94);
-  --gland-admin-border: rgba(190, 255, 0, 0.16);
-  --gland-admin-border-soft: rgba(255, 255, 255, 0.10);
-  --gland-admin-text: #f7f9ef;
-  --gland-admin-muted: rgba(247, 249, 239, 0.70);
-  --gland-admin-soft: rgba(247, 249, 239, 0.52);
-  --gland-admin-accent: #bfff00;
-  --gland-admin-danger: #ff8a96;
+  --admin-bg: #080a0b;
+  --admin-surface: #101314;
+  --admin-surface-2: #141819;
+  --admin-surface-3: #191e20;
+  --admin-sidebar: #0b0e0f;
+  --admin-border: rgba(255, 255, 255, 0.10);
+  --admin-border-strong: rgba(255, 255, 255, 0.16);
+  --admin-text: #f2f4f0;
+  --admin-text-soft: rgba(242, 244, 240, 0.72);
+  --admin-text-muted: rgba(242, 244, 240, 0.52);
+  --admin-accent: #b7ff00;
+  --admin-accent-soft: rgba(183, 255, 0, 0.11);
+  --admin-danger: #ff727f;
+  --admin-radius-lg: 22px;
+  --admin-radius-md: 16px;
+  --admin-radius-sm: 12px;
+  --admin-shadow: 0 16px 50px rgba(0, 0, 0, 0.28);
+  --admin-font: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html,
 body {
-  font-family: var(--gland-admin-font) !important;
+  min-height: 100%;
+  background: var(--admin-bg) !important;
+  color: var(--admin-text) !important;
+  font-family: var(--admin-font) !important;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: 0.01em;
-  line-height: 1.65;
 }
 
 body,
@@ -46,33 +55,89 @@ div,
 li,
 td,
 th {
-  font-family: var(--gland-admin-font) !important;
+  font-family: var(--admin-font) !important;
 }
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(190, 255, 0, 0.08), transparent 30%),
-    var(--gland-admin-bg) !important;
-  color: var(--gland-admin-text) !important;
+    radial-gradient(circle at 18% 12%, rgba(183, 255, 0, 0.075), transparent 28%),
+    linear-gradient(180deg, #080a0b 0%, #070909 100%) !important;
 }
 
+/* Layout rhythm */
+main,
+.admin-main,
+.content,
+.dashboard-content {
+  padding-top: 34px !important;
+  padding-bottom: 72px !important;
+}
+
+.admin-main > *,
+main > *,
+.content > * {
+  max-width: 1180px;
+}
+
+/* Sidebar */
+.admin-sidebar,
+.sidebar {
+  background: var(--admin-sidebar) !important;
+  border-right: 1px solid var(--admin-border) !important;
+}
+
+.admin-sidebar a,
+.sidebar a,
+nav a {
+  color: rgba(242, 244, 240, 0.84) !important;
+  border-radius: 14px !important;
+  padding: 13px 18px !important;
+  line-height: 1.25 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.admin-sidebar a:hover,
+.sidebar a:hover,
+nav a:hover {
+  background: rgba(255, 255, 255, 0.055) !important;
+  color: var(--admin-text) !important;
+}
+
+.admin-sidebar a.active,
+.sidebar a.active,
+nav a.active,
+.admin-sidebar .active,
+.sidebar .active {
+  background: rgba(183, 255, 0, 0.13) !important;
+  color: var(--admin-accent) !important;
+}
+
+/* Page header */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: var(--gland-admin-font) !important;
-  color: var(--gland-admin-text) !important;
-  letter-spacing: -0.035em;
-  line-height: 1.12;
+  color: var(--admin-text) !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.055em !important;
+  line-height: 1.05 !important;
 }
 
-p,
-li,
-small,
-label {
-  line-height: 1.7;
+h1 {
+  font-size: clamp(38px, 4vw, 58px) !important;
+  margin: 0 0 14px !important;
+}
+
+h2 {
+  font-size: clamp(28px, 3vw, 40px) !important;
+}
+
+h3 {
+  font-size: 22px !important;
 }
 
 p,
@@ -82,116 +147,302 @@ label,
 [class*="muted"],
 [class*="desc"],
 [class*="subtitle"] {
-  color: var(--gland-admin-muted) !important;
+  color: var(--admin-text-soft) !important;
+  line-height: 1.7 !important;
 }
 
-main,
-.admin-main,
-.content,
-.dashboard-content {
-  padding-top: 28px !important;
-  letter-spacing: 0.006em;
+.admin-page-header,
+.page-header,
+.header-block,
+main > section:first-child {
+  margin-bottom: 32px !important;
+  padding-bottom: 22px !important;
+  border-bottom: 1px solid var(--admin-border) !important;
 }
 
-section,
-.admin-section,
+/* Cards and panels */
 .card,
 .panel,
+.admin-card,
 .table-card,
 .analytics-card,
 .stat-card,
-.admin-card,
-form {
-  border-radius: 24px !important;
+[class*="card"],
+[class*="panel"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.018)),
+    var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius-lg) !important;
+  box-shadow: none !important;
 }
 
+/* Forms: kill the ugly white blocks */
+form,
+.admin-form,
+.form-card,
+main form,
+.content form,
+.admin-main form {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.016)),
+    var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: 24px !important;
+  box-shadow: var(--admin-shadow) !important;
+  padding: clamp(22px, 3vw, 34px) !important;
+}
+
+/* Force children inside form to stop inheriting pale/white template colors */
+form *,
+.admin-form *,
+.form-card * {
+  color: inherit;
+}
+
+form label,
+.admin-form label,
+.form-card label {
+  display: block;
+  margin-bottom: 8px !important;
+  color: var(--admin-text-soft) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Inputs */
 input,
 textarea,
 select {
   width: 100%;
-  border-radius: 16px !important;
-  padding: 15px 17px !important;
-  background: rgba(255, 255, 255, 0.055) !important;
-  border: 1px solid var(--gland-admin-border-soft) !important;
-  color: var(--gland-admin-text) !important;
-  outline: none !important;
+  min-height: 46px;
+  background: #0c0f10 !important;
+  color: var(--admin-text) !important;
+  border: 1px solid var(--admin-border-strong) !important;
+  border-radius: var(--admin-radius-md) !important;
+  padding: 13px 15px !important;
   font-size: 15px !important;
+  font-weight: 500 !important;
   line-height: 1.5 !important;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+textarea {
+  min-height: 126px !important;
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(242, 244, 240, 0.36) !important;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: rgba(190, 255, 0, 0.42) !important;
-  box-shadow: 0 0 0 4px rgba(190, 255, 0, 0.08) !important;
-  background: rgba(255, 255, 255, 0.075) !important;
+  background: #0f1314 !important;
+  border-color: rgba(183, 255, 0, 0.55) !important;
+  box-shadow: 0 0 0 4px rgba(183, 255, 0, 0.09) !important;
 }
 
-textarea {
-  min-height: 120px;
-  resize: vertical;
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto !important;
+  min-height: auto !important;
+  accent-color: var(--admin-accent);
 }
 
+input[type="file"] {
+  background: #0c0f10 !important;
+  color: var(--admin-text-soft) !important;
+  cursor: pointer;
+}
+
+/* Buttons */
 button,
 .btn,
 [class*="button"] {
-  min-height: 46px;
+  min-height: 44px;
   border-radius: 999px !important;
-  padding: 13px 23px !important;
-  line-height: 1.15 !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  white-space: nowrap;
+  padding: 12px 20px !important;
+  border: 1px solid var(--admin-border) !important;
+  background: #171c1d !important;
+  color: var(--admin-text) !important;
+  font-size: 14px !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1.1 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 
 button:hover,
 .btn:hover {
-  transform: translateY(-1px);
+  background: #202627 !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  transform: none !important;
 }
 
-.admin-sidebar,
-.sidebar,
-nav {
-  letter-spacing: -0.012em;
+button[type="submit"],
+.btn-primary,
+.primary,
+button.create,
+button.save {
+  background: var(--admin-accent) !important;
+  color: #111500 !important;
+  border-color: var(--admin-accent) !important;
 }
 
-.admin-sidebar a,
-.sidebar a,
-nav a {
-  line-height: 1.3 !important;
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
+button[type="submit"]:hover,
+.btn-primary:hover,
+.primary:hover {
+  background: #c8ff33 !important;
+  color: #111500 !important;
 }
 
+/* Refresh button */
+button.refresh,
+.refresh,
+#refreshButton,
+[data-refresh] {
+  background: #111516 !important;
+  color: var(--admin-text) !important;
+}
+
+/* Delete / danger */
+button.delete,
+button.danger,
+.btn-danger,
+[data-action="delete"],
+[data-gland-action="delete"] {
+  background: rgba(255, 114, 127, 0.10) !important;
+  color: #ff9aa3 !important;
+  border-color: rgba(255, 114, 127, 0.34) !important;
+}
+
+/* Tables */
 table {
+  width: 100%;
   border-collapse: separate !important;
   border-spacing: 0 10px !important;
 }
 
+thead th,
 th {
-  color: var(--gland-admin-muted) !important;
+  color: var(--admin-text-muted) !important;
   font-size: 12px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.10em !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
   text-transform: uppercase !important;
+  padding: 12px 16px !important;
+  border: none !important;
+}
+
+tbody tr,
+tr {
+  background: var(--admin-surface) !important;
 }
 
 td {
-  color: var(--gland-admin-text) !important;
+  color: var(--admin-text-soft) !important;
+  padding: 14px 16px !important;
+  border-top: 1px solid var(--admin-border) !important;
+  border-bottom: 1px solid var(--admin-border) !important;
   line-height: 1.55 !important;
 }
 
-.admin-page-header,
-.page-header,
-.header-block {
-  margin-bottom: 30px !important;
+td:first-child {
+  border-left: 1px solid var(--admin-border) !important;
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
 }
 
-.admin-page-header h1,
-.page-header h1,
-.header-block h1 {
-  margin-bottom: 12px !important;
+td:last-child {
+  border-right: 1px solid var(--admin-border) !important;
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 
-/* GLAND ADMIN GLOBAL UI POLISH END */
+/* Dashboard stats */
+.stat-card,
+.analytics-card {
+  padding: 24px !important;
+  min-height: 126px;
+}
+
+.stat-card h3,
+.analytics-card h3,
+.stat-card p,
+.analytics-card p {
+  margin-top: 0 !important;
+}
+
+.stat-card strong,
+.analytics-card strong,
+.stat-card .number,
+.analytics-card .number {
+  color: var(--admin-text) !important;
+  font-size: clamp(34px, 4vw, 54px) !important;
+  font-weight: 780 !important;
+  letter-spacing: -0.06em !important;
+}
+
+/* Preview panels */
+.preview,
+.preview-card,
+[class*="preview"] {
+  background: var(--admin-surface) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: 24px !important;
+  color: var(--admin-text) !important;
+}
+
+/* Logout should not crash into content like a floating lime UFO */
+.logout,
+#logoutButton,
+button.logout,
+[data-logout] {
+  position: fixed !important;
+  right: 26px !important;
+  bottom: 24px !important;
+  z-index: 80 !important;
+  background: var(--admin-accent) !important;
+  color: #111500 !important;
+  border-color: var(--admin-accent) !important;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.32) !important;
+}
+
+/* Utility shell for placeholder pages */
+.admin-placeholder {
+  max-width: 860px;
+  padding: 34px !important;
+  border-radius: 26px !important;
+  background: var(--admin-surface) !important;
+  border: 1px solid var(--admin-border) !important;
+}
+
+.admin-placeholder__eyebrow {
+  margin: 0 0 12px;
+  color: var(--admin-accent) !important;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.admin-placeholder__title {
+  margin: 0 0 12px !important;
+}
+
+.admin-placeholder__text {
+  margin: 0 0 22px !important;
+  max-width: 720px;
+}
+
+/* GLAND ADMIN PROFESSIONAL UI V2 END */
