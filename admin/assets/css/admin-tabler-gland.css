@@ -1443,3 +1443,351 @@ h6 {
 }
 
 /* GLAND ADMIN TYPOGRAPHY SPACING FIX END */
+
+
+/* GLAND ADMIN BREATHING ROOM START */
+
+/*
+  Final spacing layer for Mosvita.
+  The font is good, but it needs more air between text, controls, and sections.
+*/
+
+html,
+body {
+  font-size: 16px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.72 !important;
+}
+
+.gland-main {
+  padding: 58px 58px 110px !important;
+}
+
+.gland-container {
+  max-width: 1200px !important;
+}
+
+/* Sidebar spacing */
+.gland-sidebar {
+  padding: 32px 22px !important;
+}
+
+.gland-brand {
+  gap: 14px !important;
+  margin-bottom: 42px !important;
+}
+
+.gland-brand-title {
+  font-size: 15.5px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.008em !important;
+  line-height: 1.35 !important;
+}
+
+.gland-brand-subtitle {
+  margin-top: 4px !important;
+  font-size: 12.5px !important;
+  line-height: 1.55 !important;
+  letter-spacing: 0.015em !important;
+}
+
+.gland-nav {
+  gap: 11px !important;
+}
+
+.gland-nav-link {
+  min-height: 48px !important;
+  padding: 13px 16px !important;
+  gap: 13px !important;
+  font-size: 15.5px !important;
+  font-weight: 540 !important;
+  letter-spacing: 0.012em !important;
+  line-height: 1.45 !important;
+}
+
+.gland-sidebar-footer {
+  margin-top: 24px !important;
+  padding-top: 22px !important;
+}
+
+/* Page header */
+.gland-page-header {
+  padding-bottom: 38px !important;
+  margin-bottom: 46px !important;
+}
+
+.gland-eyebrow {
+  margin-bottom: 14px !important;
+  font-size: 12.5px !important;
+  font-weight: 640 !important;
+  letter-spacing: 0.22em !important;
+  line-height: 1.6 !important;
+}
+
+.gland-title {
+  font-size: clamp(40px, 4.8vw, 58px) !important;
+  font-weight: 690 !important;
+  letter-spacing: -0.006em !important;
+  line-height: 1.18 !important;
+}
+
+.gland-subtitle {
+  margin-top: 18px !important;
+  max-width: 860px !important;
+  font-size: 17.5px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.012em !important;
+  line-height: 1.85 !important;
+}
+
+/* Tabs and status */
+.gland-message-tabs {
+  gap: 50px !important;
+  margin-bottom: 42px !important;
+  padding-bottom: 0 !important;
+}
+
+.gland-message-tab {
+  padding-bottom: 18px !important;
+  font-size: 16px !important;
+  font-weight: 540 !important;
+  letter-spacing: 0.014em !important;
+  line-height: 1.55 !important;
+}
+
+.gland-status-text {
+  margin-bottom: 30px !important;
+  font-size: 15.5px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.8 !important;
+}
+
+/* Message cards */
+.gland-message-list {
+  gap: 26px !important;
+}
+
+.gland-message-card {
+  padding: 32px !important;
+  border-radius: 18px !important;
+}
+
+.gland-message-head {
+  margin-bottom: 26px !important;
+}
+
+.gland-message-name {
+  font-size: 20px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.002em !important;
+  line-height: 1.42 !important;
+}
+
+.gland-message-meta {
+  margin-top: 8px !important;
+  font-size: 15px !important;
+  letter-spacing: 0.012em !important;
+  line-height: 1.75 !important;
+}
+
+.gland-message-badge {
+  min-height: 34px !important;
+  padding: 8px 13px !important;
+  font-size: 12.5px !important;
+  font-weight: 610 !important;
+  letter-spacing: 0.08em !important;
+}
+
+.gland-message-content {
+  padding: 24px 26px !important;
+  margin-bottom: 28px !important;
+  border-radius: 12px !important;
+}
+
+.gland-message-content-label {
+  margin-bottom: 14px !important;
+  font-size: 13px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.18em !important;
+  line-height: 1.65 !important;
+}
+
+.gland-message-text {
+  font-size: 16px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.92 !important;
+}
+
+.gland-message-actions {
+  gap: 14px !important;
+}
+
+.gland-message-note {
+  min-height: 46px !important;
+  padding: 12px 16px !important;
+}
+
+/* Buttons and form controls */
+.gland-btn {
+  min-height: 44px !important;
+  padding: 12px 18px !important;
+  font-size: 15px !important;
+  font-weight: 550 !important;
+  letter-spacing: 0.012em !important;
+  line-height: 1.45 !important;
+}
+
+.gland-field label {
+  margin-bottom: 10px !important;
+  font-size: 14px !important;
+  font-weight: 550 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.6 !important;
+}
+
+.gland-field input,
+.gland-field textarea,
+.gland-field select {
+  min-height: 48px !important;
+  padding: 13px 16px !important;
+  font-size: 15.5px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.72 !important;
+}
+
+.gland-field textarea {
+  min-height: 140px !important;
+}
+
+.gland-form-grid {
+  gap: 24px !important;
+}
+
+.gland-form-actions {
+  gap: 16px !important;
+  margin-top: 30px !important;
+}
+
+/* Panels, cards, lists */
+.gland-panel {
+  border-radius: 20px !important;
+}
+
+.gland-panel-header {
+  padding: 26px 30px !important;
+}
+
+.gland-panel-body {
+  padding: 30px !important;
+}
+
+.gland-panel-title {
+  font-size: 19px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.002em !important;
+  line-height: 1.45 !important;
+}
+
+.gland-crud-layout {
+  gap: 32px !important;
+}
+
+.gland-list {
+  gap: 20px !important;
+}
+
+.gland-list-card {
+  padding: 24px !important;
+  border-radius: 18px !important;
+}
+
+.gland-list-card-title {
+  font-size: 19px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.002em !important;
+  line-height: 1.45 !important;
+}
+
+.gland-list-card-meta {
+  margin-top: 10px !important;
+  font-size: 15px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.85 !important;
+}
+
+.gland-list-card-actions {
+  gap: 14px !important;
+  margin-top: 22px !important;
+}
+
+/* Dashboard stats */
+.gland-stat-grid {
+  gap: 30px !important;
+  margin-bottom: 44px !important;
+}
+
+.gland-stat-card {
+  min-height: 150px !important;
+  padding: 30px !important;
+  border-radius: 20px !important;
+}
+
+.gland-stat-label {
+  font-size: 12.5px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.18em !important;
+  line-height: 1.6 !important;
+}
+
+.gland-stat-value {
+  margin-top: 24px !important;
+  font-weight: 660 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.12 !important;
+}
+
+/* Tables */
+.gland-table th {
+  padding: 18px 22px !important;
+  font-size: 12.5px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0.16em !important;
+  line-height: 1.6 !important;
+}
+
+.gland-table td {
+  padding: 20px 22px !important;
+  font-size: 15px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.85 !important;
+}
+
+/* Empty states */
+.gland-empty,
+.gland-message-empty {
+  padding: 34px !important;
+  font-size: 15.5px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.85 !important;
+}
+
+/* Smaller screens */
+@media (max-width: 980px) {
+  .gland-main {
+    padding: 34px 22px 90px !important;
+  }
+
+  .gland-title {
+    font-size: 38px !important;
+  }
+
+  .gland-message-card {
+    padding: 24px !important;
+  }
+
+  .gland-message-content {
+    padding: 20px !important;
+  }
+}
+
+/* GLAND ADMIN BREATHING ROOM END */
