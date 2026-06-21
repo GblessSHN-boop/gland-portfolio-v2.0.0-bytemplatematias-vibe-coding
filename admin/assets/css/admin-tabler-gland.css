@@ -337,3 +337,134 @@ body {
 }
 
 /* GLAND ADMIN TABLER SYSTEM END */
+
+/* GLAND TABLER CRUD EXTENSION START */
+
+.gland-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.gland-form-grid .span-2 {
+  grid-column: span 2;
+}
+
+.gland-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #a1a1aa;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.gland-field input,
+.gland-field textarea,
+.gland-field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 11px 13px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: #0b0b0d;
+  color: #f4f4f5;
+  outline: none;
+}
+
+.gland-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.gland-field input:focus,
+.gland-field textarea:focus,
+.gland-field select:focus {
+  border-color: rgba(157, 255, 0, 0.6);
+  box-shadow: 0 0 0 3px rgba(157, 255, 0, 0.08);
+}
+
+.gland-form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.gland-crud-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.gland-list {
+  display: grid;
+  gap: 14px;
+}
+
+.gland-list-card {
+  background: #171719;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.gland-list-card-title {
+  margin: 0;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.gland-list-card-meta {
+  margin: 7px 0 0;
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.gland-list-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.gland-btn-danger {
+  background: rgba(255, 95, 109, 0.12);
+  border-color: rgba(255, 95, 109, 0.28);
+  color: #ff7f8c;
+}
+
+.gland-btn-danger:hover {
+  background: rgba(255, 95, 109, 0.18);
+  color: #ff9aa4;
+}
+
+.gland-btn-secondary {
+  background: #1d1d20;
+  color: #d4d4d8;
+}
+
+.gland-status-text {
+  min-height: 24px;
+  margin: 0 0 18px;
+  color: #a1a1aa;
+}
+
+@media (max-width: 1100px) {
+  .gland-crud-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .gland-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gland-form-grid .span-2 {
+    grid-column: span 1;
+  }
+}
+
+/* GLAND TABLER CRUD EXTENSION END */
