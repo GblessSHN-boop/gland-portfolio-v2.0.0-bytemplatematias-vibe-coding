@@ -71,242 +71,6 @@
    <link rel="stylesheet" href="assets/css/aos.css">
    <!--<< Main.css >>-->
    <link rel="stylesheet" href="assets/css/main.css">
-<!-- GLAND INDEX HERO NAV V1 START -->
-<style id="gland-index-hero-nav-v1">
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 96px;
-  }
-
-  #home,
-  #about,
-  #prot,
-  #services,
-  #testi {
-    scroll-margin-top: 96px;
-  }
-
-  .banner__section {
-    min-height: min(940px, 100vh);
-    padding-top: clamp(118px, 11vw, 176px);
-    padding-bottom: clamp(78px, 8vw, 124px);
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  .banner__section > .container {
-    width: 100%;
-  }
-
-  .banner__section h1 {
-    max-width: 980px;
-    margin-bottom: clamp(18px, 2vw, 28px);
-    line-height: 0.96;
-    letter-spacing: -0.055em;
-  }
-
-  .banner__section p,
-  .banner__section .pra,
-  .banner__section .ptext {
-    max-width: 680px;
-    line-height: 1.72;
-  }
-
-  .banner__section .cmn--btn,
-  .banner__section .cmn__btn,
-  .banner__section .common__btn {
-    margin-top: 8px;
-  }
-
-  .gland-hero-video-thumb {
-    margin-top: clamp(18px, 3vw, 44px);
-  }
-
-  .gland-hero-ad-video {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-  }
-
-  a[href="#home"].active,
-  .menu a[href="#home"].active,
-  .main-menu a[href="#home"].active {
-    color: #c9f31d;
-  }
-
-  @media (max-width: 991.98px) {
-    html {
-      scroll-padding-top: 82px;
-    }
-
-    #home,
-    #about,
-    #prot,
-    #services,
-    #testi {
-      scroll-margin-top: 82px;
-    }
-
-    .banner__section {
-      min-height: auto;
-      padding-top: 116px;
-      padding-bottom: 72px;
-    }
-
-    .banner__section h1 {
-      font-size: clamp(46px, 10vw, 78px) !important;
-      line-height: 1.02;
-      letter-spacing: -0.045em;
-    }
-
-    .banner__section p,
-    .banner__section .pra,
-    .banner__section .ptext {
-      max-width: 100%;
-      font-size: 16px;
-      line-height: 1.72;
-    }
-
-    .gland-hero-video-thumb {
-      max-width: 520px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  }
-
-  @media (max-width: 575.98px) {
-    .banner__section {
-      padding-top: 104px;
-      padding-bottom: 58px;
-    }
-
-    .banner__section h1 {
-      font-size: clamp(38px, 13vw, 56px) !important;
-      line-height: 1.05;
-      letter-spacing: -0.035em;
-    }
-
-    .banner__section .d-flex {
-      flex-wrap: wrap;
-    }
-  }
-</style>
-
-<script id="gland-index-hero-nav-v1-script">
-(function () {
-  "use strict";
-
-  var sectionIds = ["home", "about", "prot", "services", "testi"];
-
-  function normalizeLinks() {
-    document.querySelectorAll('a[href="index.html"]').forEach(function (link) {
-      link.setAttribute("href", "#home");
-    });
-
-    document.querySelectorAll("a.toparrow").forEach(function (link) {
-      link.setAttribute("href", "#home");
-    });
-  }
-
-  function setActive(id) {
-    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
-      var href = link.getAttribute("href") || "";
-      var isActive = href === "#" + id;
-
-      link.classList.toggle("active", isActive);
-
-      if (isActive) {
-        link.setAttribute("aria-current", "page");
-      } else {
-        link.removeAttribute("aria-current");
-      }
-    });
-  }
-
-  function smoothScrollTo(id) {
-    var target = document.getElementById(id);
-
-    if (!target) {
-      return false;
-    }
-
-    target.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-
-    window.history.replaceState(null, "", "#" + id);
-    setActive(id);
-
-    return true;
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    normalizeLinks();
-
-    document.addEventListener("click", function (event) {
-      var link = event.target.closest('a[href^="#"]');
-
-      if (!link) {
-        return;
-      }
-
-      var href = link.getAttribute("href") || "";
-
-      if (href === "#0" || href === "#") {
-        return;
-      }
-
-      var id = href.slice(1);
-
-      if (sectionIds.indexOf(id) < 0) {
-        return;
-      }
-
-      if (smoothScrollTo(id)) {
-        event.preventDefault();
-      }
-    });
-
-    if ("IntersectionObserver" in window) {
-      var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
-        });
-      }, {
-        root: null,
-        rootMargin: "-35% 0px -55% 0px",
-        threshold: 0
-      });
-
-      sectionIds.forEach(function (id) {
-        var section = document.getElementById(id);
-
-        if (section) {
-          observer.observe(section);
-        }
-      });
-    }
-
-    if (window.location.hash) {
-      var initialId = window.location.hash.replace("#", "");
-
-      if (sectionIds.indexOf(initialId) >= 0) {
-        window.setTimeout(function () {
-          smoothScrollTo(initialId);
-        }, 250);
-      }
-    } else {
-      setActive("home");
-    }
-  });
-})();
-</script>
-<!-- GLAND INDEX HERO NAV V1 END -->
 </head>
 <body>
 
@@ -326,19 +90,19 @@
 
 
 <!--<< banner >>-->
-<section class="banner__section" id="home">
+<section class="banner__section">
    <!--<< Header v-1 >>-->
    <header class="header-section">
       <div class="container">
          <div class="header-wrapper">
             <div class="main__logo">
-               <a href="#home" class="logo">
+               <a href="index.html" class="logo">
                   <img src="assets/img/logo/gland-header-icon.gif" alt="logo">
                </a>
             </div>
             <ul class="main-menu">
                <li>
-                  <a href="#home">
+                  <a href="index.html">
                      Home
                   </a>
                </li>
@@ -1675,7 +1439,7 @@ to create experiences that feel alive, clear, and meaningful.
             <div class="col-lg-6">
                <div class="get__content">
                   <p>
-                     Hello, IÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢m David Matias, Website & User Interface 
+                     Hello, IÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢m David Matias, Website & User Interface 
                      Designer based in London.
                   </p>
                   <a href="#0">davidmatias333@gmail.com</a>
@@ -1717,7 +1481,7 @@ to create experiences that feel alive, clear, and meaningful.
    <div class="footer__bottom cmn__bg">
       <div class="container">
          <div class="copyright">
-            <p class="white"> Copyright ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© 2023 <a href="index-2.html" class="base">Matias.</a> All rights reserved.</p>
+            <p class="white"> Copyright Ãƒâ€šÃ‚Â© 2023 <a href="index-2.html" class="base">Matias.</a> All rights reserved.</p>
             <ul class="terms">
                <li>
                   <a href="#0">
@@ -1730,7 +1494,7 @@ to create experiences that feel alive, clear, and meaningful.
                   </a>
                </li>
             </ul>
-            <a href="#home" class="toparrow">
+            <a href="#about" class="toparrow">
                <i class="bi bi-arrow-up-short"></i>
             </a>
          </div>
