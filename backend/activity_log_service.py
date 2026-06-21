@@ -654,3 +654,148 @@ def prune_old_logs(days: int = 180) -> Dict[str, Any]:
         }
     finally:
         connection.close()
+
+# GLAND ACTIVITY LOG EMAIL HOOK V4 START
+try:
+    _gland_original_log_activity_v4
+except NameError:
+    _gland_original_log_activity_v4 = log_activity
+
+_gland_activity_email_hook_cache_v4 = {}
+
+
+def _gland_activity_email_extract_v4(args, kwargs):
+    category = kwargs.get("category")
+    event_name = kwargs.get("event_name")
+    payload = kwargs.get("payload")
+
+    if len(args) >= 1 and category is None:
+        category = args[0]
+
+    if len(args) >= 2 and event_name is None:
+        event_name = args[1]
+
+    if len(args) >= 3 and payload is None:
+        payload = args[2]
+
+    if not isinstance(payload, dict):
+        payload = {}
+
+    if not category:
+        category = payload.get("category") or payload.get("event_category") or ""
+
+    if not event_name:
+        event_name = (
+            payload.get("event_name")
+            or payload.get("event")
+            or payload.get("action")
+            or payload.get("activity")
+            or ""
+        )
+
+    return str(category or ""), str(event_name or ""), dict(payload or {})
+
+
+def _gland_activity_email_should_send_v4(category, event_name, payload):
+    text = (str(category or "") + " " + str(event_name or "") + " " + repr(payload or {})).lower()
+
+    if "activity_log_" in text and "_test" in text:
+        return False
+
+    wanted = [
+        "login_success",
+        "signin_success",
+        "sign_in_success",
+        "login_failed",
+        "signin_failed",
+        "sign_in_failed",
+        "invalid_password",
+        "auth_failed",
+        "login_verification_failed",
+        "verification_failed",
+        "otp_failed",
+        "invalid_otp",
+        "wrong_otp",
+    ]
+
+    return any(item in text for item in wanted)
+
+
+def _gland_activity_email_key_v4(event_name, payload):
+    identifier = (
+        payload.get("identifier")
+        or payload.get("email")
+        or payload.get("admin_email")
+        or payload.get("username")
+        or "-"
+    )
+
+    ip_address = (
+        payload.get("ip_address")
+        or payload.get("ip")
+        or payload.get("remote_addr")
+        or "-"
+    )
+
+    status = payload.get("status") or payload.get("success") or payload.get("result") or "-"
+
+    return "{}|{}|{}|{}".format(
+        str(event_name or "").lower(),
+        str(identifier or "").lower(),
+        str(ip_address or "").lower(),
+        str(status or "").lower(),
+    )
+
+
+def _gland_activity_email_recent_v4(key, seconds=20):
+    try:
+        import time
+
+        now = time.time()
+        previous = _gland_activity_email_hook_cache_v4.get(key)
+
+        for cached_key, cached_time in list(_gland_activity_email_hook_cache_v4.items()):
+            if now - cached_time > 120:
+                _gland_activity_email_hook_cache_v4.pop(cached_key, None)
+
+        if previous and now - previous < seconds:
+            return True
+
+        _gland_activity_email_hook_cache_v4[key] = now
+        return False
+
+    except Exception:
+        return False
+
+
+def log_activity(*args, **kwargs):
+    result = _gland_original_log_activity_v4(*args, **kwargs)
+
+    try:
+        category, event_name, payload = _gland_activity_email_extract_v4(args, kwargs)
+
+        if _gland_activity_email_should_send_v4(category, event_name, payload):
+            cache_key = _gland_activity_email_key_v4(event_name, payload)
+
+            if not _gland_activity_email_recent_v4(cache_key):
+                from backend.gland_alert_email_v3 import send_security_alert
+
+                payload = dict(payload or {})
+                payload.setdefault("category", category)
+                payload.setdefault("event_name", event_name)
+
+                email_result = send_security_alert(event_name, payload)
+
+                if isinstance(result, dict):
+                    result["email_alert"] = {
+                        "sent": bool(email_result.get("sent")),
+                        "recipients": email_result.get("recipients", []),
+                        "subject": email_result.get("subject", ""),
+                    }
+
+    except Exception as error:
+        if isinstance(result, dict):
+            result["email_alert_error"] = str(error)
+
+    return result
+# GLAND ACTIVITY LOG EMAIL HOOK V4 END

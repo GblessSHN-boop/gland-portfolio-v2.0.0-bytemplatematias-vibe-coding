@@ -1090,3 +1090,215 @@ def send_login_otp_email(payload: Optional[Dict[str, Any]]) -> Dict[str, Any]:
 
 def send_admin_login_verification_email(payload: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     return send_login_otp_email(payload)
+
+# GLAND OTP EMAIL UX V4 START
+def _gland_v4_rows_html(rows):
+    builder = globals().get("_build_rows_html")
+
+    if callable(builder):
+        try:
+            return builder(rows)
+        except Exception:
+            pass
+
+    html_rows = []
+
+    for label, value in rows:
+        html_rows.append(
+            '<tr>'
+            '<td style="width:210px;padding:12px 14px;border-bottom:1px solid #d8dee8;background:#f8fafc;color:#334155;font-size:13px;font-weight:800;vertical-align:top;">{}</td>'
+            '<td style="padding:12px 14px;border-bottom:1px solid #d8dee8;color:#0f172a;font-size:14px;line-height:1.65;white-space:pre-wrap;vertical-align:top;">{}</td>'
+            '</tr>'.format(
+                _html_escape(label),
+                _html_escape(value),
+            )
+        )
+
+    return "\n".join(html_rows)
+
+
+def _build_otp_html_v4(code, admin, expires_at, ip_address, user_agent):
+    login_url = str(
+        _cfg("ADMIN_LOGIN_URL", "http://127.0.0.1:8000/admin/login.html")
+        or "http://127.0.0.1:8000/admin/login.html"
+    ).strip()
+
+    rows = [
+        ("Akun login", admin.get("email") or "-"),
+        ("Username", admin.get("username") or "-"),
+        ("Berlaku sampai", expires_at),
+        ("IP address", ip_address),
+        ("User agent", user_agent),
+    ]
+
+    return """<!doctype html>
+<html>
+  <body style="margin:0;background:#e5e7eb;padding:24px;font-family:Arial,Helvetica,sans-serif;">
+    <div style="max-width:760px;margin:0 auto;background:#ffffff;border:1px solid #cbd5e1;border-radius:0;overflow:hidden;">
+      <div style="height:6px;background:#2563eb;line-height:6px;">&nbsp;</div>
+
+      <div style="background:#0f172a;color:#ffffff;padding:24px;border-radius:0;">
+        <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#a3e635;font-weight:900;">GLAND Portfolio CMS</div>
+        <h1 style="margin:10px 0 0;font-size:24px;line-height:1.35;font-weight:900;">Kode OTP Login Admin</h1>
+      </div>
+
+      <div style="padding:24px;">
+        <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.75;">
+          Email dan password sudah benar. Masukkan kode berikut untuk menyelesaikan login admin.
+        </p>
+
+        <div style="border:2px solid #0f172a;background:#f8fafc;padding:22px;text-align:center;margin:18px 0 12px;border-radius:0;">
+          <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#64748b;font-weight:900;margin-bottom:10px;">Kode OTP</div>
+          <div id="kode-otp" style="font-family:Consolas,Menlo,Monaco,monospace;font-size:42px;color:#0f172a;font-weight:900;line-height:1.2;user-select:all;">{code}</div>
+        </div>
+
+        <div style="margin:14px 0 24px;padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:13px;line-height:1.65;font-weight:800;border-radius:0;">
+          Cara salin kode: blok angka OTP di atas, lalu tekan Ctrl + C. Di HP, tap dan tahan angka OTP, lalu pilih Copy.
+        </div>
+
+        <div style="margin:16px 0 24px;">
+          <a href="{login_url}" style="display:inline-block;background:#0f172a;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:0;font-size:14px;font-weight:900;">
+            Buka halaman login
+          </a>
+        </div>
+
+        <table role="presentation" style="width:100%;border-collapse:collapse;border:1px solid #d8dee8;border-radius:0;">
+          {rows}
+        </table>
+
+        <p style="margin:18px 0 0;color:#64748b;font-size:12px;line-height:1.6;">
+          Jangan bagikan kode ini kepada siapa pun. Jika kamu tidak mencoba login, segera amankan akun admin.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>""".format(
+        code=_html_escape(code),
+        login_url=_html_escape(login_url),
+        rows=_gland_v4_rows_html(rows),
+    )
+
+
+def _send_login_otp_email_v4(payload):
+    payload = payload or {}
+    admin = payload.get("admin") or {}
+
+    code = str(payload.get("code") or "").strip()
+    expires_at = str(payload.get("expires_at") or "-")
+    ip_address = str(payload.get("ip_address") or "-")
+    user_agent = str(payload.get("user_agent") or "-")
+    to_email = _normalize_email(admin.get("email"))
+
+    if not to_email:
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "Admin account does not have an email address.",
+            "recipient": "",
+        }
+
+    if not code:
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "Missing verification code.",
+            "recipient": to_email,
+        }
+
+    if not bool(_cfg("SMTP_ENABLED", True)):
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "SMTP is disabled.",
+            "recipient": to_email,
+        }
+
+    smtp_host = str(_cfg("SMTP_HOST", "smtp.gmail.com") or "smtp.gmail.com").strip()
+    smtp_port = int(_cfg("SMTP_PORT", 587) or 587)
+    smtp_username = str(_cfg("SMTP_USERNAME", "") or "").strip()
+    smtp_password = str(_cfg("SMTP_APP_PASSWORD", "") or _cfg("SMTP_PASSWORD", "") or "").strip()
+    from_email = str(_cfg("SMTP_FROM_EMAIL", "") or smtp_username or "").strip()
+    from_name = str(_cfg("SMTP_FROM_NAME", "GLAND Portfolio CMS") or "GLAND Portfolio CMS").strip()
+
+    if not smtp_username or not smtp_password:
+        return {
+            "sent": False,
+            "skipped": False,
+            "error": "SMTP username or password is missing.",
+            "recipient": to_email,
+        }
+
+    if not from_email:
+        from_email = smtp_username
+
+    subject = "GLAND OTP Login Admin: {} | {}".format(code, to_email)
+
+    plain = "\n".join([
+        "Kode OTP Login GLAND",
+        "",
+        "Kode OTP: {}".format(code),
+        "",
+        "Akun login      : {}".format(admin.get("email") or "-"),
+        "Username        : {}".format(admin.get("username") or "-"),
+        "Berlaku sampai  : {}".format(expires_at),
+        "IP address      : {}".format(ip_address),
+        "",
+        "Cara salin kode:",
+        "Blok angka OTP, lalu tekan Ctrl + C.",
+        "Di HP, tap dan tahan angka OTP, lalu pilih Copy.",
+        "",
+        "Masukkan kode ini pada halaman login admin.",
+        "Jangan bagikan kode ini kepada siapa pun.",
+        "",
+        "User agent:",
+        user_agent,
+    ])
+
+    message = _EmailMessage()
+    message["Subject"] = subject
+    message["From"] = "{} <{}>".format(from_name, from_email) if from_name else from_email
+    message["To"] = to_email
+    message["Reply-To"] = from_email
+    message["X-GLAND-OTP-Recipient"] = to_email
+    message.set_content(plain)
+    message.add_alternative(
+        _build_otp_html_v4(code, admin, expires_at, ip_address, user_agent),
+        subtype="html",
+    )
+
+    try:
+        if smtp_port == 465:
+            context = _ssl.create_default_context()
+
+            with _smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=20, context=context) as server:
+                server.login(smtp_username, smtp_password)
+                server.send_message(message)
+        else:
+            with _smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
+                server.ehlo()
+                server.starttls(context=_ssl.create_default_context())
+                server.ehlo()
+                server.login(smtp_username, smtp_password)
+                server.send_message(message)
+
+        return {
+            "sent": True,
+            "skipped": False,
+            "error": "",
+            "message": "OTP email sent only to login account email: {}".format(to_email),
+            "recipient": to_email,
+        }
+
+    except Exception as error:
+        return {
+            "sent": False,
+            "skipped": False,
+            "error": str(error),
+            "message": "Failed to send OTP email to login account email.",
+            "recipient": to_email,
+        }
+
+
+send_login_otp_email = _send_login_otp_email_v4
+send_admin_login_verification_email = _send_login_otp_email_v4
+# GLAND OTP EMAIL UX V4 END
