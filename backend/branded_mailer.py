@@ -497,3 +497,42 @@ def send_contact_message_alert(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     return _send_email_message(message)
 # GLAND CONTACT ALERT MAILER END
+
+# GLAND OTP ALERT SUPPRESS START
+def _gland_should_suppress_login_verification_sent_alert(*args, **kwargs):
+    text = (repr(args) + " " + repr(kwargs)).lower()
+    return "login_verification_sent" in text
+
+def _gland_wrap_alert_sender(fn):
+    def _wrapped(*args, **kwargs):
+        if _gland_should_suppress_login_verification_sent_alert(*args, **kwargs):
+            return {
+                "sent": False,
+                "skipped": True,
+                "error": "",
+                "message": "login_verification_sent admin alert suppressed. OTP is sent only to the login account email.",
+            }
+
+        return fn(*args, **kwargs)
+
+    _wrapped._gland_wrapped = True
+    return _wrapped
+
+for _gland_alert_fn_name in [
+    "send_admin_activity_alert",
+    "send_admin_alert",
+    "send_admin_alert_email",
+    "send_admin_event_alert",
+    "send_admin_notification",
+    "send_branded_admin_alert",
+    "send_branded_admin_email",
+    "send_notification_email",
+    "send_email_notification",
+    "send_email",
+]:
+    _gland_candidate = globals().get(_gland_alert_fn_name)
+
+    if callable(_gland_candidate) and not getattr(_gland_candidate, "_gland_wrapped", False):
+        globals()[_gland_alert_fn_name] = _gland_wrap_alert_sender(_gland_candidate)
+# GLAND OTP ALERT SUPPRESS END
+
