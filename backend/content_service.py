@@ -1,0 +1,2 @@
+﻿# Content management service placeholder
+

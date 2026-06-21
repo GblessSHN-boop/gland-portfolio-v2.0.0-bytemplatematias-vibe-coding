@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Inbox | GLAND Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/admin-tabler-gland.css?v=sidebar-20260621155436">
+</head>
+<body>
+    <div class="gland-page">
+        <aside class="gland-sidebar">
+    <div class="gland-brand">
+        <div class="gland-brand-mark">G</div>
+        <div>
+            <div class="gland-brand-title">GLAND Admin</div>
+            <div class="gland-brand-subtitle">Portfolio CMS</div>
+        </div>
+    </div>
+
+    <nav class="gland-nav" aria-label="Admin navigation">
+        <a data-admin-nav class="gland-nav-link" href="dashboard.html"><i class="ti ti-dashboard"></i> Dashboard</a>
+        <a data-admin-nav class="gland-nav-link" href="messages.html"><i class="ti ti-message"></i> Messages</a>
+        <a data-admin-nav class="gland-nav-link" href="projects.html"><i class="ti ti-briefcase"></i> Projects</a>
+        <a data-admin-nav class="gland-nav-link" href="highlights.html"><i class="ti ti-sparkles"></i> Highlights</a>
+        <a data-admin-nav class="gland-nav-link" href="personal-info.html"><i class="ti ti-user"></i> Personal Info</a>
+        <a data-admin-nav class="gland-nav-link" href="hero-content.html"><i class="ti ti-layout-sidebar"></i> Hero Content</a>
+        <a data-admin-nav class="gland-nav-link" href="site-identity.html"><i class="ti ti-id-badge-2"></i> Site Identity</a>
+        <a data-admin-nav class="gland-nav-link" href="media.html"><i class="ti ti-photo"></i> Media</a>
+        <a data-admin-nav class="gland-nav-link" href="analytics.html"><i class="ti ti-chart-line"></i> Analytics</a>
+        <a data-admin-nav class="gland-nav-link" href="activity-logs.html"><i class="ti ti-history"></i> Activity</a>
+        <a data-admin-nav class="gland-nav-link" href="page-editor.html"><i class="ti ti-file-pencil"></i> Page Editor</a>
+        <a data-admin-nav class="gland-nav-link" href="settings.html"><i class="ti ti-settings"></i> Settings</a>
+    <!-- GLAND ACTIVITY LOGS NAV START -->
+<a href="/admin/activity-logs.html" data-admin-nav="activity-logs" style="display:flex;align-items:center;gap:10px;min-height:36px;padding:9px 12px;border-radius:12px;color:#b8c1d1;text-decoration:none;font-size:13px;font-weight:750;line-height:1.45;">Activity Logs</a>
+<!-- GLAND ACTIVITY LOGS NAV END -->
+</nav>
+
+    <div class="gland-sidebar-footer">
+        <button type="button" class="gland-btn gland-btn-block gland-sidebar-logout" data-admin-logout>
+            <i class="ti ti-logout me-2"></i> Sign Out
+        </button>
+    </div>
+</aside>
+
+        <main class="gland-main">
+            <div class="gland-container">
+                <header class="gland-page-header">
+                    <div>
+                        <p class="gland-eyebrow">Contact Inbox</p>
+                        <h1 class="gland-title">Contact Inbox</h1>
+                        <p class="gland-subtitle">Manage, review, and archive contact submissions from your public site.</p>
+                    </div>
+
+                    <div class="gland-inbox-pill">
+                        <span class="gland-inbox-dot"></span>
+                        Auto refresh: ON
+                    </div>
+                </header>
+
+                <div class="gland-message-tabs" role="tablist" aria-label="Message status filters">
+                    <button type="button" class="gland-message-tab is-active" data-message-filter="new">New Requests</button>
+                    <button type="button" class="gland-message-tab" data-message-filter="read">Read</button>
+                    <button type="button" class="gland-message-tab" data-message-filter="approved">Approved</button>
+                    <button type="button" class="gland-message-tab" data-message-filter="rejected">Rejected</button>
+                    <button type="button" class="gland-message-tab" data-message-filter="archived">Archived</button>
+                </div>
+
+                <p class="gland-status-text" id="messagesStatus">Loading messages...</p>
+
+                <section class="gland-message-list" id="messagesList" aria-live="polite"></section>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/admin-auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="assets/js/admin-tabler-shell.js"></script>
+    <script src="assets/js/messages-tabler.js"></script>
+</body>
+</html>

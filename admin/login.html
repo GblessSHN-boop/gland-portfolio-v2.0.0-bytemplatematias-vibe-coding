@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | GLAND Portfolio</title>
+
+  <style>
+    :root {
+      --bg: #08090b;
+      --panel: #171719;
+      --panel-2: #101114;
+      --text: #ffffff;
+      --muted: #b9beca;
+      --line: rgba(255, 255, 255, 0.12);
+      --line-strong: rgba(255, 255, 255, 0.18);
+      --accent: #9dff00;
+      --danger: #ff7b92;
+      --warning: #ffd166;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 42px 20px;
+      background:
+        radial-gradient(circle at top left, rgba(157, 255, 0, 0.10), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(115, 183, 255, 0.08), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: "GlandAdminLocal", "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    }
+
+    .login-shell {
+      width: min(760px, 100%);
+    }
+
+    .login-header {
+      margin-bottom: 26px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(42px, 6vw, 64px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .description {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 17px;
+    }
+
+    .login-card {
+      width: 100%;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(23, 23, 25, 0.96);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    label {
+      display: block;
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    input {
+      width: 100%;
+      min-height: 54px;
+      margin: 0 0 22px;
+      padding: 0 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: 13px;
+      background: #eef5ff;
+      color: #111827;
+      outline: none;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(157, 255, 0, 0.10);
+    }
+
+    input:disabled {
+      opacity: 0.76;
+      cursor: not-allowed;
+    }
+
+    .primary-button,
+    .secondary-button {
+      width: 100%;
+      min-height: 54px;
+      border-radius: 13px;
+      cursor: pointer;
+      font-size: 15.5px;
+      font-weight: 800;
+      font-family: inherit;
+    }
+
+    .primary-button {
+      border: 0;
+      background: var(--accent);
+      color: #111111;
+    }
+
+    .primary-button:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+    }
+
+    .secondary-button {
+      margin: -4px 0 18px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .secondary-button:hover {
+      color: var(--accent);
+      border-color: rgba(157, 255, 0, 0.4);
+    }
+
+    .verification-step {
+      margin-top: 4px;
+      padding-top: 6px;
+    }
+
+    .verification-step[hidden] {
+      display: none !important;
+    }
+
+    .verification-hint {
+      margin: -8px 0 18px;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .debug-code {
+      display: block;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(157, 255, 0, 0.28);
+      border-radius: 13px;
+      background: rgba(157, 255, 0, 0.10);
+      color: var(--accent);
+      word-break: break-word;
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 18px;
+      color: var(--danger);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .message.is-success {
+      color: var(--accent);
+    }
+
+    .message.is-warning {
+      color: var(--warning);
+    }
+
+    .message.is-danger {
+      color: var(--danger);
+    }
+
+    .links {
+      display: grid;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .back-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 640px) {
+      body {
+        place-items: start center;
+        padding: 28px 16px;
+      }
+
+      .login-card {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="login-shell">
+    <header class="login-header">
+      <p class="eyebrow">GLAND CMS</p>
+      <h1>Admin Login</h1>
+      <p class="description">Sign in to manage portfolio content, messages, media, and analytics.</p>
+    </header>
+
+    <section class="login-card">
+      <form id="adminLoginForm" autocomplete="on">
+        <label for="username">Username or Email</label>
+        <input id="username" name="username" type="text" autocomplete="username" required />
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+
+        <div id="loginVerificationStep" class="verification-step" hidden>
+          <label for="verificationCode">6-Digit Verification Code</label>
+          <input
+            id="verificationCode"
+            name="verificationCode"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="6"
+            pattern="[0-9]{6}"
+            placeholder="000000"
+          />
+          <p class="verification-hint" id="verificationHint">Enter the code sent to your admin email.</p>
+          <button class="secondary-button" id="restartLoginButton" type="button">Use another account</button>
+        </div>
+
+        <button id="loginButton" class="primary-button" type="submit">Login</button>
+
+        <div id="loginMessage" class="message is-danger" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <nav class="links" aria-label="Login links">
+      <a class="back-link" href="/admin/forgot-password.html">Forgot password?</a>
+      <a class="back-link" href="../index.html">Back to portfolio</a>
+    </nav>
+  </main>
+
+  <script src="assets/js/auth.js?v=loginfix-20260621161450"></script>
+
+<!-- GLAND OTP RESEND ADDON START -->
+<style id="gland-otp-resend-style">
+  .gland-otp-resend-panel {
+    margin-top: 18px;
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .gland-otp-resend-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .gland-otp-resend-title {
+    color: #f4f7fb;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
+  }
+
+  .gland-otp-resend-desc {
+    color: rgba(226, 232, 240, 0.72);
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  .gland-otp-resend-button {
+    border: 1px solid rgba(139, 255, 0, 0.45);
+    border-radius: 14px;
+    background: rgba(139, 255, 0, 0.10);
+    color: #9cff00;
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+  }
+
+  .gland-otp-resend-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: rgba(139, 255, 0, 0.16);
+    border-color: rgba(139, 255, 0, 0.75);
+  }
+
+  .gland-otp-resend-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .gland-otp-resend-status {
+    margin-top: 10px;
+    color: #9cff00;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .gland-otp-resend-status.is-error {
+    color: #ff6b6b;
+  }
+
+  @media (max-width: 640px) {
+    .gland-otp-resend-panel {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .gland-otp-resend-button {
+      width: 100%;
+    }
+  }
+</style>
+
+<script id="gland-otp-resend-addon">
+(function () {
+  "use strict";
+
+  var LOGIN_ENDPOINT = "/api/auth/login";
+  var COOLDOWN_SECONDS = 60;
+  var STORAGE_KEY = "gland-admin-otp-resend-until";
+  var isRendering = false;
+
+  function visible(element) {
+    if (!element) return false;
+
+    var style = window.getComputedStyle(element);
+    var rect = element.getBoundingClientRect();
+
+    return style.display !== "none" &&
+      style.visibility !== "hidden" &&
+      rect.width > 0 &&
+      rect.height > 0;
+  }
+
+  function allInputs() {
+    return Array.prototype.slice.call(document.querySelectorAll("input"));
+  }
+
+  function findPasswordInput() {
+    return allInputs().find(function (input) {
+      return input.type === "password" && visible(input);
+    });
+  }
+
+  function findCodeInput() {
+    var inputs = allInputs().filter(function (input) {
+      return visible(input) && input.type !== "password" && input.type !== "hidden";
+    });
+
+    var byName = inputs.find(function (input) {
+      var text = [
+        input.name,
+        input.id,
+        input.placeholder,
+        input.autocomplete,
+        input.getAttribute("aria-label")
+      ].join(" ").toLowerCase();
+
+      return text.indexOf("otp") >= 0 ||
+        text.indexOf("code") >= 0 ||
+        text.indexOf("verification") >= 0;
+    });
+
+    if (byName) return byName;
+
+    var byMaxLength = inputs.find(function (input) {
+      return String(input.getAttribute("maxlength") || input.maxLength || "") === "6";
+    });
+
+    if (byMaxLength) return byMaxLength;
+
+    var bodyText = document.body.textContent || "";
+
+    if (/6[\s-]*digit|verification code/i.test(bodyText) && inputs.length > 1) {
+      return inputs[inputs.length - 1];
+    }
+
+    return null;
+  }
+
+  function findIdentifierInput() {
+    var codeInput = findCodeInput();
+
+    return allInputs().find(function (input) {
+      if (!visible(input)) return false;
+      if (input === codeInput) return false;
+      if (input.type === "password") return false;
+      if (input.type === "hidden") return false;
+
+      var text = [
+        input.name,
+        input.id,
+        input.placeholder,
+        input.getAttribute("aria-label")
+      ].join(" ").toLowerCase();
+
+      return input.type === "email" ||
+        text.indexOf("email") >= 0 ||
+        text.indexOf("username") >= 0 ||
+        text.indexOf("identifier") >= 0;
+    });
+  }
+
+  function isOtpStep() {
+    var codeInput = findCodeInput();
+    var bodyText = document.body.textContent || "";
+
+    return Boolean(
+      codeInput &&
+      visible(codeInput) &&
+      (/verify\s*&\s*login/i.test(bodyText) || /verification code/i.test(bodyText) || /code sent to/i.test(bodyText))
+    );
+  }
+
+  function getCooldownRemaining() {
+    var until = Number(window.sessionStorage.getItem(STORAGE_KEY) || "0");
+    var remaining = Math.ceil((until - Date.now()) / 1000);
+
+    return Math.max(0, remaining);
+  }
+
+  function startCooldown() {
+    var until = Date.now() + COOLDOWN_SECONDS * 1000;
+    window.sessionStorage.setItem(STORAGE_KEY, String(until));
+    refreshCooldown();
+  }
+
+  function setStatus(message, type) {
+    var status = document.getElementById("gland-otp-resend-status");
+
+    if (!status) return;
+
+    status.textContent = message || "";
+    status.classList.toggle("is-error", type === "error");
+  }
+
+  function refreshCooldown() {
+    var button = document.getElementById("gland-otp-resend-button");
+
+    if (!button) return;
+
+    var remaining = getCooldownRemaining();
+
+    if (remaining > 0) {
+      button.disabled = true;
+      button.textContent = "Resend in " + remaining + "s";
+    } else {
+      button.disabled = false;
+      button.textContent = "Resend code";
+    }
+  }
+
+  async function readJson(response) {
+    try {
+      return await response.json();
+    } catch (error) {
+      return {};
+    }
+  }
+
+  async function resendCode() {
+    var identifierInput = findIdentifierInput();
+    var passwordInput = findPasswordInput();
+    var codeInput = findCodeInput();
+
+    var identifier = identifierInput ? identifierInput.value.trim() : "";
+    var password = passwordInput ? passwordInput.value : "";
+
+    if (!identifier || !password) {
+      setStatus("Isi email dan password dulu, lalu minta kode baru.", "error");
+      return;
+    }
+
+    var button = document.getElementById("gland-otp-resend-button");
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Sending...";
+    }
+
+    setStatus("Mengirim kode baru ke email akun login...", "info");
+
+    try {
+      var response = await fetch(LOGIN_ENDPOINT, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          identifier: identifier,
+          username_or_email: identifier,
+          username: identifier,
+          email: identifier,
+          password: password
+        })
+      });
+
+      var data = await readJson(response);
+
+      if (!response.ok || data.success === false) {
+        throw new Error(
+          data.message ||
+          data.error ||
+          "Kode baru gagal dikirim."
+        );
+      }
+
+      if (codeInput) {
+        codeInput.value = "";
+        codeInput.focus();
+      }
+
+      startCooldown();
+      setStatus("Kode baru sudah dikirim. Cek Inbox, Spam, atau All Mail.", "success");
+    } catch (error) {
+      refreshCooldown();
+      setStatus(error.message || "Kode baru gagal dikirim.", "error");
+    }
+  }
+
+  function findInsertTarget(codeInput) {
+    var helper = Array.prototype.slice.call(document.querySelectorAll("p, div, span"))
+      .filter(visible)
+      .find(function (element) {
+        return /code sent to|expires at/i.test(element.textContent || "");
+      });
+
+    if (helper) return helper;
+
+    return codeInput.closest(".form-group, .input-group, label, div") || codeInput.parentElement;
+  }
+
+  function renderResendControl() {
+    if (isRendering) return;
+
+    isRendering = true;
+
+    try {
+      var existing = document.getElementById("gland-otp-resend-panel");
+
+      if (!isOtpStep()) {
+        if (existing) existing.remove();
+        return;
+      }
+
+      var codeInput = findCodeInput();
+      if (!codeInput) return;
+
+      if (!existing) {
+        var panel = document.createElement("div");
+        panel.id = "gland-otp-resend-panel";
+        panel.className = "gland-otp-resend-panel";
+        panel.innerHTML = [
+          '<div class="gland-otp-resend-copy">',
+          '  <div class="gland-otp-resend-title">Didn’t receive the code?</div>',
+          '  <div class="gland-otp-resend-desc">Request a fresh 6-digit code for this login email.</div>',
+          '  <div id="gland-otp-resend-status" class="gland-otp-resend-status" aria-live="polite"></div>',
+          '</div>',
+          '<button type="button" id="gland-otp-resend-button" class="gland-otp-resend-button">Resend code</button>'
+        ].join("");
+
+        var target = findInsertTarget(codeInput);
+        target.insertAdjacentElement("afterend", panel);
+
+        document.getElementById("gland-otp-resend-button").addEventListener("click", resendCode);
+      }
+
+      refreshCooldown();
+    } finally {
+      isRendering = false;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", renderResendControl);
+
+  var observer = new MutationObserver(function () {
+    window.setTimeout(renderResendControl, 50);
+  });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class", "style", "hidden", "aria-hidden"]
+  });
+
+  window.setInterval(refreshCooldown, 1000);
+  window.setInterval(renderResendControl, 1500);
+})();
+</script>
+<!-- GLAND OTP RESEND ADDON END -->
+</body>
+</html>
