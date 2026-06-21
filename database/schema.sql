@@ -196,3 +196,30 @@ CREATE TABLE IF NOT EXISTS admin_password_reset_tokens (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 -- GLAND ADMIN PASSWORD RESET TOKENS END
+
+-- GLAND ADMIN LOGIN VERIFICATION START
+CREATE TABLE IF NOT EXISTS admin_login_verification_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT NOT NULL,
+    challenge_token_hash VARCHAR(128) NOT NULL UNIQUE,
+    code_hash VARCHAR(128) NOT NULL,
+    identifier VARCHAR(150) DEFAULT NULL,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME DEFAULT NULL,
+    attempt_count INT NOT NULL DEFAULT 0,
+    max_attempts INT NOT NULL DEFAULT 5,
+    requested_ip VARCHAR(64) DEFAULT NULL,
+    requested_user_agent TEXT DEFAULT NULL,
+    email_sent TINYINT(1) DEFAULT 0,
+    email_error TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_admin_login_verification_admin_id (admin_id),
+    INDEX idx_admin_login_verification_token_hash (challenge_token_hash),
+    INDEX idx_admin_login_verification_expires_at (expires_at),
+    INDEX idx_admin_login_verification_used_at (used_at),
+    CONSTRAINT fk_admin_login_verification_admin_id
+        FOREIGN KEY (admin_id)
+        REFERENCES admin_users(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- GLAND ADMIN LOGIN VERIFICATION END

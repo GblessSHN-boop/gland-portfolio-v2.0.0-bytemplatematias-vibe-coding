@@ -161,3 +161,39 @@ def send_admin_password_reset_email(payload: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     return send_email(subject, body, to_email=to_email)
+
+
+# GLAND ADMIN LOGIN VERIFICATION EMAIL START
+def send_admin_login_verification_email(payload: Dict[str, Any]) -> Dict[str, Any]:
+    admin = payload.get("admin") or {}
+    code = str(payload.get("code") or "").strip()
+    expires_at = str(payload.get("expires_at") or "-")
+    ip_address = str(payload.get("ip_address") or "-")
+    user_agent = str(payload.get("user_agent") or "-")
+
+    to_email = str(admin.get("email") or _get_config("ADMIN_ALERT_EMAIL", "") or "")
+
+    subject = "GLAND Admin Login Verification Code"
+
+    body = "\n".join(
+        [
+            "GLAND Portfolio Admin Login Verification",
+            "",
+            "Use this 6-digit code to finish signing in:",
+            "",
+            code,
+            "",
+            f"Username : {admin.get('username') or '-'}",
+            f"Email    : {admin.get('email') or '-'}",
+            f"Expires  : {expires_at}",
+            f"IP       : {ip_address}",
+            "",
+            "If you did not try to sign in, review your admin security activity.",
+            "",
+            "User Agent:",
+            user_agent,
+        ]
+    )
+
+    return send_email(subject, body, to_email=to_email)
+# GLAND ADMIN LOGIN VERIFICATION EMAIL END

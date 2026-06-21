@@ -1,3 +1,4 @@
+from backend.login_verification_service import create_login_verification_challenge, verify_login_verification_challenge
 from backend.activity_service import get_admin_activity_summary, get_recent_admin_activity
 from backend.branded_mailer import send_contact_message_alert
 from backend.password_reset_service import request_admin_password_reset, reset_admin_password_with_token
@@ -389,6 +390,10 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
+        if path == "/api/auth/verify-login":
+            self._handle_auth_verify_login()
+            return
+
         # GLAND ADMIN AUTH POST ROUTES START
         if path == "/api/auth/login":
             self._handle_auth_login()
@@ -1340,9 +1345,9 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
         )
 
     def _handle_auth_login(self):
-        try:
-            data = self._auth_read_json()
-        except Exception:
+        data = self._auth_read_json()
+
+        if data is None:
             self._auth_json_response(
                 400,
                 {
@@ -1395,35 +1400,68 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             )
             return
 
-        session = create_admin_session(
-            admin["id"],
-            ip_address=self._auth_client_ip(),
-            user_agent=self.headers.get("User-Agent", ""),
-        )
+        try:
+            challenge = create_login_verification_challenge(
+                admin,
+                identifier=identifier,
+                ip_address=self._auth_client_ip(),
+                user_agent=self.headers.get("User-Agent", ""),
+            )
+        except Exception as error:
+            self._auth_record_event_and_alert(
+                "login_verification_failed",
+                identifier=identifier,
+                admin=admin,
+                success=False,
+                message="Failed to create verification code.",
+            )
+            self._auth_json_response(
+                500,
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": "Failed to create verification code.",
+                    "error": str(error),
+                },
+            )
+            return
+
+        if not challenge.get("success"):
+            self._auth_json_response(
+                int(challenge.get("status_code") or 400),
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": challenge.get("message") or "Verification failed.",
+                },
+            )
+            return
 
         self._auth_record_event_and_alert(
-            "login_success",
+            "login_verification_sent",
             identifier=identifier,
             admin=admin,
             success=True,
-            message="Login successful.",
+            message="Login verification code generated.",
         )
 
         self._auth_json_response(
             200,
             {
                 "success": True,
-                "authenticated": True,
-                "message": "Login successful.",
+                "authenticated": False,
+                "requires_verification": True,
+                "message": "Verification code required.",
                 "data": {
-                    "admin": admin,
-                    "expires_at": session.get("expires_at"),
+                    "requires_verification": True,
+                    "challenge_token": challenge.get("challenge_token"),
+                    "expires_at": challenge.get("expires_at"),
+                    "email_sent": bool(challenge.get("email_sent")),
+                    "email_skipped": bool(challenge.get("email_skipped")),
+                    "masked_email": challenge.get("masked_email"),
+                    "debug_code": challenge.get("debug_code"),
                 },
             },
-            cookie_header=self._auth_cookie_header(
-                session["token"],
-                session.get("max_age_seconds", 43200),
-            ),
         )
 
     def _handle_auth_logout(self):
@@ -1579,6 +1617,87 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
             },
         )
     # GLAND ADMIN PASSWORD RESET METHODS END
+
+
+    # GLAND ADMIN LOGIN VERIFICATION METHODS START
+    def _handle_auth_verify_login(self):
+        data = self._auth_read_json()
+
+        if data is None:
+            self._auth_json_response(
+                400,
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": "Invalid JSON body.",
+                },
+            )
+            return
+
+        challenge_token = str(data.get("challenge_token") or data.get("challengeToken") or "").strip()
+        code = str(data.get("code") or data.get("verification_code") or data.get("verificationCode") or "").strip()
+
+        result = verify_login_verification_challenge(challenge_token, code)
+
+        if not result.get("success"):
+            self._auth_record_event_and_alert(
+                "login_verification_failed",
+                identifier=str(result.get("identifier") or ""),
+                success=False,
+                message=result.get("message") or "Login verification failed.",
+            )
+            self._auth_json_response(
+                int(result.get("status_code") or 400),
+                {
+                    "success": False,
+                    "authenticated": False,
+                    "message": result.get("message") or "Verification failed.",
+                },
+            )
+            return
+
+        admin = result.get("admin") or {}
+        identifier = str(result.get("identifier") or admin.get("username") or admin.get("email") or "")
+
+        session = create_admin_session(
+            admin["id"],
+            ip_address=self._auth_client_ip(),
+            user_agent=self.headers.get("User-Agent", ""),
+        )
+
+        self._auth_record_event_and_alert(
+            "login_verification_success",
+            identifier=identifier,
+            admin=admin,
+            success=True,
+            message="Login verification successful.",
+        )
+
+        self._auth_record_event_and_alert(
+            "login_success",
+            identifier=identifier,
+            admin=admin,
+            success=True,
+            message="Login successful after verification.",
+        )
+
+        self._auth_json_response(
+            200,
+            {
+                "success": True,
+                "authenticated": True,
+                "message": "Login successful.",
+                "data": {
+                    "admin": admin,
+                    "expires_at": session.get("expires_at"),
+                },
+            },
+            cookie_header=self._auth_cookie_header(
+                session["token"],
+                session.get("max_age_seconds", 43200),
+            ),
+        )
+    # GLAND ADMIN LOGIN VERIFICATION METHODS END
 
     # GLAND ADMIN AUTH METHODS END
 
