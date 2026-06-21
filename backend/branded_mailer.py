@@ -1260,3 +1260,80 @@ for _gland_contact_fn_name in [
         globals()[_gland_contact_fn_name] = _gland_wrap_contact_sender(_gland_contact_candidate)
 # GLAND ALERT ROUTING END
 
+# GLAND ACTIVITY LOG INTEGRATION START
+def _gland_activity_log_payload(payload=None, **extra):
+    data = {}
+
+    if isinstance(payload, dict):
+        data.update(payload)
+
+    data.update(extra or {})
+    return data
+
+
+def _gland_activity_safe_log(category, event_name, payload=None):
+    try:
+        from backend.activity_log_service import log_activity
+        return log_activity(
+            category=category,
+            event_name=str(event_name or "admin_activity"),
+            payload=_gland_activity_log_payload(payload),
+        )
+    except Exception:
+        return {
+            "success": False,
+            "error": "activity log skipped",
+        }
+
+
+def _gland_activity_wrap_security(fn):
+    def _wrapped(event_name="admin_security_event", payload=None, *args, **kwargs):
+        _gland_activity_safe_log("security", event_name, payload)
+        return fn(event_name, payload, *args, **kwargs)
+
+    _wrapped._gland_activity_log_wrapped = True
+    return _wrapped
+
+
+def _gland_activity_wrap_change(fn):
+    def _wrapped(event_name="admin_change_event", payload=None, *args, **kwargs):
+        _gland_activity_safe_log("change", event_name, payload)
+        return fn(event_name, payload, *args, **kwargs)
+
+    _wrapped._gland_activity_log_wrapped = True
+    return _wrapped
+
+
+def _gland_activity_wrap_contact(fn):
+    def _wrapped(payload=None, *args, **kwargs):
+        event_name = "contact_message_received"
+
+        if isinstance(payload, dict):
+            event_name = str(
+                payload.get("event")
+                or payload.get("event_name")
+                or payload.get("subject")
+                or event_name
+            )
+
+        _gland_activity_safe_log("contact", event_name, payload)
+        return fn(payload, *args, **kwargs)
+
+    _wrapped._gland_activity_log_wrapped = True
+    return _wrapped
+
+
+_gland_security_fn = globals().get("send_gland_security_alert")
+if callable(_gland_security_fn) and not getattr(_gland_security_fn, "_gland_activity_log_wrapped", False):
+    globals()["send_gland_security_alert"] = _gland_activity_wrap_security(_gland_security_fn)
+
+
+_gland_change_fn = globals().get("send_gland_admin_change_alert")
+if callable(_gland_change_fn) and not getattr(_gland_change_fn, "_gland_activity_log_wrapped", False):
+    globals()["send_gland_admin_change_alert"] = _gland_activity_wrap_change(_gland_change_fn)
+
+
+_gland_contact_fn = globals().get("send_gland_contact_alert")
+if callable(_gland_contact_fn) and not getattr(_gland_contact_fn, "_gland_activity_log_wrapped", False):
+    globals()["send_gland_contact_alert"] = _gland_activity_wrap_contact(_gland_contact_fn)
+# GLAND ACTIVITY LOG INTEGRATION END

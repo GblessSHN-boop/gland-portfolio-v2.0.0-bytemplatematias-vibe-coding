@@ -1719,5 +1719,243 @@ def run():
         httpd.server_close()
 
 
+
+# GLAND ACTIVITY LOGS API SAFE START
+def _gland_find_flask_app(candidate=None):
+    if candidate is not None and hasattr(candidate, "add_url_rule") and hasattr(candidate, "url_map"):
+        return candidate
+
+    for name in ("app", "application", "flask_app"):
+        obj = globals().get(name)
+
+        if obj is not None and hasattr(obj, "add_url_rule") and hasattr(obj, "url_map"):
+            return obj
+
+    for obj in list(globals().values()):
+        if obj is not None and hasattr(obj, "add_url_rule") and hasattr(obj, "url_map"):
+            return obj
+
+    return None
+
+
+def _gland_activity_auth_payload():
+    flask_app = _gland_find_flask_app()
+
+    if not flask_app:
+        return {
+            "authenticated": False,
+            "error": "Flask app object not found.",
+        }
+
+    try:
+        for rule in flask_app.url_map.iter_rules():
+            if str(rule.rule).rstrip("/") == "/api/auth/me":
+                view = flask_app.view_functions.get(rule.endpoint)
+
+                if not view:
+                    continue
+
+                result = view()
+                response = result
+                status_code = 200
+
+                if isinstance(result, tuple):
+                    response = result[0]
+
+                    if len(result) > 1 and isinstance(result[1], int):
+                        status_code = result[1]
+
+                data = None
+
+                if hasattr(response, "get_json"):
+                    data = response.get_json(silent=True)
+                elif isinstance(response, dict):
+                    data = response
+
+                if isinstance(data, dict) and data.get("success") and data.get("authenticated"):
+                    return {
+                        "authenticated": True,
+                        "data": data.get("data"),
+                        "status_code": status_code,
+                    }
+
+                return {
+                    "authenticated": False,
+                    "data": data if isinstance(data, dict) else None,
+                    "status_code": status_code,
+                }
+
+    except Exception as error:
+        return {
+            "authenticated": False,
+            "error": str(error),
+        }
+
+    try:
+        from flask import session
+
+        admin_id = (
+            session.get("admin_id")
+            or session.get("admin_user_id")
+            or session.get("user_id")
+        )
+
+        if admin_id:
+            return {
+                "authenticated": True,
+                "data": {
+                    "id": admin_id,
+                },
+                "status_code": 200,
+            }
+
+    except Exception:
+        pass
+
+    return {
+        "authenticated": False,
+        "error": "Auth endpoint /api/auth/me not found or session is not authenticated.",
+    }
+
+
+def _gland_activity_int_arg(name, default_value, minimum_value, maximum_value):
+    from flask import request
+
+    try:
+        value = int(request.args.get(name, default_value))
+    except Exception:
+        value = default_value
+
+    if value < minimum_value:
+        value = minimum_value
+
+    if value > maximum_value:
+        value = maximum_value
+
+    return value
+
+
+def gland_api_admin_activity_logs():
+    from flask import jsonify, request
+
+    from backend.activity_log_service import (
+        ensure_activity_logs_table,
+        list_activity_logs,
+    )
+
+    auth = _gland_activity_auth_payload()
+
+    if not auth.get("authenticated"):
+        return jsonify({
+            "success": False,
+            "authenticated": False,
+            "message": "Unauthorized. Please login first.",
+        }), 401
+
+    ensure_activity_logs_table()
+
+    filters = {
+        "q": request.args.get("q", "").strip(),
+        "category": request.args.get("category", "").strip(),
+        "status": request.args.get("status", "").strip(),
+    }
+
+    limit = _gland_activity_int_arg("limit", 50, 1, 200)
+    offset = _gland_activity_int_arg("offset", 0, 0, 1000000)
+
+    result = list_activity_logs(filters, limit=limit, offset=offset)
+
+    return jsonify(result)
+
+
+def gland_api_admin_activity_log_stats():
+    from flask import jsonify
+
+    from backend.activity_log_service import (
+        ensure_activity_logs_table,
+        get_activity_log_stats,
+    )
+
+    auth = _gland_activity_auth_payload()
+
+    if not auth.get("authenticated"):
+        return jsonify({
+            "success": False,
+            "authenticated": False,
+            "message": "Unauthorized. Please login first.",
+        }), 401
+
+    ensure_activity_logs_table()
+    result = get_activity_log_stats()
+
+    return jsonify(result)
+
+
+def _gland_add_url_rule_once(flask_app, rule, endpoint, view_func):
+    existing_rules = {
+        str(item.rule).rstrip("/")
+        for item in flask_app.url_map.iter_rules()
+    }
+
+    if rule.rstrip("/") in existing_rules:
+        return "exists"
+
+    final_endpoint = endpoint
+    counter = 2
+
+    while final_endpoint in flask_app.view_functions:
+        final_endpoint = "{}_{}".format(endpoint, counter)
+        counter += 1
+
+    flask_app.add_url_rule(
+        rule,
+        endpoint=final_endpoint,
+        view_func=view_func,
+        methods=["GET"],
+    )
+
+    return "added"
+
+
+def _gland_install_activity_logs_api(candidate=None):
+    flask_app = _gland_find_flask_app(candidate)
+
+    if not flask_app:
+        return {
+            "success": False,
+            "error": "Flask app object not found.",
+        }
+
+    results = {
+        "/api/admin/activity-logs": _gland_add_url_rule_once(
+            flask_app,
+            "/api/admin/activity-logs",
+            "gland_api_admin_activity_logs",
+            gland_api_admin_activity_logs,
+        ),
+        "/api/admin/activity-logs/stats": _gland_add_url_rule_once(
+            flask_app,
+            "/api/admin/activity-logs/stats",
+            "gland_api_admin_activity_log_stats",
+            gland_api_admin_activity_log_stats,
+        ),
+    }
+
+    return {
+        "success": True,
+        "results": results,
+    }
+# GLAND ACTIVITY LOGS API SAFE END
+
 if __name__ == "__main__":
     run()
+# GLAND ACTIVITY LOGS INSTALL CALL START
+try:
+    _gland_install_activity_logs_api(
+        globals().get("app")
+        or globals().get("application")
+        or globals().get("flask_app")
+    )
+except Exception as _gland_activity_error:
+    print("Activity Logs API install failed:", _gland_activity_error)
+# GLAND ACTIVITY LOGS INSTALL CALL END

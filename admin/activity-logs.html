@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity Logs | GLAND Admin</title>
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: #111318;
+      --panel-2: #171a20;
+      --line: rgba(255, 255, 255, 0.09);
+      --text: #f5f7fb;
+      --muted: #aab2c0;
+      --soft: #d7deea;
+      --lime: #9cff00;
+      --danger: #ff6b6b;
+      --warning: #ffd166;
+      --blue: #8ab4ff;
+      --radius: 18px;
+      --sidebar: 228px;
+      --font: "Inter", "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: var(--font);
+      letter-spacing: 0.01em;
+      background:
+        radial-gradient(circle at top left, rgba(156, 255, 0, 0.10), transparent 34%),
+        linear-gradient(135deg, #07090d 0%, #0b0d12 48%, #090b10 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .layout {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--sidebar);
+      padding: 20px 14px;
+      border-right: 1px solid var(--line);
+      background: rgba(12, 14, 19, 0.82);
+      backdrop-filter: blur(18px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 8px 8px 22px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--lime);
+      color: #071006;
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow: 0 0 24px rgba(156, 255, 0, 0.20);
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .brand-subtitle {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+      padding-top: 6px;
+    }
+
+    .nav a {
+      display: flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      color: #b8c1d1;
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1.45;
+      transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .nav a:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.055);
+      transform: translateX(1px);
+    }
+
+    .nav a.active {
+      color: var(--lime);
+      background: rgba(156, 255, 0, 0.10);
+      border: 1px solid rgba(156, 255, 0, 0.22);
+    }
+
+    .main {
+      width: 100%;
+      padding-left: var(--sidebar);
+    }
+
+    .shell {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 30px 28px 44px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--lime);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.02;
+      letter-spacing: -0.055em;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-top: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill,
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    .pill {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--soft);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .btn {
+      min-height: 40px;
+      border: 1px solid rgba(156, 255, 0, 0.35);
+      border-radius: 13px;
+      padding: 10px 15px;
+      cursor: pointer;
+      color: #111900;
+      background: var(--lime);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.35;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(156, 255, 0, 0.16);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .stat-card {
+      min-height: 126px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(17, 19, 24, 0.82);
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.14);
+    }
+
+    .stat-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      line-height: 1.45;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      margin: 14px 0 0;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .stat-note {
+      margin: 12px 0 0;
+      color: #7f8898;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(17, 19, 24, 0.90);
+      overflow: hidden;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .search {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      outline: none;
+      padding: 0 15px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .select {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      outline: none;
+      padding: 0 13px;
+      color: var(--text);
+      background: #151820;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 16px;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 13px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .tab.active {
+      color: var(--lime);
+      border-color: rgba(156, 255, 0, 0.28);
+      background: rgba(156, 255, 0, 0.09);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1050px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.065);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #7f8898;
+      background: rgba(255, 255, 255, 0.018);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.11em;
+      line-height: 1.45;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    td {
+      color: #dfe6f3;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .event-name {
+      color: #ffffff;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .summary {
+      max-width: 380px;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--soft);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.2;
+      white-space: nowrap;
+      text-transform: capitalize;
+    }
+
+    .badge.security {
+      color: var(--blue);
+      border-color: rgba(138, 180, 255, 0.25);
+      background: rgba(138, 180, 255, 0.08);
+    }
+
+    .badge.change {
+      color: var(--warning);
+      border-color: rgba(255, 209, 102, 0.26);
+      background: rgba(255, 209, 102, 0.08);
+    }
+
+    .badge.contact {
+      color: var(--lime);
+      border-color: rgba(156, 255, 0, 0.24);
+      background: rgba(156, 255, 0, 0.08);
+    }
+
+    .badge.failed,
+    .badge.high {
+      color: var(--danger);
+      border-color: rgba(255, 107, 107, 0.25);
+      background: rgba(255, 107, 107, 0.08);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.5;
+      flex-wrap: wrap;
+    }
+
+    .empty {
+      padding: 42px 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 980px) {
+      :root {
+        --sidebar: 0px;
+      }
+
+      .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .main {
+        padding-left: 0;
+      }
+
+      .shell {
+        padding: 22px 16px 34px;
+      }
+
+      .topbar {
+        display: block;
+      }
+
+      .toolbar-actions {
+        justify-content: flex-start;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div>
+          <p class="brand-title">GLAND Admin</p>
+          <p class="brand-subtitle">Portfolio CMS</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="/admin/dashboard.html">Dashboard</a>
+        <a href="/admin/messages.html">Messages</a>
+        <a href="/admin/projects.html">Projects</a>
+        <a href="/admin/media.html">Media</a>
+        <a href="/admin/activity-logs.html" class="active">Activity Logs</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="shell">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Admin Monitoring</p>
+            <h1>Activity Logs</h1>
+            <p class="lead">
+              Pantau login, logout, OTP gagal, perubahan konten, upload media, dan pesan contact dari satu halaman.
+              Data refresh otomatis agar aktivitas terbaru langsung terlihat.
+            </p>
+          </div>
+
+          <div class="toolbar-actions">
+            <span class="pill" id="refresh-status">Auto refresh 5s</span>
+            <button class="btn" type="button" id="refresh-btn">Refresh</button>
+          </div>
+        </header>
+
+        <section class="stats">
+          <article class="stat-card">
+            <p class="stat-label">Total Logs</p>
+            <p class="stat-value" id="stat-total">0</p>
+            <p class="stat-note">Semua aktivitas yang tercatat.</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">Security</p>
+            <p class="stat-value" id="stat-security">0</p>
+            <p class="stat-note">Login, logout, OTP, dan session.</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">Failed</p>
+            <p class="stat-value" id="stat-failed">0</p>
+            <p class="stat-note">Aktivitas gagal atau ditolak.</p>
+          </article>
+
+          <article class="stat-card">
+            <p class="stat-label">Contact</p>
+            <p class="stat-value" id="stat-contact">0</p>
+            <p class="stat-note">Pesan dari halaman frontend.</p>
+          </article>
+        </section>
+
+        <section class="panel">
+          <div class="filters">
+            <input class="search" id="search-input" type="search" placeholder="Cari event, email, IP, path, atau summary..." />
+            <select class="select" id="status-filter" aria-label="Status filter">
+              <option value="all">All status</option>
+              <option value="success">Success</option>
+              <option value="failed">Failed</option>
+              <option value="info">Info</option>
+            </select>
+            <select class="select" id="limit-filter" aria-label="Limit filter">
+              <option value="30">30 rows</option>
+              <option value="50" selected>50 rows</option>
+              <option value="100">100 rows</option>
+              <option value="200">200 rows</option>
+            </select>
+          </div>
+
+          <div class="tabs" id="category-tabs">
+            <button class="tab active" data-category="all" type="button">All</button>
+            <button class="tab" data-category="security" type="button">Security</button>
+            <button class="tab" data-category="change" type="button">Changes</button>
+            <button class="tab" data-category="contact" type="button">Contact</button>
+            <button class="tab" data-category="other" type="button">Other</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Event</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Admin or Visitor</th>
+                  <th>Network</th>
+                  <th>Device</th>
+                  <th>Path</th>
+                </tr>
+              </thead>
+              <tbody id="logs-body">
+                <tr>
+                  <td colspan="8" class="empty">Loading activity logs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <footer class="footer">
+            <span id="result-info">0 rows</span>
+            <span id="latest-info">Latest activity: -</span>
+          </footer>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      category: "all",
+      status: "all",
+      q: "",
+      limit: 50,
+      offset: 0,
+      autoRefresh: true,
+      timer: null
+    };
+
+    const body = document.getElementById("logs-body");
+    const resultInfo = document.getElementById("result-info");
+    const latestInfo = document.getElementById("latest-info");
+    const refreshStatus = document.getElementById("refresh-status");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function badge(text, extraClass) {
+      const value = escapeHtml(text || "-");
+      const className = ["badge", extraClass || String(text || "").toLowerCase()].join(" ");
+      return `<span class="${className}">${value}</span>`;
+    }
+
+    function buildParams() {
+      const params = new URLSearchParams();
+
+      params.set("limit", String(state.limit));
+      params.set("offset", String(state.offset));
+
+      if (state.category !== "all") {
+        params.set("category", state.category);
+      }
+
+      if (state.status !== "all") {
+        params.set("status", state.status);
+      }
+
+      if (state.q.trim()) {
+        params.set("q", state.q.trim());
+      }
+
+      return params;
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+          "Accept": "application/json"
+        }
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch (error) {
+        data = {};
+      }
+
+      if (response.status === 401) {
+        window.location.href = "/admin/login.html";
+        return null;
+      }
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || data.error || "Request failed.");
+      }
+
+      return data;
+    }
+
+    function renderRows(rows) {
+      if (!rows || rows.length === 0) {
+        body.innerHTML = `<tr><td colspan="8" class="empty">Belum ada activity log untuk filter ini.</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = rows.map((row) => {
+        const identity = row.identifier || row.admin_email || row.admin_username || "-";
+        const network = [
+          row.ip_address || "-",
+          row.ip_location || "-",
+          row.network_org || ""
+        ].filter(Boolean).join("<br>");
+
+        const device = [
+          row.device_type || "-",
+          row.browser || "-",
+          row.operating_system || "-"
+        ].filter(Boolean).join("<br>");
+
+        const path = [
+          row.request_method || "",
+          row.request_path || "-"
+        ].filter(Boolean).join(" ");
+
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(row.created_at || "-")}</strong>
+            </td>
+            <td>
+              <div class="event-name">${escapeHtml(row.event_name || "-")}</div>
+              <div class="summary">${escapeHtml(row.summary || "-")}</div>
+            </td>
+            <td>${badge(row.category || "other", row.category || "other")}</td>
+            <td>
+              ${badge(row.status || "info", row.status || "info")}
+              <div style="height: 6px"></div>
+              ${badge(row.severity || "normal", row.severity || "normal")}
+            </td>
+            <td>${escapeHtml(identity)}</td>
+            <td>${network}</td>
+            <td>${device}</td>
+            <td class="muted">${escapeHtml(path)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function loadStats() {
+      const data = await fetchJson("/api/admin/activity-logs/stats");
+
+      if (!data) {
+        return;
+      }
+
+      document.getElementById("stat-total").textContent = data.total || 0;
+      document.getElementById("stat-security").textContent = (data.categories && data.categories.security) || 0;
+      document.getElementById("stat-failed").textContent = (data.statuses && data.statuses.failed) || 0;
+      document.getElementById("stat-contact").textContent = (data.categories && data.categories.contact) || 0;
+
+      if (data.latest) {
+        latestInfo.textContent = `Latest activity: ${data.latest.created_at || "-"} | ${data.latest.event_name || "-"}`;
+      }
+    }
+
+    async function loadLogs() {
+      try {
+        refreshStatus.textContent = "Refreshing...";
+
+        const data = await fetchJson(`/api/admin/activity-logs?${buildParams().toString()}`);
+
+        if (!data) {
+          return;
+        }
+
+        renderRows(data.data || []);
+        resultInfo.textContent = `${data.total || 0} total logs. Showing ${(data.data || []).length} rows.`;
+        refreshStatus.textContent = state.autoRefresh ? "Auto refresh 5s" : "Paused";
+
+        await loadStats();
+      } catch (error) {
+        refreshStatus.textContent = "Refresh failed";
+        body.innerHTML = `<tr><td colspan="8" class="empty">${escapeHtml(error.message || "Failed to load activity logs.")}</td></tr>`;
+      }
+    }
+
+    function scheduleRefresh() {
+      if (state.timer) {
+        window.clearInterval(state.timer);
+      }
+
+      state.timer = window.setInterval(() => {
+        if (state.autoRefresh) {
+          loadLogs();
+        }
+      }, 5000);
+    }
+
+    let searchTimer = null;
+
+    document.getElementById("search-input").addEventListener("input", (event) => {
+      state.q = event.target.value;
+      state.offset = 0;
+
+      window.clearTimeout(searchTimer);
+      searchTimer = window.setTimeout(loadLogs, 350);
+    });
+
+    document.getElementById("status-filter").addEventListener("change", (event) => {
+      state.status = event.target.value;
+      state.offset = 0;
+      loadLogs();
+    });
+
+    document.getElementById("limit-filter").addEventListener("change", (event) => {
+      state.limit = Number(event.target.value || 50);
+      state.offset = 0;
+      loadLogs();
+    });
+
+    document.getElementById("refresh-btn").addEventListener("click", loadLogs);
+
+    document.getElementById("category-tabs").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-category]");
+
+      if (!button) {
+        return;
+      }
+
+      state.category = button.dataset.category || "all";
+      state.offset = 0;
+
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.classList.toggle("active", tab === button);
+      });
+
+      loadLogs();
+    });
+
+    loadLogs();
+    scheduleRefresh();
+  </script>
+</body>
+</html>
