@@ -48,3 +48,22 @@ CONTACT_ALERTS_ENABLED = True
 LOGIN_VERIFICATION_CODE_MINUTES = 10
 LOGIN_VERIFICATION_MAX_ATTEMPTS = 5
 LOGIN_VERIFICATION_DEBUG_RETURN_CODE = False
+
+# GLAND ALERT ROUTING CONFIG START
+SECURITY_ALERT_EMAILS = [
+    "owner@example.com",
+    "security@example.com",
+]
+
+ADMIN_CHANGE_ALERT_EMAILS = [
+    "security@example.com",
+]
+
+CONTACT_ALERT_EMAILS = [
+    "owner@example.com",
+    "security@example.com",
+]
+
+IP_GEOLOCATION_ENABLED = False
+IPINFO_TOKEN = ""
+# GLAND ALERT ROUTING CONFIG END
