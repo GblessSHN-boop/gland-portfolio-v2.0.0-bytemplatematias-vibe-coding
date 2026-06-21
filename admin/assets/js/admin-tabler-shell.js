@@ -30,12 +30,18 @@
 
   function removeLegacyLogoutButtons() {
     document.querySelectorAll("button, a").forEach((element) => {
-      const text = String(element.textContent || "").trim().toLowerCase();
-      const isLogoutText = text === "logout";
-      const isOurLogout = element.hasAttribute("data-admin-logout");
-      const isInsideSidebarFooter = Boolean(element.closest(".gland-sidebar-footer"));
+      const label = String(element.textContent || "").trim().toLowerCase();
+      const isLegacyLogout = label === "logout";
+      const isOfficialLogout = element.hasAttribute("data-admin-logout") || Boolean(element.closest(".gland-sidebar-footer"));
 
-      if (isLogoutText && !isOurLogout && !isInsideSidebarFooter) {
+      if (isLegacyLogout && !isOfficialLogout) {
+        element.remove();
+      }
+    });
+
+    document.querySelectorAll("#logoutButton").forEach((element) => {
+      const isOfficialLogout = element.hasAttribute("data-admin-logout") || Boolean(element.closest(".gland-sidebar-footer"));
+      if (!isOfficialLogout) {
         element.remove();
       }
     });
@@ -46,9 +52,18 @@
     bindLogout();
     removeLegacyLogoutButtons();
 
-    window.setTimeout(removeLegacyLogoutButtons, 100);
-    window.setTimeout(removeLegacyLogoutButtons, 500);
-    window.setTimeout(removeLegacyLogoutButtons, 1200);
+    const observer = new MutationObserver(() => {
+      removeLegacyLogoutButtons();
+      syncActiveNav();
+      bindLogout();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    window.setInterval(removeLegacyLogoutButtons, 750);
   }
 
   if (document.readyState === "loading") {
