@@ -162,7 +162,6 @@ def send_admin_password_reset_email(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     return send_email(subject, body, to_email=to_email)
 
-
 # GLAND ADMIN LOGIN VERIFICATION EMAIL START
 def send_admin_login_verification_email(payload: Dict[str, Any]) -> Dict[str, Any]:
     admin = payload.get("admin") or {}
@@ -171,24 +170,33 @@ def send_admin_login_verification_email(payload: Dict[str, Any]) -> Dict[str, An
     ip_address = str(payload.get("ip_address") or "-")
     user_agent = str(payload.get("user_agent") or "-")
 
-    to_email = str(admin.get("email") or _get_config("ADMIN_ALERT_EMAIL", "") or "")
+    to_email = str(admin.get("email") or _get_config("ADMIN_ALERT_EMAIL", "") or "").strip()
 
-    subject = "GLAND Admin Login Verification Code"
+    if not code:
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "Missing verification code.",
+        }
+
+    subject = f"GLAND Login Code: {code}"
 
     body = "\n".join(
         [
-            "GLAND Portfolio Admin Login Verification",
+            "GLAND Portfolio Admin",
             "",
-            "Use this 6-digit code to finish signing in:",
+            "Your 6-digit login verification code is:",
             "",
-            code,
+            f"    {code}",
             "",
             f"Username : {admin.get('username') or '-'}",
             f"Email    : {admin.get('email') or '-'}",
             f"Expires  : {expires_at}",
             f"IP       : {ip_address}",
             "",
-            "If you did not try to sign in, review your admin security activity.",
+            "Enter this code on the admin login page to finish signing in.",
+            "",
+            "If you did not try to sign in, change your admin password and review Admin Activity.",
             "",
             "User Agent:",
             user_agent,
@@ -197,3 +205,4 @@ def send_admin_login_verification_email(payload: Dict[str, Any]) -> Dict[str, An
 
     return send_email(subject, body, to_email=to_email)
 # GLAND ADMIN LOGIN VERIFICATION EMAIL END
+

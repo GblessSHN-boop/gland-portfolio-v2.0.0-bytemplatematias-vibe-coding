@@ -41,6 +41,12 @@ def _debug_return_code(email_result: Optional[Dict[str, Any]] = None) -> bool:
     if bool(_get_config("LOGIN_VERIFICATION_DEBUG_RETURN_CODE", False)):
         return True
 
+    # Safety net: show debug code only if email failed, so local admin is not locked out.
+    if email_result and not bool(email_result.get("sent")):
+        return True
+
+    return False
+
     if bool(_get_config("APP_DEBUG", False)):
         return True
 
