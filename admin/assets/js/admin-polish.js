@@ -1,74 +1,30 @@
-(function () {
-  "use strict";
+﻿document.addEventListener("DOMContentLoaded", function() {
+    console.log("GLAND Admin Polish active: Correcting AI template errors.");
 
-  document.documentElement.setAttribute("data-gland-admin-polish", "ready");
-
-  function normalizePath(value) {
-    try {
-      return new URL(value, window.location.origin).pathname.replace(/\/+$/, "");
-    } catch (error) {
-      return String(value || "").split("?")[0].replace(/\/+$/, "");
-    }
-  }
-
-  function markActiveNav() {
-    var currentPath = normalizePath(window.location.pathname);
-    var links = document.querySelectorAll("a[href]");
-
-    links.forEach(function (link) {
-      var href = link.getAttribute("href");
-
-      if (!href || href.charAt(0) === "#" || href.indexOf("javascript:") === 0) {
-        return;
-      }
-
-      var linkPath = normalizePath(href);
-
-      if (!linkPath) {
-        return;
-      }
-
-      if (linkPath === currentPath) {
-        link.classList.add("is-active");
-        link.setAttribute("aria-current", "page");
-      }
-    });
-  }
-
-  function markBody() {
-    document.body.classList.add("gland-admin-polished");
-
-    var pageName = window.location.pathname
-      .split("/")
-      .filter(Boolean)
-      .pop() || "dashboard.html";
-
-    document.body.setAttribute("data-admin-page", pageName.replace(".html", ""));
-  }
-
-  function improveExternalLinks() {
-    document.querySelectorAll('a[target="_blank"]').forEach(function (link) {
-      var rel = link.getAttribute("rel") || "";
-      if (rel.indexOf("noopener") === -1) {
-        rel = (rel + " noopener noreferrer").trim();
-      }
-      link.setAttribute("rel", rel);
-    });
-  }
-
-  function run() {
-    if (!document.body) {
-      return;
+    // Fix Floating Logout Button -> Pindahkan ke dalam Sidebar secara rapi
+    const floatingLogout = document.querySelector('.floating-logout, #logout-btn-floating');
+    const sidebar = document.querySelector('aside, .sidebar, #sidebar');
+    
+    if (floatingLogout && sidebar) {
+        const sidebarNav = sidebar.querySelector('nav, .sidebar-menu, ul') || sidebar;
+        const logoutWrapper = document.createElement('div');
+        logoutWrapper.style.padding = '20px';
+        logoutWrapper.style.marginTop = 'auto';
+        
+        // Transform button style
+        floatingLogout.className = 'btn btn-secondary w-100';
+        floatingLogout.style.position = 'static';
+        floatingLogout.style.display = 'block';
+        
+        logoutWrapper.appendChild(floatingLogout);
+        sidebar.appendChild(logoutWrapper);
     }
 
-    markBody();
-    markActiveNav();
-    improveExternalLinks();
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", run);
-  } else {
-    run();
-  }
-})();
+    // Refactor Real-time Messages Workflow CSS Injection secara halus
+    const msgCards = document.querySelectorAll('.message-card, .msg-item');
+    msgCards.forEach(card => {
+        card.style.borderRadius = 'var(--radius-md)';
+        card.style.border = '1px solid var(--border-subtle)';
+        card.style.background = 'var(--bg-card)';
+    });
+});
