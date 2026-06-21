@@ -1,108 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics | GLAND Portfolio Admin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
-  <link rel="stylesheet" href="assets/css/admin-polish.css" />
-    <link rel="stylesheet" href="assets/css/admin-clean-v3.css">
+    <title>Analytics | GLAND Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/admin-tabler-gland.css">
 </head>
 <body>
-    <div class="gland-admin-shell">
+    <div class="gland-page">
         <aside class="gland-sidebar">
             <div class="gland-brand">
                 <div class="gland-brand-mark">G</div>
                 <div>
-                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-title">GLAND Admin</p>
                     <p class="gland-brand-subtitle">Portfolio CMS</p>
                 </div>
             </div>
 
             <nav class="gland-nav" aria-label="Admin navigation">
-                <a href="messages.html">Messages</a>
-                <a href="projects.html">Projects</a>
-                <a href="highlights.html">Highlights</a>
-                <a href="personal-info.html">Personal Info</a>
-                <a href="hero-content.html">Hero Content</a>
-                <a href="site-identity.html">Site Identity</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="page-editor.html">Page Editor</a>
-                <a href="media.html">Media</a>
-                <a href="analytics.html" class="is-active">Analytics</a>
-                <a href="settings.html">Settings</a>
+                <a data-admin-nav class="gland-nav-link" href="messages.html"><i class="ti ti-inbox"></i> Messages</a>
+                <a data-admin-nav class="gland-nav-link" href="projects.html"><i class="ti ti-briefcase"></i> Projects</a>
+                <a data-admin-nav class="gland-nav-link" href="highlights.html"><i class="ti ti-sparkles"></i> Highlights</a>
+                <a data-admin-nav class="gland-nav-link" href="personal-info.html"><i class="ti ti-user"></i> Personal Info</a>
+                <a data-admin-nav class="gland-nav-link" href="hero-content.html"><i class="ti ti-layout"></i> Hero Content</a>
+                <a data-admin-nav class="gland-nav-link" href="site-identity.html"><i class="ti ti-id"></i> Site Identity</a>
+                <a data-admin-nav class="gland-nav-link" href="dashboard.html"><i class="ti ti-dashboard"></i> Dashboard</a>
+                <a data-admin-nav class="gland-nav-link" href="analytics.html"><i class="ti ti-chart-line"></i> Analytics</a>
+                <a data-admin-nav class="gland-nav-link" href="page-editor.html"><i class="ti ti-file-pencil"></i> Page Editor</a>
+                <a data-admin-nav class="gland-nav-link" href="media.html"><i class="ti ti-photo"></i> Media</a>
+                <a data-admin-nav class="gland-nav-link" href="settings.html"><i class="ti ti-settings"></i> Settings</a>
             </nav>
+
+            <div class="gland-sidebar-footer">
+                <button type="button" class="gland-btn w-100" data-admin-logout>
+                    <i class="ti ti-logout me-2"></i> Sign Out
+                </button>
+            </div>
         </aside>
 
         <main class="gland-main">
-            <header class="gland-page-header">
-                <div>
-                    <p class="gland-kicker">Tracking Events</p>
-                    <h2 class="gland-page-title">Analytics</h2>
-                    <p class="gland-page-description">
-                        View recent tracked events and send test analytics events to the backend.
-                    </p>
-                </div>
+            <div class="gland-container">
+                <header class="gland-page-header">
+                    <div>
+                        <p class="gland-eyebrow">Tracking Events</p>
+                        <h1 class="gland-title">Analytics</h1>
+                        <p class="gland-subtitle">View recent tracked events and send test analytics events.</p>
+                    </div>
 
-                <div class="gland-toolbar">
-                    <button class="gland-button" type="button" data-refresh-analytics>
-                        Refresh
+                    <button type="button" class="gland-btn" data-refresh-page>
+                        <i class="ti ti-refresh me-2"></i> Refresh
                     </button>
-                </div>
-            </header>
+                </header>
 
-            <p class="gland-page-description" data-page-status></p>
+                <p class="gland-status-text" id="analyticsStatus">Loading analytics...</p>
 
-            <section class="gland-card gland-form-card">
-                <form data-analytics-event-form>
-                    <div class="gland-form-grid">
-                        <div class="gland-field">
-                            <label for="event_type">Event Type</label>
-                            <input id="event_type" name="event_type" type="text" value="admin_test">
-                        </div>
+<section class="gland-crud-layout">
+    <form class="gland-panel" id="analyticsForm">
+        <div class="gland-panel-header">
+            <h2 class="gland-panel-title">Send Test Event</h2>
+        </div>
+        <div class="gland-panel-body">
+            <div class="gland-form-grid">
+                <div class="gland-field"><label>Event Type</label><input id="eventType" value="admin_test"></div>
+                <div class="gland-field"><label>Event Name</label><input id="eventName" value="manual_test"></div>
+                <div class="gland-field"><label>Event Value</label><input id="eventValue" type="number" value="1"></div>
+                <div class="gland-field"><label>Page Path</label><input id="pagePath" value="/admin/analytics.html"></div>
+                <div class="gland-field span-2"><label>Target URL</label><input id="targetUrl" placeholder="Optional target URL"></div>
+            </div>
+            <div class="gland-form-actions">
+                <button class="gland-btn gland-btn-primary" type="submit">Send Test Event</button>
+            </div>
+        </div>
+    </form>
 
-                        <div class="gland-field">
-                            <label for="event_name">Event Name</label>
-                            <input id="event_name" name="event_name" type="text" value="manual_test">
-                        </div>
-
-                        <div class="gland-field">
-                            <label for="event_value">Event Value</label>
-                            <input id="event_value" name="event_value" type="text" value="1">
-                        </div>
-
-                        <div class="gland-field">
-                            <label for="page_path">Page Path</label>
-                            <input id="page_path" name="page_path" type="text" value="/admin/analytics.html">
-                        </div>
-
-                        <div class="gland-field full">
-                            <label for="target_url">Target URL</label>
-                            <input id="target_url" name="target_url" type="text" value="">
-                        </div>
-                    </div>
-
-                    <div class="gland-actions">
-                        <button class="gland-button lime" type="submit">
-                            Send Test Event
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <section data-events-list>
-                <div class="gland-card gland-empty">
-                    Loading analytics events...
-                </div>
-            </section>
+    <section class="gland-panel">
+        <div class="gland-panel-header">
+            <h2 class="gland-panel-title">Recent Events</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="gland-table">
+                <thead><tr><th>ID</th><th>Type</th><th>Name</th><th>Page</th><th>Target</th><th>Created</th></tr></thead>
+                <tbody id="analyticsEventsBody"><tr><td colspan="6" class="gland-empty">Loading events...</td></tr></tbody>
+            </table>
+        </div>
+    </section>
+</section>
+            </div>
         </main>
     </div>
 
-    <script src="assets/js/analytics.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD START -->
-  <script src="assets/js/admin-auth-guard.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD END -->
-  <script src="assets/js/admin-polish.js"></script>
-    <script src="assets/js/admin-clean-v3.js"></script>
+    <script src="assets/js/admin-auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="assets/js/admin-tabler-shell.js"></script>
+    <script src="assets/js/analytics-tabler.js"></script>
 </body>
 </html>

@@ -1,118 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media | GLAND Portfolio Admin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
-  <link rel="stylesheet" href="assets/css/admin-polish.css" />
-    <link rel="stylesheet" href="assets/css/admin-clean-v3.css">
+    <title>Media | GLAND Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/admin-tabler-gland.css">
 </head>
 <body>
-    <div class="gland-admin-shell">
+    <div class="gland-page">
         <aside class="gland-sidebar">
             <div class="gland-brand">
                 <div class="gland-brand-mark">G</div>
                 <div>
-                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-title">GLAND Admin</p>
                     <p class="gland-brand-subtitle">Portfolio CMS</p>
                 </div>
             </div>
 
             <nav class="gland-nav" aria-label="Admin navigation">
-                <a href="messages.html">Messages</a>
-                <a href="projects.html">Projects</a>
-                <a href="highlights.html">Highlights</a>
-                <a href="personal-info.html">Personal Info</a>
-                <a href="hero-content.html">Hero Content</a>
-                <a href="site-identity.html">Site Identity</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="page-editor.html">Page Editor</a>
-                <a href="media.html" class="is-active">Media</a>
-                <a href="analytics.html">Analytics</a>
-                <a href="settings.html">Settings</a>
+                <a data-admin-nav class="gland-nav-link" href="messages.html"><i class="ti ti-inbox"></i> Messages</a>
+                <a data-admin-nav class="gland-nav-link" href="projects.html"><i class="ti ti-briefcase"></i> Projects</a>
+                <a data-admin-nav class="gland-nav-link" href="highlights.html"><i class="ti ti-sparkles"></i> Highlights</a>
+                <a data-admin-nav class="gland-nav-link" href="personal-info.html"><i class="ti ti-user"></i> Personal Info</a>
+                <a data-admin-nav class="gland-nav-link" href="hero-content.html"><i class="ti ti-layout"></i> Hero Content</a>
+                <a data-admin-nav class="gland-nav-link" href="site-identity.html"><i class="ti ti-id"></i> Site Identity</a>
+                <a data-admin-nav class="gland-nav-link" href="dashboard.html"><i class="ti ti-dashboard"></i> Dashboard</a>
+                <a data-admin-nav class="gland-nav-link" href="analytics.html"><i class="ti ti-chart-line"></i> Analytics</a>
+                <a data-admin-nav class="gland-nav-link" href="page-editor.html"><i class="ti ti-file-pencil"></i> Page Editor</a>
+                <a data-admin-nav class="gland-nav-link" href="media.html"><i class="ti ti-photo"></i> Media</a>
+                <a data-admin-nav class="gland-nav-link" href="settings.html"><i class="ti ti-settings"></i> Settings</a>
             </nav>
+
+            <div class="gland-sidebar-footer">
+                <button type="button" class="gland-btn w-100" data-admin-logout>
+                    <i class="ti ti-logout me-2"></i> Sign Out
+                </button>
+            </div>
         </aside>
 
         <main class="gland-main">
-            <header class="gland-page-header">
-                <div>
-                    <p class="gland-kicker">Media Library</p>
-                    <h2 class="gland-page-title">Media</h2>
-                    <p class="gland-page-description">
-                        Upload images and videos to the local uploads folder, with metadata stored in MySQL.
-                    </p>
-                </div>
-
-                <div class="gland-toolbar">
-                    <button class="gland-button" type="button" data-refresh-media>
-                        Refresh
-                    </button>
-                </div>
-            </header>
-
-            <p class="gland-page-description" data-page-status></p>
-
-            <section class="gland-media-layout">
-                <div class="gland-card gland-form-card">
-                    <form data-media-form>
-                        <div class="gland-form-grid">
-                            <div class="gland-field full">
-                                <label for="file">Media File</label>
-                                <input id="file" name="file" type="file" accept="image/*,video/mp4,video/webm,video/quicktime" required>
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="media_type">Media Type</label>
-                                <select id="media_type" name="media_type">
-                                    <option value="image">Image</option>
-                                    <option value="video">Video</option>
-                                </select>
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="title">Title</label>
-                                <input id="title" name="title" type="text" placeholder="Media title">
-                            </div>
-
-                            <div class="gland-field full">
-                                <label for="alt_text">Alt Text</label>
-                                <input id="alt_text" name="alt_text" type="text" placeholder="Useful image/video description">
-                            </div>
-                        </div>
-
-                        <div class="gland-checkbox-row">
-                            <label>
-                                <input type="checkbox" name="is_active" checked>
-                                Active
-                            </label>
-                        </div>
-
-                        <div class="gland-actions">
-                            <button class="gland-button lime" type="submit" data-submit-media>
-                                Upload Media
-                            </button>
-                            <button class="gland-button secondary" type="button" data-reset-media-form>
-                                Reset
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <section class="gland-media-grid" data-media-list aria-live="polite">
-                    <div class="gland-card gland-empty">
-                        Loading media files from MySQL...
+            <div class="gland-container">
+                <header class="gland-page-header">
+                    <div>
+                        <p class="gland-eyebrow">Media Library</p>
+                        <h1 class="gland-title">Media</h1>
+                        <p class="gland-subtitle">Upload images and videos with metadata stored in MySQL.</p>
                     </div>
-                </section>
-            </section>
+
+                    <button type="button" class="gland-btn" data-refresh-page>
+                        <i class="ti ti-refresh me-2"></i> Refresh
+                    </button>
+                </header>
+
+                <p class="gland-status-text" id="mediaStatus">Loading media...</p>
+
+<section class="gland-crud-layout">
+    <form class="gland-panel" id="mediaForm" enctype="multipart/form-data">
+        <div class="gland-panel-header">
+            <h2 class="gland-panel-title">Upload Media</h2>
+        </div>
+        <div class="gland-panel-body">
+            <div class="gland-form-grid">
+                <div class="gland-field span-2"><label>Media File</label><input type="file" name="file" required></div>
+                <div class="gland-field"><label>Media Type</label><select name="media_type"><option value="image">Image</option><option value="video">Video</option></select></div>
+                <div class="gland-field"><label>Title</label><input name="title" placeholder="Media title"></div>
+                <div class="gland-field span-2"><label>Alt Text</label><input name="alt_text" placeholder="Accessible image description"></div>
+                <div class="gland-field"><label>Active</label><select name="is_active"><option value="1">Yes</option><option value="0">No</option></select></div>
+            </div>
+            <div class="gland-form-actions">
+                <button class="gland-btn gland-btn-primary" type="submit">Upload Media</button>
+            </div>
+        </div>
+    </form>
+
+    <section class="gland-panel">
+        <div class="gland-panel-header">
+            <h2 class="gland-panel-title">Media Library</h2>
+        </div>
+        <div class="gland-panel-body">
+            <div class="gland-list" id="mediaList"></div>
+        </div>
+    </section>
+</section>
+            </div>
         </main>
     </div>
 
-    <script src="assets/js/media.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD START -->
-  <script src="assets/js/admin-auth-guard.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD END -->
-  <script src="assets/js/admin-polish.js"></script>
-    <script src="assets/js/admin-clean-v3.js"></script>
+    <script src="assets/js/admin-auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="assets/js/admin-tabler-shell.js"></script>
+    <script src="assets/js/media-tabler.js"></script>
 </body>
 </html>

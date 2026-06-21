@@ -1,143 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Info | GLAND Portfolio Admin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
-  <link rel="stylesheet" href="assets/css/admin-polish.css" />
-    <link rel="stylesheet" href="assets/css/admin-clean-v3.css">
+    <title>Personal Info | GLAND Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/admin-tabler-gland.css">
 </head>
 <body>
-    <div class="gland-admin-shell">
+    <div class="gland-page">
         <aside class="gland-sidebar">
             <div class="gland-brand">
                 <div class="gland-brand-mark">G</div>
                 <div>
-                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-title">GLAND Admin</p>
                     <p class="gland-brand-subtitle">Portfolio CMS</p>
                 </div>
             </div>
 
             <nav class="gland-nav" aria-label="Admin navigation">
-                <a href="messages.html">Messages</a>
-                <a href="projects.html">Projects</a>
-                <a href="highlights.html">Highlights</a>
-                <a href="personal-info.html" class="is-active">Personal Info</a>
-                <a href="hero-content.html">Hero Content</a>
-                <a href="site-identity.html">Site Identity</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="page-editor.html">Page Editor</a>
-                <a href="media.html">Media</a>
-                <a href="analytics.html">Analytics</a>
-                <a href="settings.html">Settings</a>
+                <a data-admin-nav class="gland-nav-link" href="messages.html"><i class="ti ti-inbox"></i> Messages</a>
+                <a data-admin-nav class="gland-nav-link" href="projects.html"><i class="ti ti-briefcase"></i> Projects</a>
+                <a data-admin-nav class="gland-nav-link" href="highlights.html"><i class="ti ti-sparkles"></i> Highlights</a>
+                <a data-admin-nav class="gland-nav-link" href="personal-info.html"><i class="ti ti-user"></i> Personal Info</a>
+                <a data-admin-nav class="gland-nav-link" href="hero-content.html"><i class="ti ti-layout"></i> Hero Content</a>
+                <a data-admin-nav class="gland-nav-link" href="site-identity.html"><i class="ti ti-id"></i> Site Identity</a>
+                <a data-admin-nav class="gland-nav-link" href="dashboard.html"><i class="ti ti-dashboard"></i> Dashboard</a>
+                <a data-admin-nav class="gland-nav-link" href="analytics.html"><i class="ti ti-chart-line"></i> Analytics</a>
+                <a data-admin-nav class="gland-nav-link" href="page-editor.html"><i class="ti ti-file-pencil"></i> Page Editor</a>
+                <a data-admin-nav class="gland-nav-link" href="media.html"><i class="ti ti-photo"></i> Media</a>
+                <a data-admin-nav class="gland-nav-link" href="settings.html"><i class="ti ti-settings"></i> Settings</a>
             </nav>
+
+            <div class="gland-sidebar-footer">
+                <button type="button" class="gland-btn w-100" data-admin-logout>
+                    <i class="ti ti-logout me-2"></i> Sign Out
+                </button>
+            </div>
         </aside>
 
         <main class="gland-main">
-            <header class="gland-page-header">
-                <div>
-                    <p class="gland-kicker">Profile CMS</p>
-                    <h2 class="gland-page-title">Personal Info</h2>
-                    <p class="gland-page-description">
-                        Manage profile photo path, description, email, phone, and address stored in MySQL.
-                        Later this data will sync into the public personal info section.
-                    </p>
-                </div>
-
-                <div class="gland-toolbar">
-                    <button class="gland-button" type="button" data-refresh-personal-info>
-                        Refresh
-                    </button>
-                </div>
-            </header>
-
-            <p class="gland-page-description" data-page-status></p>
-
-            <section class="gland-personal-layout">
-                <div class="gland-card gland-form-card">
-                    <form data-personal-info-form>
-                        <div class="gland-form-grid">
-                            <div class="gland-field">
-                                <label for="full_name">Full Name</label>
-                                <input id="full_name" name="full_name" type="text" required>
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="role_title">Role Title</label>
-                                <input id="role_title" name="role_title" type="text">
-                            </div>
-
-                            <div class="gland-field full">
-                                <label for="description">Description</label>
-                                <textarea id="description" name="description"></textarea>
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="email">Email</label>
-                                <input id="email" name="email" type="email">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="phone">Phone</label>
-                                <input id="phone" name="phone" type="text">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="address">Address</label>
-                                <input id="address" name="address" type="text">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="photo_path">Photo Path</label>
-                                <input id="photo_path" name="photo_path" type="text" placeholder="assets/img/about/gland-personal-info.png">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="resume_url">Resume URL</label>
-                                <input id="resume_url" name="resume_url" type="url">
-                            </div>
-                        </div>
-
-                        <div class="gland-checkbox-row">
-                            <label>
-                                <input type="checkbox" name="is_active" checked>
-                                Active
-                            </label>
-                        </div>
-
-                        <div class="gland-actions">
-                            <button class="gland-button lime" type="submit">
-                                Save Personal Info
-                            </button>
-                            <button class="gland-button secondary" type="button" data-reset-personal-info>
-                                Reset
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <aside class="gland-card gland-profile-preview">
-                    <img class="gland-profile-photo" data-preview-photo src="../assets/img/about/gland-personal-info.png" alt="Personal info preview">
-                    <h3 class="gland-profile-name" data-preview-name>Full name</h3>
-                    <p class="gland-profile-role" data-preview-role>Role title</p>
-                    <p class="gland-profile-description" data-preview-description>Personal description preview.</p>
-
-                    <div class="gland-profile-contact">
-                        <span data-preview-email>email@example.com</span>
-                        <span data-preview-phone>Phone number</span>
-                        <span data-preview-address>Address</span>
+            <div class="gland-container">
+                <header class="gland-page-header">
+                    <div>
+                        <p class="gland-eyebrow">Profile CMS</p>
+                        <h1 class="gland-title">Personal Info</h1>
+                        <p class="gland-subtitle">Manage personal profile, contact details, and about content.</p>
                     </div>
-                </aside>
-            </section>
+
+                    <button type="button" class="gland-btn" data-refresh-page>
+                        <i class="ti ti-refresh me-2"></i> Refresh
+                    </button>
+                </header>
+
+                <p class="gland-status-text" data-page-status>Loading personal info...</p>
+
+<form class="gland-panel" data-singleton-api="/api/personal-info">
+    <div class="gland-panel-header">
+        <h2 class="gland-panel-title">Personal Profile</h2>
+    </div>
+    <div class="gland-panel-body">
+        <div class="gland-form-grid">
+            <div class="gland-field"><label>Name</label><input name="name" placeholder="Gland Siahaan"></div>
+            <div class="gland-field"><label>Role</label><input name="role" placeholder="AI Engineer & Creative Designer"></div>
+            <div class="gland-field"><label>Email</label><input name="email" placeholder="you@example.com"></div>
+            <div class="gland-field"><label>Phone</label><input name="phone" placeholder="+62..."></div>
+            <div class="gland-field"><label>Location</label><input name="location" placeholder="Medan, Indonesia"></div>
+            <div class="gland-field"><label>Availability</label><input name="availability" placeholder="Available for projects"></div>
+            <div class="gland-field span-2"><label>Bio</label><textarea name="bio" placeholder="Short personal profile"></textarea></div>
+            <div class="gland-field span-2"><label>About Text</label><textarea name="about_text" placeholder="About section content"></textarea></div>
+        </div>
+        <div class="gland-form-actions">
+            <button class="gland-btn gland-btn-primary" type="submit">Save Personal Info</button>
+        </div>
+    </div>
+</form>
+            </div>
         </main>
     </div>
 
-    <script src="assets/js/personal-info.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD START -->
-  <script src="assets/js/admin-auth-guard.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD END -->
-  <script src="assets/js/admin-polish.js"></script>
-    <script src="assets/js/admin-clean-v3.js"></script>
+    <script src="assets/js/admin-auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="assets/js/admin-tabler-shell.js"></script>
+    <script src="assets/js/singleton-tabler.js"></script>
 </body>
 </html>

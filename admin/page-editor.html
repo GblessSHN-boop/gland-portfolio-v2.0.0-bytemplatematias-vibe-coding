@@ -1,60 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Editor | GLAND Portfolio Admin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
-  <link rel="stylesheet" href="assets/css/admin-polish.css" />
-    <link rel="stylesheet" href="assets/css/admin-clean-v3.css">
+    <title>Page Editor | GLAND Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/admin-tabler-gland.css">
 </head>
 <body>
-    <div class="gland-admin-shell">
+    <div class="gland-page">
         <aside class="gland-sidebar">
             <div class="gland-brand">
                 <div class="gland-brand-mark">G</div>
                 <div>
-                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-title">GLAND Admin</p>
                     <p class="gland-brand-subtitle">Portfolio CMS</p>
                 </div>
             </div>
 
             <nav class="gland-nav" aria-label="Admin navigation">
-                <a href="messages.html">Messages</a>
-                <a href="projects.html">Projects</a>
-                <a href="highlights.html">Highlights</a>
-                <a href="personal-info.html">Personal Info</a>
-                <a href="hero-content.html">Hero Content</a>
-                <a href="site-identity.html">Site Identity</a>
-                <a href="dashboard.html" class="is-active">Dashboard</a>
-                <a href="page-editor.html">Page Editor</a>
-                <a href="media.html">Media</a>
-                <a href="analytics.html">Analytics</a>
-                <a href="settings.html">Settings</a>
+                <a data-admin-nav class="gland-nav-link" href="messages.html"><i class="ti ti-inbox"></i> Messages</a>
+                <a data-admin-nav class="gland-nav-link" href="projects.html"><i class="ti ti-briefcase"></i> Projects</a>
+                <a data-admin-nav class="gland-nav-link" href="highlights.html"><i class="ti ti-sparkles"></i> Highlights</a>
+                <a data-admin-nav class="gland-nav-link" href="personal-info.html"><i class="ti ti-user"></i> Personal Info</a>
+                <a data-admin-nav class="gland-nav-link" href="hero-content.html"><i class="ti ti-layout"></i> Hero Content</a>
+                <a data-admin-nav class="gland-nav-link" href="site-identity.html"><i class="ti ti-id"></i> Site Identity</a>
+                <a data-admin-nav class="gland-nav-link" href="dashboard.html"><i class="ti ti-dashboard"></i> Dashboard</a>
+                <a data-admin-nav class="gland-nav-link" href="analytics.html"><i class="ti ti-chart-line"></i> Analytics</a>
+                <a data-admin-nav class="gland-nav-link" href="page-editor.html"><i class="ti ti-file-pencil"></i> Page Editor</a>
+                <a data-admin-nav class="gland-nav-link" href="media.html"><i class="ti ti-photo"></i> Media</a>
+                <a data-admin-nav class="gland-nav-link" href="settings.html"><i class="ti ti-settings"></i> Settings</a>
             </nav>
+
+            <div class="gland-sidebar-footer">
+                <button type="button" class="gland-btn w-100" data-admin-logout>
+                    <i class="ti ti-logout me-2"></i> Sign Out
+                </button>
+            </div>
         </aside>
 
-        <main class="admin-main">
-    <section class="admin-page-header">
-        <p class="admin-placeholder__eyebrow">Page Builder</p>
-        <h1>Page Editor</h1>
-        <p>Area untuk mengelola konten halaman publik secara lebih fleksibel.</p>
-    </section>
+        <main class="gland-main">
+            <div class="gland-container">
+                <header class="gland-page-header">
+                    <div>
+                        <p class="gland-eyebrow">Page Builder</p>
+                        <h1 class="gland-title">Page Editor</h1>
+                        <p class="gland-subtitle">Manage page-level content modules.</p>
+                    </div>
 
-    <section class="admin-placeholder">
-        <p class="admin-placeholder__eyebrow">Status</p>
-        <h2 class="admin-placeholder__title">Module belum diaktifkan</h2>
-        <p class="admin-placeholder__text">
-            Halaman ini sekarang tidak lagi 404. Fitur detailnya bisa dibangun setelah struktur admin utama sudah bersih dan stabil.
-        </p>
-        <a class="btn" href="dashboard.html">Back to Dashboard</a>
-    </section>
-</main>
+                    <button type="button" class="gland-btn" data-refresh-page>
+                        <i class="ti ti-refresh me-2"></i> Refresh
+                    </button>
+                </header>
+
+                <section class="gland-panel gland-placeholder">
+    <div class="gland-panel-header">
+        <h2 class="gland-panel-title">Module belum diaktifkan</h2>
     </div>
-<!-- GLAND ADMIN AUTH GUARD START -->
-  <script src="assets/js/admin-auth-guard.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD END -->
-  <script src="assets/js/admin-polish.js"></script>
-    <script src="assets/js/admin-clean-v3.js"></script>
+    <div class="gland-panel-body">
+        <p>Halaman ini sudah memakai shell Tabler yang konsisten. Fitur page editor bisa dibangun setelah modul admin utama stabil.</p>
+    </div>
+</section>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/admin-auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="assets/js/admin-tabler-shell.js"></script>
 </body>
 </html>

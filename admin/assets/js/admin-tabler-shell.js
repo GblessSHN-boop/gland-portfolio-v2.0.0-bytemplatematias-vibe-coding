@@ -15,9 +15,7 @@
           method: "POST",
           credentials: "include"
         });
-      } catch (error) {
-        // Tetap redirect.
-      }
+      } catch (error) {}
 
       window.location.href = "login.html";
     });

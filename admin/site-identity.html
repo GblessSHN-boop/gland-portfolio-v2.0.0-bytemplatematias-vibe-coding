@@ -1,157 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Identity | GLAND Portfolio Admin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
-  <link rel="stylesheet" href="assets/css/admin-polish.css" />
-    <link rel="stylesheet" href="assets/css/admin-clean-v3.css">
+    <title>Site Identity | GLAND Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/admin-tabler-gland.css">
 </head>
 <body>
-    <div class="gland-admin-shell">
+    <div class="gland-page">
         <aside class="gland-sidebar">
             <div class="gland-brand">
                 <div class="gland-brand-mark">G</div>
                 <div>
-                    <h1 class="gland-brand-title">GLAND Admin</h1>
+                    <p class="gland-brand-title">GLAND Admin</p>
                     <p class="gland-brand-subtitle">Portfolio CMS</p>
                 </div>
             </div>
 
             <nav class="gland-nav" aria-label="Admin navigation">
-                <a href="messages.html">Messages</a>
-                <a href="projects.html">Projects</a>
-                <a href="highlights.html">Highlights</a>
-                <a href="personal-info.html">Personal Info</a>
-                <a href="hero-content.html">Hero Content</a>
-                <a href="site-identity.html" class="is-active">Site Identity</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="page-editor.html">Page Editor</a>
-                <a href="media.html">Media</a>
-                <a href="analytics.html">Analytics</a>
-                <a href="settings.html">Settings</a>
+                <a data-admin-nav class="gland-nav-link" href="messages.html"><i class="ti ti-inbox"></i> Messages</a>
+                <a data-admin-nav class="gland-nav-link" href="projects.html"><i class="ti ti-briefcase"></i> Projects</a>
+                <a data-admin-nav class="gland-nav-link" href="highlights.html"><i class="ti ti-sparkles"></i> Highlights</a>
+                <a data-admin-nav class="gland-nav-link" href="personal-info.html"><i class="ti ti-user"></i> Personal Info</a>
+                <a data-admin-nav class="gland-nav-link" href="hero-content.html"><i class="ti ti-layout"></i> Hero Content</a>
+                <a data-admin-nav class="gland-nav-link" href="site-identity.html"><i class="ti ti-id"></i> Site Identity</a>
+                <a data-admin-nav class="gland-nav-link" href="dashboard.html"><i class="ti ti-dashboard"></i> Dashboard</a>
+                <a data-admin-nav class="gland-nav-link" href="analytics.html"><i class="ti ti-chart-line"></i> Analytics</a>
+                <a data-admin-nav class="gland-nav-link" href="page-editor.html"><i class="ti ti-file-pencil"></i> Page Editor</a>
+                <a data-admin-nav class="gland-nav-link" href="media.html"><i class="ti ti-photo"></i> Media</a>
+                <a data-admin-nav class="gland-nav-link" href="settings.html"><i class="ti ti-settings"></i> Settings</a>
             </nav>
+
+            <div class="gland-sidebar-footer">
+                <button type="button" class="gland-btn w-100" data-admin-logout>
+                    <i class="ti ti-logout me-2"></i> Sign Out
+                </button>
+            </div>
         </aside>
 
         <main class="gland-main">
-            <header class="gland-page-header">
-                <div>
-                    <p class="gland-kicker">Brand & SEO CMS</p>
-                    <h2 class="gland-page-title">Site Identity</h2>
-                    <p class="gland-page-description">
-                        Manage site title, metadata, logo paths, favicon, preloader text, and social links stored in MySQL.
-                    </p>
-                </div>
-
-                <div class="gland-toolbar">
-                    <button class="gland-button" type="button" data-refresh-site-identity>
-                        Refresh
-                    </button>
-                </div>
-            </header>
-
-            <p class="gland-page-description" data-page-status></p>
-
-            <section class="gland-identity-layout">
-                <div class="gland-card gland-form-card">
-                    <form data-site-identity-form>
-                        <div class="gland-form-grid">
-                            <div class="gland-field full">
-                                <label for="site_title">Site Title</label>
-                                <input id="site_title" name="site_title" type="text" required>
-                            </div>
-
-                            <div class="gland-field full">
-                                <label for="meta_description">Meta Description</label>
-                                <textarea id="meta_description" name="meta_description"></textarea>
-                            </div>
-
-                            <div class="gland-field full">
-                                <label for="canonical_url">Canonical URL</label>
-                                <input id="canonical_url" name="canonical_url" type="url">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="logo_path">Logo Path</label>
-                                <input id="logo_path" name="logo_path" type="text" placeholder="assets/img/logo/gland-header-icon.gif">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="header_icon_path">Header Icon Path</label>
-                                <input id="header_icon_path" name="header_icon_path" type="text" placeholder="assets/img/logo/gland-header-icon.gif">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="favicon_path">Favicon Path</label>
-                                <input id="favicon_path" name="favicon_path" type="text" placeholder="assets/img/logo/favicon.png">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="preloader_text">Preloader Text</label>
-                                <input id="preloader_text" name="preloader_text" type="text" placeholder="GLAND">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="youtube_url">YouTube URL</label>
-                                <input id="youtube_url" name="youtube_url" type="url">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="github_url">GitHub URL</label>
-                                <input id="github_url" name="github_url" type="url">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="instagram_url">Instagram URL</label>
-                                <input id="instagram_url" name="instagram_url" type="url">
-                            </div>
-
-                            <div class="gland-field">
-                                <label for="linkedin_url">LinkedIn URL</label>
-                                <input id="linkedin_url" name="linkedin_url" type="url">
-                            </div>
-                        </div>
-
-                        <div class="gland-checkbox-row">
-                            <label>
-                                <input type="checkbox" name="is_active" checked>
-                                Active
-                            </label>
-                        </div>
-
-                        <div class="gland-actions">
-                            <button class="gland-button lime" type="submit">
-                                Save Site Identity
-                            </button>
-                            <button class="gland-button secondary" type="button" data-reset-site-identity>
-                                Reset
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <aside class="gland-card gland-identity-preview">
-                    <img class="gland-identity-logo" data-preview-logo src="../assets/img/logo/gland-header-icon.gif" alt="Site identity preview">
-                    <h3 class="gland-identity-title" data-preview-title>Site title</h3>
-                    <p class="gland-identity-description" data-preview-description>Meta description preview.</p>
-
-                    <div class="gland-identity-small-list">
-                        <span data-preview-canonical>Canonical URL</span>
-                        <span data-preview-preloader>Preloader: GLAND</span>
+            <div class="gland-container">
+                <header class="gland-page-header">
+                    <div>
+                        <p class="gland-eyebrow">Brand & SEO CMS</p>
+                        <h1 class="gland-title">Site Identity</h1>
+                        <p class="gland-subtitle">Manage metadata, logo paths, favicon, and social links.</p>
                     </div>
 
-                    <div class="gland-identity-small-list" data-preview-socials></div>
-                </aside>
-            </section>
+                    <button type="button" class="gland-btn" data-refresh-page>
+                        <i class="ti ti-refresh me-2"></i> Refresh
+                    </button>
+                </header>
+
+                <p class="gland-status-text" data-page-status>Loading site identity...</p>
+
+<form class="gland-panel" data-singleton-api="/api/site-identity">
+    <div class="gland-panel-header">
+        <h2 class="gland-panel-title">Brand & SEO</h2>
+    </div>
+    <div class="gland-panel-body">
+        <div class="gland-form-grid">
+            <div class="gland-field span-2"><label>Site Title</label><input name="site_title" placeholder="Gland Siahaan | AI Engineer"></div>
+            <div class="gland-field span-2"><label>Meta Description</label><textarea name="meta_description" placeholder="SEO description"></textarea></div>
+            <div class="gland-field span-2"><label>Canonical URL</label><input name="canonical_url" placeholder="https://..."></div>
+            <div class="gland-field"><label>Logo Path</label><input name="logo_path" placeholder="assets/img/logo/..."></div>
+            <div class="gland-field"><label>Header Icon Path</label><input name="header_icon_path" placeholder="assets/img/logo/..."></div>
+            <div class="gland-field"><label>Favicon Path</label><input name="favicon_path" placeholder="assets/img/logo/favicon.png"></div>
+            <div class="gland-field"><label>Preloader Text</label><input name="preloader_text" placeholder="GLAND"></div>
+            <div class="gland-field span-2"><label>YouTube URL</label><input name="youtube_url" placeholder="https://youtube.com/..."></div>
+            <div class="gland-field span-2"><label>GitHub URL</label><input name="github_url" placeholder="https://github.com/..."></div>
+            <div class="gland-field span-2"><label>Instagram URL</label><input name="instagram_url" placeholder="https://instagram.com/..."></div>
+            <div class="gland-field span-2"><label>LinkedIn URL</label><input name="linkedin_url" placeholder="https://linkedin.com/..."></div>
+        </div>
+        <div class="gland-form-actions">
+            <button class="gland-btn gland-btn-primary" type="submit">Save Site Identity</button>
+        </div>
+    </div>
+</form>
+            </div>
         </main>
     </div>
 
-    <script src="assets/js/site-identity.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD START -->
-  <script src="assets/js/admin-auth-guard.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD END -->
-  <script src="assets/js/admin-polish.js"></script>
-    <script src="assets/js/admin-clean-v3.js"></script>
+    <script src="assets/js/admin-auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="assets/js/admin-tabler-shell.js"></script>
+    <script src="assets/js/singleton-tabler.js"></script>
 </body>
 </html>
