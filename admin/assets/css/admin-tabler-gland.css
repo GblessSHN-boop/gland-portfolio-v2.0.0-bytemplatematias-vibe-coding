@@ -643,3 +643,112 @@ button.logout:not(.gland-btn),
 }
 
 /* GLAND TABLER FULL ADMIN EXTENSION END */
+
+/* GLAND SIDEBAR AND LOGOUT FIX START */
+
+/* Make sidebar behave like a real layout, not a trapped elevator. */
+.gland-sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.gland-brand {
+  flex: 0 0 auto !important;
+  margin-bottom: 34px !important;
+}
+
+.gland-nav {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 4px !important;
+  padding-bottom: 18px !important;
+}
+
+.gland-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gland-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+}
+
+.gland-sidebar-footer {
+  position: static !important;
+  flex: 0 0 auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin-top: 18px !important;
+  padding-top: 18px !important;
+  border-top: 1px solid rgba(255,255,255,0.10) !important;
+  background: #111113 !important;
+}
+
+.gland-sidebar-footer .gland-btn {
+  width: 100% !important;
+}
+
+/* Kill old floating logout injected by previous admin scripts/styles. */
+body > button.logout,
+body > a.logout,
+body > #logoutButton:not([data-admin-logout]),
+body > button#logoutButton:not([data-admin-logout]),
+body > .admin-logout,
+body > .admin-logout-button,
+body > .logout-button,
+body > [class*="logout"]:not(.gland-btn):not(.gland-sidebar-footer):not(.gland-nav-link) {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* If any legacy logout survives with fixed position, bury it. */
+button.logout:not([data-admin-logout]),
+a.logout:not([data-admin-logout]),
+.admin-logout-button,
+.logout-button {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Prevent content from hiding behind browser / accidental old fixed buttons. */
+.gland-main {
+  padding-bottom: 96px !important;
+}
+
+/* Keep tables readable instead of becoming horizontal punishment. */
+.table-responsive,
+.gland-panel {
+  max-width: 100% !important;
+}
+
+.gland-table {
+  min-width: 760px;
+}
+
+@media (max-width: 980px) {
+  .gland-sidebar {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .gland-nav {
+    overflow: visible !important;
+  }
+
+  .gland-sidebar-footer {
+    margin-top: 16px !important;
+  }
+
+  .gland-table {
+    min-width: 680px;
+  }
+}
+
+/* GLAND SIDEBAR AND LOGOUT FIX END */
