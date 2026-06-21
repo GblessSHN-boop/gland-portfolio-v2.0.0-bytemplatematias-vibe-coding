@@ -1121,3 +1121,107 @@ body > .admin-logout-button {
 }
 
 /* GLAND UNIFIED ADMIN SHELL END */
+
+
+/* GLAND ADMIN CUSTOM FONT START */
+
+@font-face {
+  font-family: "GlandAdminLocal";
+  src: url("../fonts/=font-20260621152537") format("woff2");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --gland-admin-font: "GlandAdminLocal", "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+/* Apply selected local font to the entire admin UI */
+html,
+body,
+.gland-page,
+.gland-sidebar,
+.gland-main,
+.gland-container,
+.gland-panel,
+.gland-nav-link,
+.gland-btn,
+.gland-title,
+.gland-subtitle,
+.gland-eyebrow,
+.gland-brand-title,
+.gland-brand-subtitle,
+.gland-panel-title,
+.gland-stat-label,
+.gland-stat-value,
+.gland-field label,
+.gland-field input,
+.gland-field textarea,
+.gland-field select,
+.gland-list-card-title,
+.gland-list-card-meta,
+.gland-message-name,
+.gland-message-meta,
+.gland-message-text,
+.gland-message-note,
+.gland-message-tab,
+.gland-message-badge,
+.gland-table,
+.gland-table th,
+.gland-table td,
+button,
+input,
+textarea,
+select,
+label,
+a,
+p,
+span,
+div,
+small,
+td,
+th {
+  font-family: var(--gland-admin-font) !important;
+}
+
+/* Keep spacing readable. Some local fonts are drama queens. */
+body {
+  letter-spacing: -0.004em !important;
+}
+
+.gland-title {
+  letter-spacing: -0.04em !important;
+  line-height: 1.06 !important;
+}
+
+.gland-brand-title,
+.gland-panel-title,
+.gland-list-card-title,
+.gland-message-name,
+.gland-stat-value {
+  letter-spacing: -0.032em !important;
+  line-height: 1.12 !important;
+}
+
+.gland-subtitle,
+.gland-list-card-meta,
+.gland-message-meta,
+.gland-message-text,
+.gland-field input,
+.gland-field textarea,
+.gland-field select,
+.gland-table td {
+  letter-spacing: 0 !important;
+  line-height: 1.62 !important;
+}
+
+.gland-nav-link,
+.gland-btn,
+.gland-message-tab,
+.gland-message-badge,
+.gland-eyebrow {
+  letter-spacing: -0.006em !important;
+}
+
+/* GLAND ADMIN CUSTOM FONT END */
