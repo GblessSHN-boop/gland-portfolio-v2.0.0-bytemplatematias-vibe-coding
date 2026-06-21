@@ -49,44 +49,35 @@ LOGIN_VERIFICATION_CODE_MINUTES = 10
 LOGIN_VERIFICATION_MAX_ATTEMPTS = 5
 LOGIN_VERIFICATION_DEBUG_RETURN_CODE = False
 
-# GLAND ALERT ROUTING CONFIG START
-SECURITY_ALERT_EMAILS = [
-    "owner@example.com",
-    "security@example.com",
-]
-
-ADMIN_CHANGE_ALERT_EMAILS = [
-    "security@example.com",
-]
-
-CONTACT_ALERT_EMAILS = [
-    "owner@example.com",
-    "security@example.com",
-]
-
-IP_GEOLOCATION_ENABLED = False
-IPINFO_TOKEN = ""
-# GLAND ALERT ROUTING CONFIG END
-
 # GLAND ACTIVITY LOG CONFIG START
 ACTIVITY_LOG_RETENTION_DAYS = 180
 ACTIVITY_LOG_AUTO_REFRESH_SECONDS = 5
 # GLAND ACTIVITY LOG CONFIG END
 
-# GLAND CLEAR SECURITY ALERT CONFIG START
+# GLAND ALERT RECIPIENT ROUTING V3 START
+# Personal inbox only receives frontend contact messages and login alerts for the personal admin account.
+LOGIN_SECURITY_ALERT_EMAILS = [
+    "personal@example.com",
+    "monitoring@example.com",
+]
+
+# Non-login security alerts only go to the monitoring inbox.
 SECURITY_ALERT_EMAILS = [
-    "owner@example.com",
-    "security@example.com",
+    "monitoring@example.com",
 ]
 
+# CMS change alerts only go to the monitoring inbox.
 ADMIN_CHANGE_ALERT_EMAILS = [
-    "security@example.com",
+    "monitoring@example.com",
 ]
 
+# Frontend contact messages go to both inboxes.
 CONTACT_ALERT_EMAILS = [
-    "owner@example.com",
-    "security@example.com",
+    "personal@example.com",
+    "monitoring@example.com",
 ]
 
 SMTP_FROM_NAME = "GLAND Portfolio CMS"
-# GLAND CLEAR SECURITY ALERT CONFIG END
+ADMIN_LOGIN_URL = "https://example.com/admin/login.html"
+ADMIN_SECURITY_URL = "https://example.com/admin/login.html"
+# GLAND ALERT RECIPIENT ROUTING V3 END
