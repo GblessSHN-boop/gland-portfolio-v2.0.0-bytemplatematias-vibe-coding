@@ -1,74 +1,133 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#09090b]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages | GLAND Portfolio Admin</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
-  <link rel="stylesheet" href="assets/css/admin-polish.css" />
-    <link rel="stylesheet" href="assets/css/messages-workflow.css">
-    <link rel="stylesheet" href="assets/css/admin-global-ui.css">
-    <link rel="stylesheet" href="assets/css/admin-messages-refine.css">
+    <title>Messages Inbox | GLAND Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar minimalis ala Linear */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #121214; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+    </style>
 </head>
-<body>
-    <div class="gland-admin-shell">
-        <aside class="gland-sidebar">
-            <div class="gland-brand">
-                <div class="gland-brand-mark">G</div>
+<body class="h-full text-gray-200 antialiased flex">
+
+    <aside class="w-64 bg-[#121214] border-r border-[#27272a] flex flex-col justify-between fixed h-full z-10">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-8 h-8 rounded-lg bg-[#84cc16] flex items-center justify-center font-bold text-black text-sm">G</div>
                 <div>
-                    <h1 class="gland-brand-title">GLAND Admin</h1>
-                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                    <h2 class="text-sm font-semibold text-white tracking-tight">GLAND Admin</h2>
+                    <p class="text-xs text-gray-500">Portfolio CMS</p>
                 </div>
             </div>
-
-            <nav class="gland-nav" aria-label="Admin navigation">
-                <a href="messages.html" class="is-active">Messages</a>
-                <a href="projects.html">Projects</a>
-                <a href="highlights.html">Highlights</a>
-                <a href="personal-info.html">Personal Info</a>
-                <a href="hero-content.html">Hero Content</a>
-                <a href="site-identity.html">Site Identity</a>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="page-editor.html">Page Editor</a>
-                <a href="media.html">Media</a>
-                <a href="analytics.html">Analytics</a>
-                <a href="settings.html">Settings</a>
+            
+            <nav class="space-y-1">
+                <a href="/admin/messages.html" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md bg-zinc-800 text-[#84cc16] border border-zinc-700/50">
+                    <span>Messages</span>
+                </a>
+                <a href="/admin/projects.html" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white hover:bg-zinc-900 transition">
+                    <span>Projects</span>
+                </a>
+                <a href="/admin/highlights.html" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white hover:bg-zinc-900 transition">
+                    <span>Highlights</span>
+                </a>
+                <a href="/admin/personal-info.html" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white hover:bg-zinc-900 transition">
+                    <span>Personal Info</span>
+                </a>
+                <a href="/admin/dashboard.html" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white hover:bg-zinc-900 transition">
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin/analytics.html" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white hover:bg-zinc-900 transition">
+                    <span>Analytics</span>
+                </a>
             </nav>
-        </aside>
+        </div>
 
-        <main class="gland-main">
-            <header class="gland-page-header">
+        <div class="p-4 border-t border-[#27272a]">
+            <a href="/admin/logout" class="flex items-center justify-center w-full px-4 py-2 text-xs font-semibold text-gray-400 bg-zinc-900 border border-[#27272a] rounded-lg hover:bg-red-950/30 hover:text-red-400 hover:border-red-900/50 transition duration-200">
+                Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 min-h-screen pl-64 bg-[#09090b]">
+        <div class="max-w-5xl mx-auto px-8 py-8">
+            
+            <header class="flex items-center justify-between border-b border-[#27272a] pb-6 mb-8">
                 <div>
-                    <p class="gland-kicker">Contact Inbox</p>
-                    <h2 class="gland-page-title">Messages</h2>
-                    <p class="gland-page-description">
-                        Manage contact messages stored in MySQL. Mark leads as read, approved,
-                        rejected, archived, or remove spam from the inbox.
-                    </p>
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Contact Inbox</h1>
+                    <p class="text-sm text-gray-400 mt-1">Manage, review, and archive contact submissions from your public site.</p>
                 </div>
-
-                <div class="gland-toolbar">
-                    <button class="gland-button" type="button" data-refresh-messages>
-                        Refresh
-                    </button>
+                <div class="flex items-center gap-4">
+                    <div class="bg-[#121214] border border-[#27272a] px-3 py-1.5 rounded-md text-xs text-gray-400 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Auto refresh: ON
+                    </div>
                 </div>
             </header>
 
-            <p class="gland-page-description" data-page-status></p>
-
-            <section class="gland-message-list" data-message-list aria-live="polite">
-                <div class="gland-card gland-empty">
-                    Loading messages from MySQL...
+            <section class="mb-8">
+                <div class="flex border-b border-zinc-800 gap-2">
+                    <a href="?status=new" class="px-4 py-2.5 text-sm font-medium border-b-2 border-[#84cc16] text-[#84cc16]">New Requests</a>
+                    <a href="?status=read" class="px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-gray-200 border-b-2 border-transparent">Read</a>
+                    <a href="?status=approved" class="px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-gray-200 border-b-2 border-transparent">Approved</a>
+                    <a href="?status=rejected" class="px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-gray-200 border-b-2 border-transparent">Rejected</a>
+                    <a href="?status=archived" class="px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-gray-200 border-b-2 border-transparent">Archived</a>
                 </div>
             </section>
-        </main>
-    </div>
 
-    <script src="assets/js/messages.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD START -->
-  <script src="assets/js/admin-auth-guard.js"></script>
-  <!-- GLAND ADMIN AUTH GUARD END -->
-  <script src="assets/js/admin-polish.js"></script>
-    <script src="assets/js/messages-workflow.js"></script>
+            <section class="space-y-4">
+                <div class="bg-[#121214] border border-[#27272a] rounded-xl p-6 transition hover:border-zinc-700">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-semibold text-white">Gland Siahaan</h3>
+                            <div class="flex items-center gap-2 mt-1 text-xs text-gray-400">
+                                <span class="text-gray-300">glandjermanoblessedsiahaan@gmail.com</span>
+                                <span class="text-zinc-600">•</span>
+                                <span>2026-06-21 13:39:04</span>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-[11px] font-bold tracking-wider uppercase border border-blue-500/20">
+                            Read
+                        </span>
+                    </div>
+
+                    <div class="bg-[#09090b] border border-[#27272a] rounded-lg p-4 my-4">
+                        <p class="text-sm font-medium text-zinc-400 uppercase text-[10px] tracking-wider mb-1">Message Content:</p>
+                        <p class="text-sm text-gray-300 leading-relaxed">Are you okay?</p>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-zinc-800/60 flex items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <input type="text" placeholder="Add internal admin note..." class="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-1.5 text-xs text-gray-300 placeholder-gray-600 focus:outline-none focus:border-zinc-600 transition">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="bg-[#84cc16] text-black font-semibold text-xs px-3 py-1.5 rounded-md hover:bg-[#65a30d] transition">Approve</button>
+                            <button class="bg-zinc-800 text-gray-300 border border-zinc-700 text-xs px-3 py-1.5 rounded-md hover:bg-zinc-700 transition">Reject</button>
+                            <button class="bg-red-950/40 text-red-400 border border-red-900/40 text-xs px-3 py-1.5 rounded-md hover:bg-red-900/60 transition">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
 </body>
 </html>
