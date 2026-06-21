@@ -1,0 +1,211 @@
+/* GLAND ADMIN MESSAGES WORKFLOW ENHANCEMENT START */
+
+body.gland-messages-enhanced {
+  --message-panel-bg: rgba(13, 17, 13, 0.92);
+  --message-panel-border: rgba(190, 255, 0, 0.22);
+  --message-text-strong: #f5ffe8;
+  --message-text-soft: rgba(245, 255, 232, 0.72);
+  --message-accent: #bfff00;
+  --message-danger: #ff7f8a;
+  --message-muted-bg: rgba(255, 255, 255, 0.06);
+}
+
+.gland-messages-workflow {
+  margin: 22px 0 24px;
+  padding: 18px;
+  border: 1px solid var(--message-panel-border);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(190, 255, 0, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(15, 20, 13, 0.96), rgba(6, 8, 6, 0.92));
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+}
+
+.gland-messages-workflow__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.gland-messages-workflow__eyebrow {
+  margin: 0 0 6px;
+  color: var(--message-accent);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.gland-messages-workflow__title {
+  margin: 0;
+  color: var(--message-text-strong);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.gland-messages-workflow__desc {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--message-text-soft);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.gland-messages-workflow__refresh {
+  min-width: 230px;
+  padding: 12px 14px;
+  border: 1px solid rgba(190, 255, 0, 0.25);
+  border-radius: 18px;
+  background: rgba(190, 255, 0, 0.08);
+  color: var(--message-text-strong);
+  font-weight: 800;
+}
+
+.gland-messages-workflow__refresh strong {
+  color: var(--message-accent);
+}
+
+.gland-messages-workflow__steps {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.gland-messages-workflow__step {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.gland-messages-workflow__step span {
+  display: block;
+  color: var(--message-accent);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gland-messages-workflow__step small {
+  display: block;
+  margin-top: 6px;
+  color: var(--message-text-soft);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.gland-message-card {
+  position: relative;
+  background:
+    radial-gradient(circle at top left, rgba(190, 255, 0, 0.10), transparent 26%),
+    rgba(13, 17, 13, 0.96) !important;
+  border: 1px solid rgba(190, 255, 0, 0.18) !important;
+  color: var(--message-text-strong) !important;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.24) !important;
+}
+
+.gland-message-card,
+.gland-message-card * {
+  color: inherit;
+}
+
+.gland-message-card p,
+.gland-message-card small,
+.gland-message-card .muted,
+.gland-message-card [class*="muted"],
+.gland-message-card [class*="meta"] {
+  color: var(--message-text-soft) !important;
+}
+
+.gland-message-card textarea,
+.gland-message-card input,
+.gland-message-card select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  color: var(--message-text-strong) !important;
+}
+
+.gland-message-card button {
+  transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+}
+
+.gland-message-card button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.gland-message-card button[data-gland-action="delete"] {
+  border-color: rgba(255, 127, 138, 0.42) !important;
+  color: var(--message-danger) !important;
+}
+
+.gland-message-card__hint {
+  margin: 14px 0 0;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: rgba(190, 255, 0, 0.08);
+  border: 1px solid rgba(190, 255, 0, 0.18);
+  color: var(--message-text-soft) !important;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.gland-new-message-pulse {
+  animation: glandMessagePulse 1.4s ease 0s 2;
+}
+
+.gland-messages-toast {
+  position: fixed;
+  right: 26px;
+  bottom: 98px;
+  z-index: 9999;
+  max-width: 360px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(190, 255, 0, 0.34);
+  background: rgba(10, 13, 10, 0.96);
+  color: var(--message-text-strong);
+  box-shadow: 0 22px 80px rgba(0, 0, 0, 0.45);
+  font-weight: 800;
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.gland-messages-toast.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@keyframes glandMessagePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(190, 255, 0, 0.42);
+  }
+
+  100% {
+    box-shadow: 0 0 0 18px rgba(190, 255, 0, 0);
+  }
+}
+
+@media (max-width: 980px) {
+  .gland-messages-workflow__steps {
+    grid-template-columns: repeat(2, minmax(130px, 1fr));
+  }
+
+  .gland-messages-workflow__refresh {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .gland-messages-workflow__steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* GLAND ADMIN MESSAGES WORKFLOW ENHANCEMENT END */
