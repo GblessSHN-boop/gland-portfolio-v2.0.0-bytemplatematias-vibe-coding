@@ -30,7 +30,7 @@ def is_email_alert_enabled() -> bool:
         _get_config("SMTP_HOST", ""),
         _get_config("SMTP_PORT", ""),
         _get_config("SMTP_USERNAME", ""),
-        _get_config("SMTP_APP_PASSWORD", ""),
+        _get_config("SMTP_APP_PASSWORD", "") or _get_config("SMTP_PASSWORD", ""),
         _get_config("ADMIN_ALERT_EMAIL", ""),
     ]
 
@@ -49,7 +49,7 @@ def send_email(subject: str, body: str, to_email: str = "") -> Dict[str, Any]:
     smtp_host = str(_get_config("SMTP_HOST", "smtp.gmail.com"))
     smtp_port = int(_get_config("SMTP_PORT", 587))
     smtp_username = str(_get_config("SMTP_USERNAME", ""))
-    smtp_password = str(_get_config("SMTP_APP_PASSWORD", ""))
+    smtp_password = str(_get_config("SMTP_APP_PASSWORD", "") or _get_config("SMTP_PASSWORD", ""))
     from_email = str(_get_config("SMTP_FROM_EMAIL", smtp_username) or smtp_username)
     to_email = str(to_email or _get_config("ADMIN_ALERT_EMAIL", ""))
 

@@ -1,3 +1,4 @@
+from backend.branded_mailer import send_contact_message_alert
 from backend.password_reset_service import request_admin_password_reset, reset_admin_password_with_token
 from backend.notification_service import send_admin_login_alert
 from backend.login_activity_service import create_login_event, update_login_event_alert_status
@@ -548,6 +549,23 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
 
         try:
             saved_message = create_message(name, email, subject, message)
+            try:
+                _contact_alert_payload = {}
+                if isinstance(saved_message, dict):
+                    _contact_alert_payload.update(saved_message)
+                _contact_alert_payload.setdefault("name", str(name or ""))
+                _contact_alert_payload.setdefault("email", str(email or ""))
+                _contact_alert_payload.setdefault("subject", str(subject or ""))
+                _contact_alert_payload.setdefault("message", str(message or ""))
+                _contact_alert_payload.setdefault("ip_address", self.client_address[0] if getattr(self, "client_address", None) else "-")
+                _contact_alert_payload.setdefault("user_agent", self.headers.get("User-Agent", ""))
+                try:
+                    _contact_alert_payload.setdefault("admin_messages_url", self._auth_request_base_url().rstrip("/") + "/admin/messages.html")
+                except Exception:
+                    _contact_alert_payload.setdefault("admin_messages_url", "http://127.0.0.1:8000/admin/messages.html")
+                send_contact_message_alert(_contact_alert_payload)
+            except Exception:
+                pass
 
             self._send_json(
                 201,
