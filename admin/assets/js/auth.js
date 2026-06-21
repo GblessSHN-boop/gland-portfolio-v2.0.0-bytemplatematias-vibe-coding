@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  window.__GLAND_AUTH_JS_VERSION__ = "loginfix-2step-v2";
+
   var form = document.getElementById("adminLoginForm");
   var message = document.getElementById("loginMessage");
   var button = document.getElementById("loginButton");
@@ -42,65 +44,48 @@
     }
   }
 
+  function getVerificationStep() {
+    return document.getElementById("loginVerificationStep");
+  }
+
   function getVerificationInput() {
     return document.getElementById("verificationCode");
   }
 
-  function ensureVerificationStep() {
-    if (!form || document.getElementById("loginVerificationStep")) {
-      return;
-    }
+  function resetVerificationMode() {
+    verificationState.active = false;
+    verificationState.challengeToken = "";
+    verificationState.username = "";
 
-    var wrapper = document.createElement("div");
-    wrapper.id = "loginVerificationStep";
-    wrapper.className = "verification-step";
-    wrapper.hidden = true;
-
-    wrapper.innerHTML = [
-      '<label for="verificationCode">6-Digit Verification Code</label>',
-      '<input id="verificationCode" name="verificationCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" />',
-      '<p class="verification-hint" id="verificationHint">Enter the code sent to your admin email.</p>',
-      '<button class="secondary-button" id="restartLoginButton" type="button">Use another account</button>'
-    ].join("");
-
+    var usernameInput = document.getElementById("username");
     var passwordInput = document.getElementById("password");
+    var codeInput = getVerificationInput();
+    var wrapper = getVerificationStep();
 
-    if (passwordInput && passwordInput.parentNode) {
-      passwordInput.insertAdjacentElement("afterend", wrapper);
-    } else {
-      form.insertBefore(wrapper, button);
+    if (usernameInput) usernameInput.disabled = false;
+    if (passwordInput) {
+      passwordInput.disabled = false;
+      passwordInput.value = "";
     }
+    if (codeInput) codeInput.value = "";
+    if (wrapper) wrapper.hidden = true;
 
+    setMessage("");
+    setLoading(false);
+  }
+
+  function bindRestartButton() {
     var restartButton = document.getElementById("restartLoginButton");
-    if (restartButton) {
-      restartButton.addEventListener("click", function () {
-        verificationState.active = false;
-        verificationState.challengeToken = "";
-        verificationState.username = "";
 
-        var usernameInput = document.getElementById("username");
-        var passwordInput = document.getElementById("password");
-        var codeInput = getVerificationInput();
+    if (!restartButton || restartButton.dataset.bound === "true") return;
 
-        if (usernameInput) usernameInput.disabled = false;
-        if (passwordInput) {
-          passwordInput.disabled = false;
-          passwordInput.value = "";
-        }
-        if (codeInput) codeInput.value = "";
-
-        wrapper.hidden = true;
-        setMessage("");
-        setLoading(false);
-      });
-    }
+    restartButton.dataset.bound = "true";
+    restartButton.addEventListener("click", resetVerificationMode);
   }
 
   function enterVerificationMode(payload, username) {
-    ensureVerificationStep();
-
     var data = (payload && payload.data) || {};
-    var wrapper = document.getElementById("loginVerificationStep");
+    var wrapper = getVerificationStep();
     var hint = document.getElementById("verificationHint");
     var usernameInput = document.getElementById("username");
     var passwordInput = document.getElementById("password");
@@ -109,6 +94,12 @@
     verificationState.active = true;
     verificationState.challengeToken = data.challenge_token || "";
     verificationState.username = username || "";
+
+    if (!verificationState.challengeToken) {
+      setMessage("Verification token missing from server response. Login flow needs backend check.");
+      verificationState.active = false;
+      return;
+    }
 
     if (usernameInput) usernameInput.disabled = true;
     if (passwordInput) passwordInput.disabled = true;
@@ -149,6 +140,7 @@
     fetch("/api/auth/me", {
       method: "GET",
       credentials: "same-origin",
+      cache: "no-store",
       headers: {
         "Accept": "application/json"
       }
@@ -159,7 +151,7 @@
       })
       .then(function (payload) {
         if (payload && payload.authenticated) {
-          window.location.href = getNextUrl();
+          window.location.replace(getNextUrl());
         }
       })
       .catch(function () {});
@@ -183,6 +175,7 @@
     return fetch("/api/auth/login", {
       method: "POST",
       credentials: "same-origin",
+      cache: "no-store",
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -193,13 +186,15 @@
       })
     })
       .then(function (response) {
-        return response.json().then(function (payload) {
-          return { ok: response.ok, payload: payload };
+        return response.json().catch(function () {
+          return {};
+        }).then(function (payload) {
+          return { ok: response.ok, status: response.status, payload: payload };
         });
       })
       .then(function (result) {
         if (!result.ok || !result.payload || !result.payload.success) {
-          throw new Error((result.payload && result.payload.message) || "Login failed.");
+          throw new Error((result.payload && (result.payload.message || result.payload.error)) || "Login failed.");
         }
 
         if (result.payload.requires_verification || (result.payload.data && result.payload.data.requires_verification)) {
@@ -207,7 +202,12 @@
           return;
         }
 
-        window.location.href = getNextUrl();
+        if (result.payload.authenticated) {
+          window.location.replace(getNextUrl());
+          return;
+        }
+
+        throw new Error("Login response did not include verification or authenticated session.");
       });
   }
 
@@ -232,6 +232,7 @@
     return fetch("/api/auth/verify-login", {
       method: "POST",
       credentials: "same-origin",
+      cache: "no-store",
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -242,16 +243,18 @@
       })
     })
       .then(function (response) {
-        return response.json().then(function (payload) {
-          return { ok: response.ok, payload: payload };
+        return response.json().catch(function () {
+          return {};
+        }).then(function (payload) {
+          return { ok: response.ok, status: response.status, payload: payload };
         });
       })
       .then(function (result) {
         if (!result.ok || !result.payload || !result.payload.success) {
-          throw new Error((result.payload && result.payload.message) || "Verification failed.");
+          throw new Error((result.payload && (result.payload.message || result.payload.error)) || "Verification failed.");
         }
 
-        window.location.href = getNextUrl();
+        window.location.replace(getNextUrl());
       });
   }
 
@@ -259,7 +262,7 @@
     return;
   }
 
-  ensureVerificationStep();
+  bindRestartButton();
   checkExistingSession();
 
   form.addEventListener("submit", function (event) {
