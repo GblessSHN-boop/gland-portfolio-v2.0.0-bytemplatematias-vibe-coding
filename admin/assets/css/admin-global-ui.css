@@ -148,3 +148,112 @@ td {
     border-color: var(--border-subtle) !important;
     text-shadow: none !important;
 }
+
+/* ==========================================================================
+   MESSAGES WORKFLOW SPECIFIC REFACTOR (Linear / Stripe SaaS Style)
+   ========================================================================== */
+
+/* 1. Jinakkan area Alur Kerja / Inbox Workflow */
+h5, .workflow-title, h5:contains("INBOX WORKFLOW") {
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+}
+
+/* Memperkecil teks indikator panah agar subtle */
+.workflow-indicator, h2, .inbox-workflow-flow {
+    font-size: var(--font-size-sm) !important;
+    color: var(--text-secondary) !important;
+    font-weight: 400 !important;
+    opacity: 0.8;
+}
+
+/* 2. Tata Filter Menu Buttons agar berjejer rapi sebagai Tab */
+.filter-container, div:has(> .badge-new), div:has(> button) {
+    display: flex !important;
+    gap: 8px !important;
+    margin-bottom: 24px !important;
+    border-bottom: 1px solid var(--border-subtle) !important;
+    padding-bottom: 12px !important;
+}
+
+/* Bereskan tombol-tombol filter status */
+.filter-container button, .filter-container .btn, div:has(> .badge-new) a, div:has(> .badge-new) button {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--text-secondary) !important;
+    font-size: 13px !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+}
+
+/* 3. Perbaikan Total Message Item (Ubah Teks Polos menjadi Card Mewah) */
+.message-item, .msg-card, div:has(> h3) {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 20px !important;
+    margin-top: 16px !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto !important; /* Pisahkan info pesan dengan tombol status kanan */
+    gap: 16px !important;
+    position: relative !important;
+}
+
+/* Buat nama pengirim menonjol dengan benar */
+.message-item h3, .message-item .sender-name {
+    font-size: var(--font-size-base) !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    margin: 0 0 4px 0 !important;
+}
+
+/* Meta info (Email & Waktu) */
+.message-item p small, .message-meta {
+    color: var(--text-muted) !important;
+    font-size: 13px !important;
+}
+
+/* Isi pesan (Are you okay?) */
+.message-body, .message-item p:not(small) {
+    font-size: 14px !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.6 !important;
+    background: var(--bg-input) !important;
+    padding: 12px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--border-subtle) !important;
+    margin: 12px 0 !important;
+}
+
+/* 4. Bungkam Tombol Logout Floating yang tersisa / Keras Kepala */
+.logout-btn, #logout-btn-floating, button:contains("Logout"), .btn-success, [style*="position: fixed"] {
+    position: static !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-color: var(--border-subtle) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+
+.logout-btn:hover {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+/* Status Bulat Kanan (Ubah badge bulat aneh menjadi badge minimalis modern) */
+.status-indicator, div[style*="border-radius: 50%"], .status-circle {
+    border-radius: 4px !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--accent) !important;
+}
