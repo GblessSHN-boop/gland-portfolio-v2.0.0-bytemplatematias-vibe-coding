@@ -1,3 +1,4 @@
+from backend.activity_service import get_admin_activity_summary, get_recent_admin_activity
 from backend.branded_mailer import send_contact_message_alert
 from backend.password_reset_service import request_admin_password_reset, reset_admin_password_with_token
 from backend.notification_service import send_admin_login_alert
@@ -255,6 +256,10 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                         "error": str(error),
                     },
                 )
+            return
+
+        if path in ("/api/admin/activity", "/api/admin-activity"):
+            self._handle_get_admin_activity()
             return
 
         if path == "/api/messages":
@@ -1126,6 +1131,44 @@ class GlandPortfolioHandler(SimpleHTTPRequestHandler):
                     "error": str(error),
                 },
             )
+
+
+    # GLAND ADMIN ACTIVITY API START
+    def _handle_get_admin_activity(self):
+        try:
+            from urllib.parse import parse_qs, urlparse
+
+            parsed_url = urlparse(self.path)
+            query = parse_qs(parsed_url.query)
+
+            try:
+                limit = int((query.get("limit") or ["80"])[0])
+            except Exception:
+                limit = 80
+
+            limit = max(1, min(limit, 200))
+
+            self._send_json(
+                200,
+                {
+                    "success": True,
+                    "message": "Admin activity loaded.",
+                    "data": {
+                        "items": get_recent_admin_activity(limit=limit),
+                        "summary": get_admin_activity_summary(),
+                    },
+                },
+            )
+        except Exception as error:
+            self._send_json(
+                500,
+                {
+                    "success": False,
+                    "message": "Failed to load admin activity.",
+                    "error": str(error),
+                },
+            )
+    # GLAND ADMIN ACTIVITY API END
 
     # GLAND ADMIN AUTH METHODS START
     def _auth_read_json(self):

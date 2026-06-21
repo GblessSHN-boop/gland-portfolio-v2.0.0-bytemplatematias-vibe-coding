@@ -1,4 +1,5 @@
 from backend.db import get_connection
+from backend.activity_service import create_admin_activity
 
 
 VALID_MESSAGE_STATUSES = {"new", "read", "approved", "rejected", "archived"}
@@ -29,6 +30,19 @@ def create_message(name, email, subject, message):
         connection.commit()
 
         message_id = cursor.lastrowid
+
+        # GLAND MESSAGE ACTIVITY CREATE START
+        try:
+            create_admin_activity(
+                action="message_created",
+                entity_type="message",
+                entity_id=message_id,
+                description="New contact message received.",
+                metadata={"name": name, "email": email, "subject": subject},
+            )
+        except Exception:
+            pass
+        # GLAND MESSAGE ACTIVITY CREATE END
 
         return {
             "id": message_id,
@@ -127,7 +141,22 @@ def update_message(message_id, status=None, admin_note=None):
         if cursor.rowcount == 0:
             return None
 
-        return get_message_by_id(message_id)
+        updated_message = get_message_by_id(message_id)
+
+        # GLAND MESSAGE ACTIVITY UPDATE START
+        try:
+            create_admin_activity(
+                action="message_updated",
+                entity_type="message",
+                entity_id=message_id,
+                description="Message status or note updated.",
+                metadata={"status": status, "admin_note_changed": admin_note is not None},
+            )
+        except Exception:
+            pass
+        # GLAND MESSAGE ACTIVITY UPDATE END
+
+        return updated_message
     except Exception:
         connection.rollback()
         raise
@@ -144,7 +173,22 @@ def delete_message(message_id):
         cursor.execute("DELETE FROM messages WHERE id = %s", (message_id,))
         connection.commit()
 
-        return cursor.rowcount > 0
+        deleted = cursor.rowcount > 0
+
+        # GLAND MESSAGE ACTIVITY DELETE START
+        if deleted:
+            try:
+                create_admin_activity(
+                    action="message_deleted",
+                    entity_type="message",
+                    entity_id=message_id,
+                    description="Message deleted from admin inbox.",
+                )
+            except Exception:
+                pass
+        # GLAND MESSAGE ACTIVITY DELETE END
+
+        return deleted
     except Exception:
         connection.rollback()
         raise
