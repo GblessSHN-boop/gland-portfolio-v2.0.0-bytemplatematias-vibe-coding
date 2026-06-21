@@ -1929,3 +1929,202 @@ body {
 }
 
 /* GLAND ADMIN ACTIVITY UI END */
+
+
+/* GLAND COMPACT SIDEBAR START */
+
+/*
+  Compact, ordered admin sidebar.
+  Because forcing users to scroll just to find Dashboard is how software becomes furniture.
+*/
+
+:root {
+  --gland-sidebar-width: 292px;
+}
+
+.gland-page {
+  grid-template-columns: var(--gland-sidebar-width) minmax(0, 1fr) !important;
+}
+
+.gland-sidebar {
+  width: var(--gland-sidebar-width) !important;
+  min-width: var(--gland-sidebar-width) !important;
+  max-width: var(--gland-sidebar-width) !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  padding: 24px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.gland-brand {
+  flex: 0 0 auto !important;
+  gap: 12px !important;
+  margin-bottom: 28px !important;
+}
+
+.gland-brand-mark {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  border-radius: 13px !important;
+  font-size: 16px !important;
+  line-height: 44px !important;
+}
+
+.gland-brand-title {
+  font-size: 15px !important;
+  font-weight: 650 !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.003em !important;
+}
+
+.gland-brand-subtitle {
+  margin-top: 3px !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}
+
+.gland-nav {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: grid !important;
+  align-content: start !important;
+  gap: 5px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 5px 0 0 !important;
+  margin: 0 !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent !important;
+}
+
+.gland-nav::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.gland-nav::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.gland-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-radius: 999px !important;
+}
+
+.gland-nav-link {
+  min-height: 38px !important;
+  padding: 9px 11px !important;
+  gap: 10px !important;
+  border-radius: 10px !important;
+  font-size: 13.5px !important;
+  font-weight: 540 !important;
+  letter-spacing: 0.004em !important;
+  line-height: 1.25 !important;
+}
+
+.gland-nav-link i {
+  width: 18px !important;
+  min-width: 18px !important;
+  font-size: 17px !important;
+}
+
+.gland-nav-link.is-active,
+.gland-nav-link.active,
+.gland-nav-link[aria-current="page"] {
+  color: #9dff00 !important;
+  background: rgba(255, 255, 255, 0.075) !important;
+  border-color: rgba(157, 255, 0, 0.34) !important;
+  box-shadow: inset 3px 0 0 #9dff00 !important;
+}
+
+.gland-nav-link.is-active i,
+.gland-nav-link.active i,
+.gland-nav-link[aria-current="page"] i {
+  color: #9dff00 !important;
+}
+
+.gland-sidebar-footer {
+  flex: 0 0 auto !important;
+  margin-top: 14px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.09) !important;
+}
+
+.gland-sidebar-footer .gland-btn,
+.gland-sidebar-logout {
+  min-height: 42px !important;
+  padding: 10px 14px !important;
+  border-radius: 11px !important;
+  font-size: 13.5px !important;
+  font-weight: 560 !important;
+}
+
+.gland-main {
+  min-width: 0 !important;
+  padding-left: 48px !important;
+  padding-right: 48px !important;
+}
+
+@media (max-height: 820px) {
+  .gland-sidebar {
+    padding-top: 20px !important;
+    padding-bottom: 18px !important;
+  }
+
+  .gland-brand {
+    margin-bottom: 20px !important;
+  }
+
+  .gland-nav {
+    gap: 3px !important;
+  }
+
+  .gland-nav-link {
+    min-height: 34px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+    font-size: 13px !important;
+  }
+
+  .gland-sidebar-footer {
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+  }
+
+  .gland-sidebar-footer .gland-btn,
+  .gland-sidebar-logout {
+    min-height: 38px !important;
+  }
+}
+
+@media (max-width: 980px) {
+  :root {
+    --gland-sidebar-width: 100%;
+  }
+
+  .gland-page {
+    grid-template-columns: 1fr !important;
+  }
+
+  .gland-sidebar {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .gland-nav {
+    overflow: visible !important;
+  }
+
+  .gland-main {
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+}
+
+/* GLAND COMPACT SIDEBAR END */
