@@ -72,3 +72,21 @@ IPINFO_TOKEN = ""
 ACTIVITY_LOG_RETENTION_DAYS = 180
 ACTIVITY_LOG_AUTO_REFRESH_SECONDS = 5
 # GLAND ACTIVITY LOG CONFIG END
+
+# GLAND CLEAR SECURITY ALERT CONFIG START
+SECURITY_ALERT_EMAILS = [
+    "owner@example.com",
+    "security@example.com",
+]
+
+ADMIN_CHANGE_ALERT_EMAILS = [
+    "security@example.com",
+]
+
+CONTACT_ALERT_EMAILS = [
+    "owner@example.com",
+    "security@example.com",
+]
+
+SMTP_FROM_NAME = "GLAND Portfolio CMS"
+# GLAND CLEAR SECURITY ALERT CONFIG END

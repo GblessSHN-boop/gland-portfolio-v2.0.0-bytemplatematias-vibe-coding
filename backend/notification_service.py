@@ -1148,3 +1148,798 @@ _gland_contact_fn = globals().get("send_gland_contact_alert")
 if callable(_gland_contact_fn) and not getattr(_gland_contact_fn, "_gland_activity_log_wrapped", False):
     globals()["send_gland_contact_alert"] = _gland_activity_wrap_contact(_gland_contact_fn)
 # GLAND ACTIVITY LOG INTEGRATION END
+
+# GLAND CLEAR SECURITY ALERT V2 START
+def _gland_clear_cfg(name, default=None):
+    try:
+        existing = globals().get("_gland_cfg")
+        if callable(existing):
+            return existing(name, default)
+    except Exception:
+        pass
+
+    try:
+        existing = globals().get("_get_config")
+        if callable(existing):
+            return existing(name, default)
+    except Exception:
+        pass
+
+    try:
+        import config
+        return getattr(config, name, default)
+    except Exception:
+        return default
+
+
+def _gland_clear_as_list(value):
+    if value is None:
+        return []
+
+    if isinstance(value, (list, tuple, set)):
+        items = value
+    else:
+        items = str(value).replace(";", ",").split(",")
+
+    cleaned = []
+
+    for item in items:
+        text = str(item or "").strip()
+
+        if text and text not in cleaned:
+            cleaned.append(text)
+
+    return cleaned
+
+
+def _gland_clear_security_recipients():
+    recipients = _gland_clear_as_list(_gland_clear_cfg("SECURITY_ALERT_EMAILS", []))
+
+    if recipients:
+        return recipients
+
+    recipients = _gland_clear_as_list(_gland_clear_cfg("ADMIN_SECURITY_EMAILS", []))
+
+    if recipients:
+        return recipients
+
+    recipients = _gland_clear_as_list(_gland_clear_cfg("ADMIN_ALERT_EMAILS", []))
+
+    if recipients:
+        return recipients
+
+    recipients = _gland_clear_as_list(_gland_clear_cfg("ADMIN_ALERT_EMAIL", ""))
+
+    if recipients:
+        return recipients
+
+    fallback = str(_gland_clear_cfg("SMTP_USERNAME", "") or "").strip()
+
+    return [fallback] if fallback else []
+
+
+def _gland_clear_change_recipients():
+    recipients = _gland_clear_as_list(_gland_clear_cfg("ADMIN_CHANGE_ALERT_EMAILS", []))
+
+    if recipients:
+        return recipients
+
+    recipients = _gland_clear_as_list(_gland_clear_cfg("ADMIN_CHANGE_EMAILS", []))
+
+    if recipients:
+        return recipients
+
+    return ["official.arcdev@gmail.com"]
+
+
+def _gland_clear_html_escape(value):
+    try:
+        import html
+        return html.escape(str(value if value is not None else "-"))
+    except Exception:
+        return str(value if value is not None else "-")
+
+
+def _gland_clear_trim(value, limit=900):
+    text = str(value if value is not None else "-")
+
+    if len(text) > limit:
+        return text[:limit] + "... [dipotong]"
+
+    return text
+
+
+def _gland_clear_safe_key(key):
+    text = str(key or "").lower()
+
+    blocked = [
+        "password",
+        "passwd",
+        "secret",
+        "token",
+        "cookie",
+        "session",
+        "csrf",
+        "code",
+        "otp",
+        "verification_code",
+    ]
+
+    return not any(word in text for word in blocked)
+
+
+def _gland_clear_safe_payload(payload):
+    safe = {}
+
+    for key, value in dict(payload or {}).items():
+        key_text = str(key)
+
+        if not _gland_clear_safe_key(key_text):
+            safe[key_text] = "[redacted]"
+        else:
+            safe[key_text] = _gland_clear_trim(value)
+
+    return safe
+
+
+def _gland_clear_collect_payload(*args, **kwargs):
+    payload = {}
+
+    for index, arg in enumerate(args):
+        if isinstance(arg, dict):
+            payload.update(arg)
+        elif isinstance(arg, str):
+            if index == 0:
+                payload.setdefault("event", arg)
+            else:
+                payload.setdefault("arg_{}".format(index), arg)
+        elif arg is not None:
+            payload.setdefault("arg_{}".format(index), repr(arg))
+
+    payload.update(kwargs or {})
+
+    return payload
+
+
+def _gland_clear_extract_event_name(payload):
+    payload = dict(payload or {})
+
+    for key in [
+        "event",
+        "event_name",
+        "event_type",
+        "activity",
+        "action",
+        "type",
+        "name",
+        "title",
+        "subject",
+    ]:
+        value = str(payload.get(key) or "").strip()
+
+        if value:
+            return value
+
+    return "admin_activity"
+
+
+def _gland_clear_bool_text(value):
+    text = str(value if value is not None else "").strip().lower()
+
+    if text in {"1", "true", "yes", "y", "success", "successful", "ok", "berhasil"}:
+        return "success"
+
+    if text in {"0", "false", "no", "n", "failed", "fail", "error", "denied", "invalid", "gagal"}:
+        return "failed"
+
+    return ""
+
+
+def _gland_clear_event_details(event_name, payload):
+    payload = dict(payload or {})
+    event_text = str(event_name or "").strip()
+    text = (event_text + " " + repr(payload)).lower()
+
+    explicit_status = (
+        _gland_clear_bool_text(payload.get("success"))
+        or _gland_clear_bool_text(payload.get("status"))
+        or _gland_clear_bool_text(payload.get("result"))
+    )
+
+    details = {
+        "label": "Aktivitas Keamanan Admin",
+        "subject_label": "Aktivitas Keamanan Admin",
+        "status": explicit_status or "info",
+        "stage": "Aktivitas admin.",
+        "meaning": "Sistem mencatat aktivitas keamanan pada area admin.",
+        "impact": "Periksa detail perangkat, IP, dan akun terkait.",
+        "severity": "normal",
+    }
+
+    if "login_verification_sent" in text or "verification_sent" in text or "otp_sent" in text or "code_sent" in text:
+        details.update({
+            "label": "Kode OTP Login Dikirim",
+            "subject_label": "OTP Dikirim, Belum Login Penuh",
+            "status": "info",
+            "stage": "Email dan password sudah benar. Sistem mengirim kode OTP.",
+            "meaning": "Ini baru percobaan login yang lolos password. Akun belum masuk dashboard sebelum OTP benar.",
+            "impact": "Belum ada session admin final yang dibuat.",
+            "severity": "normal",
+        })
+    elif "login_verification_success" in text or "verification_success" in text or "otp_success" in text:
+        details.update({
+            "label": "OTP Login Benar",
+            "subject_label": "OTP Benar",
+            "status": "success",
+            "stage": "Verifikasi OTP berhasil.",
+            "meaning": "Kode OTP yang dimasukkan valid.",
+            "impact": "Sistem dapat melanjutkan proses pembuatan session login.",
+            "severity": "normal",
+        })
+    elif "login_verification_failed" in text or "verification_failed" in text or "otp_failed" in text or "invalid_otp" in text or "wrong_otp" in text:
+        details.update({
+            "label": "OTP Login Gagal",
+            "subject_label": "OTP Salah atau Gagal",
+            "status": "failed",
+            "stage": "Verifikasi OTP gagal.",
+            "meaning": "Kode OTP yang dimasukkan salah, sudah kedaluwarsa, atau melewati batas percobaan.",
+            "impact": "Login ditolak. Session admin tidak dibuat dari percobaan ini.",
+            "severity": "high",
+        })
+    elif "login_success" in text or "signin_success" in text or "sign_in_success" in text:
+        details.update({
+            "label": "Login Berhasil",
+            "subject_label": "Login Berhasil, Session Dibuat",
+            "status": "success",
+            "stage": "Login final berhasil.",
+            "meaning": "Akun admin berhasil masuk setelah proses autentikasi selesai.",
+            "impact": "Session admin aktif dibuat untuk perangkat ini.",
+            "severity": "normal",
+        })
+    elif "login_failed" in text or "signin_failed" in text or "sign_in_failed" in text or "invalid_password" in text or "auth_failed" in text:
+        details.update({
+            "label": "Login Gagal",
+            "subject_label": "Login Gagal",
+            "status": "failed",
+            "stage": "Cek kredensial login gagal.",
+            "meaning": "Email, username, password, atau syarat login tidak valid.",
+            "impact": "Login ditolak. Session admin tidak dibuat.",
+            "severity": "high",
+        })
+    elif "logout" in text or "signout" in text or "sign_out" in text:
+        details.update({
+            "label": "Logout Admin",
+            "subject_label": "Logout Admin",
+            "status": explicit_status or "success",
+            "stage": "Admin keluar dari dashboard.",
+            "meaning": "Session admin diakhiri dari perangkat ini.",
+            "impact": "Akses dashboard pada session tersebut dihentikan.",
+            "severity": "normal",
+        })
+    elif "session_expired" in text or "session_invalid" in text or "session_revoked" in text:
+        details.update({
+            "label": "Session Admin Ditolak",
+            "subject_label": "Session Admin Ditolak",
+            "status": "failed",
+            "stage": "Validasi session gagal.",
+            "meaning": "Session hilang, kedaluwarsa, atau dicabut.",
+            "impact": "Akses dashboard ditolak sampai login ulang.",
+            "severity": "high",
+        })
+    elif "password_reset" in text or "reset_password" in text:
+        details.update({
+            "label": "Password Reset Admin",
+            "subject_label": "Password Reset Admin",
+            "status": explicit_status or "info",
+            "stage": "Proses reset password admin.",
+            "meaning": "Sistem mencatat tindakan terkait reset password.",
+            "impact": "Periksa apakah tindakan ini memang dilakukan oleh pemilik akun.",
+            "severity": "high",
+        })
+
+    return details
+
+
+def _gland_clear_category(event_name, payload):
+    text = (str(event_name or "") + " " + repr(payload or {})).lower()
+
+    security_keywords = [
+        "login",
+        "logout",
+        "otp",
+        "verification",
+        "auth",
+        "session",
+        "signin",
+        "signout",
+        "sign in",
+        "sign out",
+        "password",
+        "reset",
+        "failed",
+    ]
+
+    change_keywords = [
+        "create",
+        "created",
+        "update",
+        "updated",
+        "delete",
+        "deleted",
+        "upload",
+        "uploaded",
+        "edit",
+        "edited",
+        "change",
+        "changed",
+        "project",
+        "media",
+        "content",
+        "profile",
+        "settings",
+        "page",
+        "hero",
+        "site_identity",
+    ]
+
+    if any(keyword in text for keyword in security_keywords):
+        return "security"
+
+    if any(keyword in text for keyword in change_keywords):
+        return "change"
+
+    return "other"
+
+
+def _gland_clear_enrich_payload(payload):
+    payload = dict(payload or {})
+
+    existing = globals().get("_gland_enriched_payload")
+
+    if callable(existing):
+        try:
+            return existing(payload)
+        except Exception:
+            pass
+
+    try:
+        from flask import request, has_request_context
+
+        if has_request_context():
+            payload.setdefault("ip_address", request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip())
+            payload.setdefault("user_agent", request.headers.get("User-Agent", ""))
+            payload.setdefault("request_path", request.path)
+            payload.setdefault("request_method", request.method)
+    except Exception:
+        pass
+
+    try:
+        import datetime as _dt
+        payload.setdefault("time", _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    except Exception:
+        payload.setdefault("time", "-")
+
+    user_agent = str(payload.get("user_agent") or payload.get("userAgent") or "")
+    lower = user_agent.lower()
+
+    device_type = "Desktop"
+    browser = "Unknown browser"
+    os_name = "Unknown OS"
+
+    if "android" in lower:
+        os_name = "Android"
+    elif "iphone" in lower:
+        os_name = "iOS iPhone"
+    elif "ipad" in lower:
+        os_name = "iPadOS"
+    elif "windows nt 10" in lower:
+        os_name = "Windows 10 or Windows 11"
+    elif "windows" in lower:
+        os_name = "Windows"
+    elif "mac os x" in lower or "macintosh" in lower:
+        os_name = "macOS"
+    elif "linux" in lower:
+        os_name = "Linux"
+
+    if "edg/" in lower:
+        browser = "Microsoft Edge"
+    elif "opr/" in lower or "opera" in lower:
+        browser = "Opera"
+    elif "chrome/" in lower or "crios/" in lower:
+        browser = "Google Chrome"
+    elif "firefox/" in lower or "fxios/" in lower:
+        browser = "Mozilla Firefox"
+    elif "safari/" in lower:
+        browser = "Safari"
+
+    if "mobile" in lower or "android" in lower or "iphone" in lower:
+        device_type = "Mobile"
+    elif "ipad" in lower or "tablet" in lower:
+        device_type = "Tablet"
+
+    ip_address = str(payload.get("ip_address") or payload.get("ip") or payload.get("remote_addr") or "").strip()
+
+    payload.setdefault("device_type", device_type)
+    payload.setdefault("browser", browser)
+    payload.setdefault("operating_system", os_name)
+
+    if ip_address in {"127.0.0.1", "::1"} or ip_address.startswith("192.168.") or ip_address.startswith("10.") or ip_address.startswith("172.16."):
+        payload.setdefault("ip_location", "Localhost atau private network. Lokasi publik tidak tersedia.")
+        payload.setdefault("network_org", "Private network")
+    else:
+        payload.setdefault("ip_location", "-")
+        payload.setdefault("network_org", "-")
+
+    return payload
+
+
+def _gland_clear_send_email(recipients, subject, title, rows, intro=""):
+    recipients = _gland_clear_as_list(recipients)
+
+    if not recipients:
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "No recipients configured.",
+            "recipients": [],
+        }
+
+    try:
+        import smtplib
+        import ssl
+        from email.message import EmailMessage
+
+        smtp_host = str(_gland_clear_cfg("SMTP_HOST", "smtp.gmail.com") or "smtp.gmail.com").strip()
+        smtp_port = int(_gland_clear_cfg("SMTP_PORT", 587) or 587)
+        smtp_username = str(_gland_clear_cfg("SMTP_USERNAME", "") or "").strip()
+        smtp_password = str(
+            _gland_clear_cfg("SMTP_APP_PASSWORD", "")
+            or _gland_clear_cfg("SMTP_PASSWORD", "")
+            or ""
+        ).strip()
+
+        from_email = str(
+            _gland_clear_cfg("SMTP_FROM_EMAIL", "")
+            or smtp_username
+            or ""
+        ).strip()
+
+        from_name = str(
+            _gland_clear_cfg("SMTP_FROM_NAME", "GLAND Portfolio CMS")
+            or "GLAND Portfolio CMS"
+        ).strip()
+
+        if not smtp_username or not smtp_password:
+            return {
+                "sent": False,
+                "skipped": False,
+                "error": "SMTP username or password is missing.",
+                "recipients": recipients,
+            }
+
+        if not from_email:
+            from_email = smtp_username
+
+        plain_lines = [title, ""]
+
+        if intro:
+            plain_lines.extend([intro, ""])
+
+        for label, value in rows:
+            plain_lines.append("{} : {}".format(label, value))
+
+        plain = "\n".join(plain_lines)
+
+        html_rows = "\n".join(
+            [
+                "<tr><td style=\"padding:10px 12px;color:#64748b;border-bottom:1px solid #e5e7eb;width:210px;vertical-align:top;font-weight:700;\">{}</td><td style=\"padding:10px 12px;color:#0f172a;border-bottom:1px solid #e5e7eb;white-space:pre-wrap;\">{}</td></tr>".format(
+                    _gland_clear_html_escape(label),
+                    _gland_clear_html_escape(value),
+                )
+                for label, value in rows
+            ]
+        )
+
+        html_intro = ""
+
+        if intro:
+            html_intro = "<p style=\"margin:0 0 18px;color:#334155;font-size:14px;line-height:1.7;\">{}</p>".format(
+                _gland_clear_html_escape(intro)
+            )
+
+        html_body = """<!doctype html>
+<html>
+  <body style="margin:0;background:#f8fafc;padding:24px;font-family:Arial,Helvetica,sans-serif;">
+    <div style="max-width:820px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden;">
+      <div style="padding:22px 24px;background:#0f172a;color:#ffffff;">
+        <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#a3e635;font-weight:800;">GLAND Portfolio CMS</div>
+        <h1 style="margin:8px 0 0;font-size:22px;line-height:1.35;">{title}</h1>
+      </div>
+      <div style="padding:24px;">
+        {intro}
+        <table role="presentation" style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;">
+          {rows}
+        </table>
+        <p style="margin:18px 0 0;color:#64748b;font-size:12px;line-height:1.6;">Catatan keamanan: password, token, session, dan kode OTP tidak pernah ditampilkan di email alert ini.</p>
+      </div>
+    </div>
+  </body>
+</html>""".format(
+            title=_gland_clear_html_escape(title),
+            intro=html_intro,
+            rows=html_rows,
+        )
+
+        message = EmailMessage()
+        message["Subject"] = str(subject)
+        message["From"] = "{} <{}>".format(from_name, from_email) if from_name else from_email
+        message["To"] = ", ".join(recipients)
+        message["Reply-To"] = from_email
+        message["X-GLAND-Alert"] = "security"
+        message.set_content(plain)
+        message.add_alternative(html_body, subtype="html")
+
+        if smtp_port == 465:
+            context = ssl.create_default_context()
+
+            with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=20, context=context) as server:
+                server.login(smtp_username, smtp_password)
+                server.send_message(message)
+        else:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
+                server.ehlo()
+                server.starttls(context=ssl.create_default_context())
+                server.ehlo()
+                server.login(smtp_username, smtp_password)
+                server.send_message(message)
+
+        return {
+            "sent": True,
+            "skipped": False,
+            "error": "",
+            "recipients": recipients,
+            "subject": str(subject),
+        }
+    except Exception as error:
+        return {
+            "sent": False,
+            "skipped": False,
+            "error": str(error),
+            "recipients": recipients,
+            "subject": str(subject),
+        }
+
+
+def send_gland_security_alert(event_name="admin_security_event", payload=None):
+    payload = _gland_clear_enrich_payload(payload or {})
+    event_name = str(event_name or _gland_clear_extract_event_name(payload) or "admin_security_event")
+    safe = _gland_clear_safe_payload(payload)
+    details = _gland_clear_event_details(event_name, payload)
+
+    identifier = (
+        safe.get("identifier")
+        or safe.get("username")
+        or safe.get("email")
+        or safe.get("admin_email")
+        or "-"
+    )
+
+    status_text = {
+        "success": "BERHASIL",
+        "failed": "GAGAL",
+        "info": "INFO",
+    }.get(details.get("status"), str(details.get("status") or "INFO").upper())
+
+    subject = "GLAND Security Alert: {} | {}".format(
+        details.get("subject_label") or details.get("label"),
+        identifier,
+    )
+
+    intro = "Ringkasan: {}. Status: {}. {}".format(
+        details.get("label"),
+        status_text,
+        details.get("meaning"),
+    )
+
+    rows = [
+        ("Jenis alert", details.get("label", "-")),
+        ("Status kejadian", status_text),
+        ("Event teknis", event_name),
+        ("Tahap proses", details.get("stage", "-")),
+        ("Arti kejadian", details.get("meaning", "-")),
+        ("Dampak keamanan", details.get("impact", "-")),
+        ("Tingkat risiko", details.get("severity", "normal")),
+        ("Akun atau identifier", identifier),
+        ("Email admin", safe.get("email", safe.get("admin_email", "-"))),
+        ("Username", safe.get("username", safe.get("admin_username", "-"))),
+        ("Waktu", safe.get("time", safe.get("created_at", "-"))),
+        ("IP address", safe.get("ip_address", safe.get("ip", safe.get("remote_addr", "-")))),
+        ("Lokasi jaringan", safe.get("ip_location", "-")),
+        ("Provider jaringan", safe.get("network_org", "-")),
+        ("Timezone", safe.get("timezone", "-")),
+        ("Koordinat", safe.get("coordinates", "-")),
+        ("Jenis perangkat", safe.get("device_type", "-")),
+        ("Browser", safe.get("browser", "-")),
+        ("Sistem operasi", safe.get("operating_system", "-")),
+        ("Request method", safe.get("request_method", safe.get("method", "-"))),
+        ("Request path", safe.get("request_path", safe.get("path", "-"))),
+        ("User agent", safe.get("user_agent", safe.get("userAgent", "-"))),
+    ]
+
+    known = {
+        "event",
+        "event_name",
+        "event_type",
+        "activity",
+        "action",
+        "type",
+        "name",
+        "title",
+        "subject",
+        "success",
+        "status",
+        "result",
+        "identifier",
+        "username",
+        "admin_username",
+        "email",
+        "admin_email",
+        "time",
+        "created_at",
+        "ip",
+        "ip_address",
+        "remote_addr",
+        "ip_location",
+        "network_org",
+        "timezone",
+        "coordinates",
+        "device_type",
+        "browser",
+        "operating_system",
+        "request_method",
+        "method",
+        "request_path",
+        "path",
+        "user_agent",
+        "userAgent",
+    }
+
+    extra_count = 0
+
+    for key in sorted(safe.keys()):
+        if key in known:
+            continue
+
+        rows.append(("Detail aman: {}".format(key), safe.get(key, "-")))
+        extra_count += 1
+
+        if extra_count >= 18:
+            break
+
+    return _gland_clear_send_email(
+        _gland_clear_security_recipients(),
+        subject,
+        "Security Alert: {}".format(details.get("label", "Aktivitas Keamanan Admin")),
+        rows,
+        intro,
+    )
+
+
+def send_gland_admin_change_alert(event_name="admin_change_event", payload=None):
+    payload = _gland_clear_enrich_payload(payload or {})
+    safe = _gland_clear_safe_payload(payload)
+    event_name = str(event_name or _gland_clear_extract_event_name(payload) or "admin_change_event")
+
+    admin_identity = (
+        safe.get("identifier")
+        or safe.get("username")
+        or safe.get("email")
+        or safe.get("admin_email")
+        or "-"
+    )
+
+    rows = [
+        ("Jenis alert", "Perubahan CMS Admin"),
+        ("Status kejadian", safe.get("status", safe.get("success", "INFO"))),
+        ("Event teknis", event_name),
+        ("Admin", admin_identity),
+        ("Email admin", safe.get("email", safe.get("admin_email", "-"))),
+        ("Target", safe.get("target", safe.get("resource", safe.get("table", "-")))),
+        ("Action", safe.get("action", event_name)),
+        ("Waktu", safe.get("time", safe.get("created_at", "-"))),
+        ("IP address", safe.get("ip_address", safe.get("ip", safe.get("remote_addr", "-")))),
+        ("Lokasi jaringan", safe.get("ip_location", "-")),
+        ("Jenis perangkat", safe.get("device_type", "-")),
+        ("Browser", safe.get("browser", "-")),
+        ("Sistem operasi", safe.get("operating_system", "-")),
+        ("Request path", safe.get("request_path", safe.get("path", "-"))),
+        ("User agent", safe.get("user_agent", safe.get("userAgent", "-"))),
+    ]
+
+    return _gland_clear_send_email(
+        _gland_clear_change_recipients(),
+        "GLAND Admin Change Alert: {} | {}".format(event_name, admin_identity),
+        "Admin Change Alert",
+        rows,
+        "Sistem mencatat perubahan pada CMS admin.",
+    )
+
+
+def _gland_clear_wrap_alert_sender(fn):
+    def _wrapped(*args, **kwargs):
+        payload = _gland_clear_collect_payload(*args, **kwargs)
+        event_name = _gland_clear_extract_event_name(payload)
+        category = _gland_clear_category(event_name, payload)
+
+        if category == "security":
+            return send_gland_security_alert(event_name, payload)
+
+        if category == "change":
+            return send_gland_admin_change_alert(event_name, payload)
+
+        return fn(*args, **kwargs)
+
+    _wrapped._gland_clear_security_wrapped = True
+    _wrapped.__name__ = getattr(fn, "__name__", "_wrapped")
+    return _wrapped
+
+
+_gland_clear_explicit_wrap_names = {
+    "send_admin_activity_alert",
+    "send_admin_activity_email",
+    "send_admin_alert",
+    "send_admin_alert_email",
+    "send_admin_event_alert",
+    "send_admin_notification",
+    "send_activity_alert",
+    "send_activity_log_alert",
+    "send_auth_alert",
+    "send_login_alert",
+    "send_security_alert",
+    "send_branded_admin_alert",
+    "send_branded_admin_email",
+    "send_branded_activity_alert",
+    "send_notification_email",
+    "send_email_notification",
+}
+
+for _gland_clear_name, _gland_clear_candidate in list(globals().items()):
+    if not callable(_gland_clear_candidate):
+        continue
+
+    if getattr(_gland_clear_candidate, "_gland_clear_security_wrapped", False):
+        continue
+
+    lower_name = str(_gland_clear_name).lower()
+
+    if lower_name in {
+        "send_admin_login_verification_email",
+        "send_gland_security_alert",
+        "send_gland_admin_change_alert",
+        "send_gland_contact_alert",
+        "send_gland_contact_message_alert",
+    }:
+        continue
+
+    should_wrap = _gland_clear_name in _gland_clear_explicit_wrap_names
+
+    if not should_wrap:
+        should_wrap = (
+            lower_name.startswith("send_")
+            and (
+                "admin" in lower_name
+                or "login" in lower_name
+                or "auth" in lower_name
+                or "security" in lower_name
+                or "activity" in lower_name
+            )
+            and (
+                "alert" in lower_name
+                or "notification" in lower_name
+                or "activity" in lower_name
+            )
+        )
+
+    if should_wrap:
+        globals()[_gland_clear_name] = _gland_clear_wrap_alert_sender(_gland_clear_candidate)
+# GLAND CLEAR SECURITY ALERT V2 END
