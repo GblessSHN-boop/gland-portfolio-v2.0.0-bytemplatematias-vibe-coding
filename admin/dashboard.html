@@ -1,57 +1,160 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-zinc-950">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overview | GLAND Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
-    </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-    <link rel="stylesheet" href="assets/css/admin-clean-v3.css">
+    <title>Dashboard | GLAND Admin</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/admin-tabler-gland.css">
 </head>
-<body class="h-full text-zinc-100 antialiased flex">
-    <aside class="w-64 bg-zinc-900/50 border-r border-zinc-800 flex flex-col fixed h-full z-10 backdrop-blur-xl">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="w-9 h-9 rounded-xl bg-lime-400 flex items-center justify-center font-bold text-black shadow-[0_0_15px_rgba(163,230,53,0.3)]">G</div>
-                <div><h2 class="text-sm font-bold text-white">GLAND Admin</h2><p class="text-[10px] uppercase tracking-widest text-zinc-500">Portfolio CMS</p></div>
+<body>
+    <div class="gland-page">
+        <aside class="gland-sidebar">
+            <div class="gland-brand">
+                <div class="gland-brand-mark">G</div>
+                <div>
+                    <p class="gland-brand-title">GLAND Admin</p>
+                    <p class="gland-brand-subtitle">Portfolio CMS</p>
+                </div>
             </div>
-            <nav class="space-y-1">
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-all">Messages</a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-all">Projects</a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-lime-400 bg-zinc-800/80 rounded-lg border border-zinc-700/50 shadow-sm">Dashboard</a>
+
+            <nav class="gland-nav" aria-label="Admin navigation">
+                <a class="gland-nav-link" href="messages.html"><i class="ti ti-inbox"></i> Messages</a>
+                <a class="gland-nav-link" href="projects.html"><i class="ti ti-briefcase"></i> Projects</a>
+                <a class="gland-nav-link" href="highlights.html"><i class="ti ti-sparkles"></i> Highlights</a>
+                <a class="gland-nav-link" href="personal-info.html"><i class="ti ti-user"></i> Personal Info</a>
+                <a class="gland-nav-link" href="hero-content.html"><i class="ti ti-layout"></i> Hero Content</a>
+                <a class="gland-nav-link" href="site-identity.html"><i class="ti ti-id"></i> Site Identity</a>
+                <a class="gland-nav-link is-active" href="dashboard.html"><i class="ti ti-dashboard"></i> Dashboard</a>
+                <a class="gland-nav-link" href="analytics.html"><i class="ti ti-chart-line"></i> Analytics</a>
+                <a class="gland-nav-link" href="page-editor.html"><i class="ti ti-file-pencil"></i> Page Editor</a>
+                <a class="gland-nav-link" href="media.html"><i class="ti ti-photo"></i> Media</a>
+                <a class="gland-nav-link" href="settings.html"><i class="ti ti-settings"></i> Settings</a>
             </nav>
-        </div>
-    </aside>
 
-    <main class="flex-1 min-h-screen pl-64">
-        <div class="max-w-5xl mx-auto px-8 py-10">
-            <header class="mb-10">
-                <h1 class="text-3xl font-bold text-white tracking-tight">Dashboard</h1>
-                <p class="text-zinc-500 mt-1">Selamat datang kembali, Gland.</p>
-            </header>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="group bg-zinc-900 border border-zinc-800 p-6 rounded-2xl hover:border-zinc-700 transition-all duration-300">
-                    <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Total Views</h3>
-                    <p class="text-4xl font-bold text-white mt-3 group-hover:text-lime-400 transition-colors">1,248</p>
-                </div>
-                <div class="group bg-zinc-900 border border-zinc-800 p-6 rounded-2xl hover:border-zinc-700 transition-all duration-300">
-                    <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Unread Msgs</h3>
-                    <p class="text-4xl font-bold text-white mt-3 group-hover:text-lime-400 transition-colors">4</p>
-                </div>
-                <div class="group bg-zinc-900 border border-zinc-800 p-6 rounded-2xl hover:border-zinc-700 transition-all duration-300">
-                    <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Projects</h3>
-                    <p class="text-4xl font-bold text-white mt-3 group-hover:text-lime-400 transition-colors">12</p>
-                </div>
+            <div class="gland-sidebar-footer">
+                <button type="button" class="gland-btn w-100" id="logoutButton">
+                    <i class="ti ti-logout me-2"></i> Sign Out
+                </button>
             </div>
-        </div>
-    </main>
-    <script src="assets/js/admin-clean-v3.js"></script>
+        </aside>
+
+        <main class="gland-main">
+            <div class="gland-container">
+                <header class="gland-page-header">
+                    <div>
+                        <p class="gland-eyebrow">Admin Overview</p>
+                        <h1 class="gland-title">Dashboard</h1>
+                        <p class="gland-subtitle">Live portfolio CMS summary, traffic, messages, projects, and interaction analytics.</p>
+                    </div>
+
+                    <button type="button" class="gland-btn" id="refreshDashboardButton">
+                        <i class="ti ti-refresh me-2"></i> Refresh
+                    </button>
+                </header>
+
+                <div class="alert alert-danger gland-error" id="dashboardError" role="alert"></div>
+
+                <section class="gland-stat-grid" aria-label="Dashboard statistics">
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Visits</p>
+                        <p class="gland-stat-value" id="statVisits">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Unique Visitors</p>
+                        <p class="gland-stat-value" id="statUnique">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Events</p>
+                        <p class="gland-stat-value" id="statEvents">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Messages</p>
+                        <p class="gland-stat-value" id="statMessages">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">New Messages</p>
+                        <p class="gland-stat-value" id="statNewMessages">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Approved</p>
+                        <p class="gland-stat-value" id="statApproved">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Projects</p>
+                        <p class="gland-stat-value" id="statProjects">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Social Clicks</p>
+                        <p class="gland-stat-value" id="statSocialClicks">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Intro Views</p>
+                        <p class="gland-stat-value" id="statIntroViews">0</p>
+                    </article>
+
+                    <article class="gland-stat-card">
+                        <p class="gland-stat-label">Avg Duration</p>
+                        <p class="gland-stat-value" id="statAvgDuration">0s</p>
+                    </article>
+                </section>
+
+                <section class="gland-section-grid">
+                    <article class="gland-panel">
+                        <div class="gland-panel-header">
+                            <h2 class="gland-panel-title">Top Pages</h2>
+                        </div>
+                        <table class="gland-table">
+                            <thead>
+                                <tr>
+                                    <th>Page</th>
+                                    <th>Visits</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topPagesBody">
+                                <tr>
+                                    <td colspan="2" class="gland-empty">Loading pages...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </article>
+
+                    <article class="gland-panel">
+                        <div class="gland-panel-header">
+                            <h2 class="gland-panel-title">Top Events</h2>
+                        </div>
+                        <table class="gland-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Name</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topEventsBody">
+                                <tr>
+                                    <td colspan="3" class="gland-empty">Loading events...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </article>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/admin-auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="assets/js/dashboard-tabler.js"></script>
 </body>
 </html>
