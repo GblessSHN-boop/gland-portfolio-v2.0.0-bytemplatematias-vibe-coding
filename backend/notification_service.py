@@ -164,19 +164,63 @@ def send_admin_password_reset_email(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 # GLAND ADMIN LOGIN VERIFICATION EMAIL START
 def send_admin_login_verification_email(payload: Dict[str, Any]) -> Dict[str, Any]:
+    import smtplib
+    import ssl
+    from email.message import EmailMessage
+
     admin = payload.get("admin") or {}
     code = str(payload.get("code") or "").strip()
     expires_at = str(payload.get("expires_at") or "-")
     ip_address = str(payload.get("ip_address") or "-")
     user_agent = str(payload.get("user_agent") or "-")
 
-    to_email = str(admin.get("email") or _get_config("ADMIN_ALERT_EMAIL", "") or "").strip()
+    # IMPORTANT:
+    # OTP must go to the account being logged into, not ADMIN_ALERT_EMAIL, not SMTP_USERNAME.
+    to_email = str(admin.get("email") or "").strip()
+
+    if not to_email:
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "Admin account does not have an email address.",
+        }
 
     if not code:
         return {
             "sent": False,
             "skipped": True,
             "error": "Missing verification code.",
+        }
+
+    if not bool(_get_config("SMTP_ENABLED", True)):
+        return {
+            "sent": False,
+            "skipped": True,
+            "error": "SMTP is disabled.",
+        }
+
+    smtp_host = str(_get_config("SMTP_HOST", "smtp.gmail.com") or "smtp.gmail.com").strip()
+    smtp_port = int(_get_config("SMTP_PORT", 587) or 587)
+    smtp_username = str(_get_config("SMTP_USERNAME", "") or "").strip()
+    smtp_password = str(
+        _get_config("SMTP_APP_PASSWORD", "")
+        or _get_config("SMTP_PASSWORD", "")
+        or ""
+    ).strip()
+
+    from_email = str(
+        _get_config("SMTP_FROM_EMAIL", "")
+        or smtp_username
+        or to_email
+    ).strip()
+
+    from_name = str(_get_config("SMTP_FROM_NAME", "GLAND Portfolio CMS") or "GLAND Portfolio CMS").strip()
+
+    if not smtp_username or not smtp_password:
+        return {
+            "sent": False,
+            "skipped": False,
+            "error": "SMTP username or password is missing.",
         }
 
     subject = f"GLAND Login Code: {code}"
@@ -203,6 +247,40 @@ def send_admin_login_verification_email(payload: Dict[str, Any]) -> Dict[str, An
         ]
     )
 
-    return send_email(subject, body, to_email=to_email)
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = f"{from_name} <{from_email}>" if from_name else from_email
+    message["To"] = to_email
+    message.set_content(body)
+
+    try:
+        if smtp_port == 465:
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=20, context=context) as server:
+                server.login(smtp_username, smtp_password)
+                server.send_message(message)
+        else:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
+                server.ehlo()
+                server.starttls(context=ssl.create_default_context())
+                server.ehlo()
+                server.login(smtp_username, smtp_password)
+                server.send_message(message)
+
+        return {
+            "sent": True,
+            "skipped": False,
+            "error": "",
+            "message": f"OTP email sent to login account: {to_email}",
+            "recipient": to_email,
+        }
+    except Exception as error:
+        return {
+            "sent": False,
+            "skipped": False,
+            "error": str(error),
+            "message": "Failed to send OTP email to login account.",
+            "recipient": to_email,
+        }
 # GLAND ADMIN LOGIN VERIFICATION EMAIL END
 
